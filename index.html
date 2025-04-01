@@ -37,7 +37,7 @@
                     <h5>Hi I'm <span class="input">UI/UX Designer</span></h5>
                     <h1>Elijah Meir C. Vinluan</h1>
                     <p>About me </p>
-                    <p>Nagsimula sa simple na pasulyap-sulyap, nagpapapansin sa 'yo
+                    <p class="hey">Nagsimula sa simple na pasulyap-sulyap, nagpapapansin sa 'yo
                         Umabot sa palitan ng mga mensahe, kilig na kilig ako
                         Kumusta? Kain na, hello, magandang umaga
                         Ingat ka, pahinga, huwag kang masyadong magpupuyat pa</p>
@@ -66,9 +66,14 @@
         })
 
         var typed=new Typed(".input",{
-            strings:["Frontend Developer"],
+            strings:["UI/UX Designer"],
             typedSpeed:1,
             backSpeed:200,
+            loop:true
+        })
+        var typed=new Typed(".hey",{
+            strings:["Frontend Developer"],
+            typedSpeed:1,
             loop:true
         })
      </script>
