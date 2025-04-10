@@ -255,4 +255,74 @@ body {
     background-color: #ff4757;
     transform: scale(1.05);
 }
+.slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 120px 0;
 
+}
+
+.slider-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 40px;
+    scroll-snap-type: x mandatory;
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar on Webkit */
+}
+
+.item {
+    flex: 0 0 auto;
+    width: 100vw;
+    max-width: 250px;
+    background: #ffe6f0;;
+    border-radius: 40px;
+    padding: 20px;
+    height: auto;;
+    scroll-snap-align: center;
+    transition: transform 0.3s ease;
+}
+
+/* Navigation Buttons */
+#next, #prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+#prev {
+    left: 10px;
+}
+
+#next {
+    right: 10px;
+}
+
+/* Hide nav buttons on small screens */
+@media (max-width: 768px) {
+    #next, #prev {
+        display: none;
+    }
+}
+.resized-image {
+    width: 80vw;
+    max-width: 300px;
+    height: auto;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+}
