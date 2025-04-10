@@ -1,0 +1,258 @@
+body {
+    font-family: cursive;
+    background-color: #ffe6f0; /* Light pink background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 30px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    font-family: Italianno;
+    max-width: 960px;
+    margin-bottom: 20px;
+}
+
+.personal-name {
+    color: #8c526f;
+    font-family: Italianno;
+    font-size: 2em;
+}
+
+h1 {
+    color: #8c526f;
+    font-size: 2.5em;
+    font-family: Italianno;
+    text-align: center;
+    margin: 0;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 30px;
+}
+
+.nav-link {
+    color: #8c526f;
+    font-size: 1.8em;
+    text-decoration: none;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr; /* Adjust column widths */
+    gap: 30px;
+    width: 90%;
+    max-width: 960px;
+    margin-bottom: 30px;
+}
+
+.story-section, .graduation-section {
+    text-align: center;
+}
+
+.section-title {
+    color: #8c526f;
+    font-size: 1.6em;
+    margin-bottom: 10px;
+}
+
+.section-content {
+    color: #333;
+    line-height: 1.6;
+    font-size: 0.9em;
+}
+
+.photo-gallery-placeholder {
+    background-color: #cccccc;
+    height: 250px; /* Adjust height */
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    font-size: 1em;
+    text-align: center;
+}
+.photo {
+background-color: #ff6b81;
+color: white;
+padding: 12 px;
+border: none;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+max-width: 250px;
+width: 100%;
+
+}
+
+.photo:hover {
+background-color: #ff4757;
+transform: scale(1.05);
+}
+
+@media screen and (max-width: 600px) {
+.photo {
+font-size: 0.95rem;
+padding: 10px 20px;
+}
+}
+
+.bottom-content {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr; /* Adjust column widths */
+    gap: 30px;
+    width: 90%;
+    max-width: 960px;
+}
+
+.fav-music-section, .love-letter-section {
+    text-align: center;
+}
+
+.fav-music-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.fav-music-item {
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 1em;
+}
+/* Main container stuff stays the same — already pretty responsive */
+body {
+    font-family: cursive;
+    background-color: #ffe6f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 30px;
+    box-sizing: border-box;
+}
+
+/* Header & navigation */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 960px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+/* Main grid layout */
+.main-content,
+.bottom-content {
+    display: grid;
+    gap: 30px;
+    width: 90%;
+    max-width: 960px;
+}
+
+/* Desktop layout */
+.main-content {
+    grid-template-columns: 1fr 1.2fr 1fr;
+}
+
+.bottom-content {
+    grid-template-columns: 1fr 1.5fr 1fr;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    .main-content,
+    .bottom-content {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navigation {
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    .section-title {
+        font-size: 1.4em;
+    }
+
+    .section-content,
+    .fav-music-item {
+        font-size: 0.95em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .photo {
+        font-size: 0.9rem;
+        padding: 10px 16px;
+    }
+
+    .nav-link {
+        font-size: 1.2em;
+    }
+}
+
+/* Button fix — noticed a tiny spacing issue 👀 */
+.photo {
+    background-color: #ff6b81;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 250px;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
+.photo:hover {
+    background-color: #ff4757;
+    transform: scale(1.05);
+}
+
