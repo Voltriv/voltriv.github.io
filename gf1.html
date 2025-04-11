@@ -22,18 +22,23 @@
     <div class="main-content">
         <div class="story-section">
             <h2 class="section-title">Our Story</h2>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
-            <p class="section-content">gipakita ko sa madly dreaming love Ever. gipasayloa ko sa akong mga kasal-anan sa imo :></p>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
+            <p class="section-content"></p>
+            <p class="section-content"></p>
+            <p class="section-content"></p>
+            <p class="section-content"></p>
         </div>
         <div class="slider">
             <button id="prev">&#10094;</button>
           
             <div class="slider-container">
-              <div class="item"><img src="voltriv.jpg" alt="Description" class="resized-image"></div>
-              <div class="item">Item 2</div>
-              <div class="item">Item 3</div>
+              <div class="item"><img src="pic1.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic2.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic3.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic4.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic3.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic2.jpg" alt="Description" class="resized-image"></div>
+              <div class="item"><img src="pic3.jpg" alt="Description" class="resized-image"></div>
+          
               <!-- Add more .item as needed -->
             </div>
           
@@ -42,28 +47,41 @@
           
         <div class="graduation-section">
             <h2 class="section-title">Graduation</h2>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
-            <p class="section-content">gipakita ko sa madly dreaming love Ever. gipasayloa ko sa akong mga kasal-anan sa imo :></p>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
-            <p class="section-content">Hello my love ever First Call sign. Ikaw lamang ako nang nagdalita kita since bati. Iyan 2020 diba diba?? galingg dana naton unang daanan labis nako nag tamay! tapos nako lablabihan pa rin :></p>
+            <p class="section-content">
+                My dearest Annielyn Custodio,
+As I sit here thinking about you today, my heart swells with an overwhelming sense of pride and joy. Today isn't just another day it's a monumental milestone, a vibrant testament to your unwavering dedication, your tireless efforts, and the brilliant mind you possess. Seeing you reach this incredible achievement of graduation fills me with so much happiness.
+i'm super proud talaga sayo my love annielyn! </p>
+            <p class="section-content"></p>
         </div>
     </div>
 
     <div class="bottom-content">
         <div class="fav-music-section">
-            <h2 class="section-title">Fav Music</h2>
+            <h2 class="section-title">Favorite Music</h2>
             <ul class="fav-music-list">
-                <li class="fav-music-item">1. i</li>
+                <li class="fav-music-item"> <audio controls autoplay loop>
+                    <source src="iv.mp3" type="audio/mpeg"></audio></li>
                 <li class="fav-music-item">2. love</li>
                 <li class="fav-music-item">3. you</li>
             </ul>
         </div>
-        <div class="center-section">
-            
-            <video src="video.mp4.mp4" controls width="640" height="360"></video>
+ 
+        <div class="container">
+            <div class="video-wrapper">
+                <video controls poster="">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="controls">
+                <button class="arrow left">&lt;</button>
+                <button class="arrow right">&gt;</button>
+            </div>
         </div>
+
         <div class="love-letter-section">
             <h2 class="section-title">love letter</h2>
+            <p> HI HI HI HI HIewqewqeqweq</p>
             </div>
     </div>
 </body>
@@ -80,6 +98,44 @@
   prevBtn.addEventListener('click', () => {
     container.scrollBy({ left: -300, behavior: 'smooth' });
   });
+
+  const leftArrow = document.querySelector('.arrow.left');
+        const rightArrow = document.querySelector('.arrow.right');
+        const videoPlayer = document.querySelector('video');
+        const videoSource = document.querySelector('source');
+
+        const videoUrls = [
+            "video1.mp4",
+            "video2.mp4",
+            "video3.mp4"
+        ];
+        let currentVideoIndex = 0;
+
+        function loadAndPlayVideo(index) {
+            videoSource.src = videoUrls[index];
+            videoPlayer.src = videoUrls[index]; //redundant, but safer
+            videoPlayer.load();
+            videoPlayer.play().catch(error => {
+                // Handle autoplay issues,  show a play button if needed.
+                console.error("Autoplay failed:", error);
+                // You might want to display a message to the user here, e.g.,
+                // "Click to play video" and then call videoPlayer.play() on a user action.
+            });
+        }
+
+        if (leftArrow && rightArrow && videoPlayer && videoSource) {
+            loadAndPlayVideo(currentVideoIndex); // Load the initial video
+
+            leftArrow.addEventListener('click', () => {
+                currentVideoIndex = (currentVideoIndex - 1 + videoUrls.length) % videoUrls.length;
+                loadAndPlayVideo(currentVideoIndex);
+            });
+
+            rightArrow.addEventListener('click', () => {
+                currentVideoIndex = (currentVideoIndex + 1) % videoUrls.length;
+                loadAndPlayVideo(currentVideoIndex);
+            });
+        }
 </script>
 
 
