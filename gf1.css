@@ -70,6 +70,7 @@ h1 {
 .section-content {
     color: #333;
     line-height: 1.6;
+    font-family: Italianno;
     font-size: 0.9em;
 }
 
@@ -196,7 +197,7 @@ body {
 
     .header {
         flex-direction: column;
-        gap: 10px;
+        gap: 5px;
     }
 
     .navigation {
@@ -205,7 +206,7 @@ body {
     }
 
     h1 {
-        font-size: 2em;
+        font-size: 3em;
     }
 
     .section-title {
