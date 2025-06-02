@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Memories</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f43f5e'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Montserrat', sans-serif;
+background-color: #fafafa;
+}
+.year-divider {
+position: sticky;
+top: 0;
+z-index: 10;
+backdrop-filter: blur(8px);
+}
+.memory-card {
+transition: all 0.3s ease;
+}
+.memory-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+.memory-image {
+transition: all 0.5s ease;
+}
+.memory-card:hover .memory-image {
+transform: scale(1.05);
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+z-index: 50;
+}
+.modal-content {
+background-color: white;
+border-radius: 8px;
+max-width: 90%;
+width: 600px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+.like-button.active i {
+animation: heartBeat 0.3s ease-in-out;
+}
+@keyframes heartBeat {
+0% { transform: scale(1); }
+50% { transform: scale(1.3); }
+100% { transform: scale(1); }
+}
+.share-menu {
+display: none;
+position: absolute;
+bottom: 100%;
+right: 0;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+padding: 0.5rem;
+z-index: 20;
+}
+.toast {
+position: fixed;
+bottom: 24px;
+left: 50%;
+transform: translateX(-50%);
+background-color: #4f46e5;
+color: white;
+padding: 12px 24px;
+border-radius: 8px;
+z-index: 100;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.toast.show {
+opacity: 1;
+}
+</style>
+</head>
+<body>
+<header class="w-full bg-white shadow-sm">
+<div class="container mx-auto px-4 py-6 flex justify-between items-center">
+<h1 class="text-3xl font-['Pacifico'] text-primary">Our Memories</h1>
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center text-gray-500">
+<i class="ri-search-line"></i>
+</div>
+</div>
+<input type="text" class="pl-10 pr-4 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Search memories...">
+</div>
+<div class="relative">
+<button id="yearFilterBtn" class="flex items-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-button hover:bg-gray-50 whitespace-nowrap">
+<span>Filter by Year</span>
+<div class="w-4 h-4 flex items-center justify-center">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div id="yearFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-20 border border-gray-100">
+<div class="p-2">
+<div class="flex items-center mb-2">
+<input type="checkbox" id="year2025" class="hidden peer" checked>
+<label for="year2025" class="w-4 h-4 mr-2 border border-gray-300 rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary cursor-pointer">
+<div class="w-3 h-3 flex items-center justify-center text-white">
+<i class="ri-check-line ri-xs"></i>
+</div>
+</label>
+<label for="year2025" class="text-sm cursor-pointer">2025</label>
+</div>
+<div class="flex items-center mb-2">
+<input type="checkbox" id="year2024" class="hidden peer" checked>
+<label for="year2024" class="w-4 h-4 mr-2 border border-gray-300 rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary cursor-pointer">
+<div class="w-3 h-3 flex items-center justify-center text-white">
+<i class="ri-check-line ri-xs"></i>
+</div>
+</label>
+<label for="year2024" class="text-sm cursor-pointer">2024</label>
+</div>
+<div class="flex items-center">
+<input type="checkbox" id="year2023" class="hidden peer" checked>
+<label for="year2023" class="w-4 h-4 mr-2 border border-gray-300 rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary cursor-pointer">
+<div class="w-3 h-3 flex items-center justify-center text-white">
+<i class="ri-check-line ri-xs"></i>
+</div>
+</label>
+<label for="year2023" class="text-sm cursor-pointer">2023</label>
+</div>
+</div>
+</div>
+</div>
+<button id="addMemoryBtn" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 whitespace-nowrap">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 flex items-center justify-center">
+<i class="ri-add-line"></i>
+</div>
+<span>Add Memory</span>
+</div>
+</button>
+<div id="addMemoryModal" class="modal">
+<div class="modal-content p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-semibold">Add New Memory</h3>
+<button class="text-gray-500 hover:text-gray-700" onclick="document.getElementById('addMemoryModal').style.display='none'">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+<form id="memoryForm" class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+<input type="date" class="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+<textarea class="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-24 resize-none" required></textarea>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Upload Photo</label>
+<div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded">
+<div class="space-y-1 text-center">
+<div class="w-12 h-12 mx-auto flex items-center justify-center text-gray-400">
+<i class="ri-image-add-line ri-2x"></i>
+</div>
+<div class="flex text-sm text-gray-600">
+<label class="relative cursor-pointer bg-white rounded font-medium text-primary hover:text-primary/90 focus-within:outline-none">
+<span>Upload a file</span>
+<input type="file" class="sr-only" accept="image/*">
+</label>
+<p class="pl-1">or drag and drop</p>
+</div>
+<p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+</div>
+</div>
+</div>
+<div class="flex justify-end gap-3 mt-6">
+<button type="button" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-button hover:bg-gray-50 whitespace-nowrap" onclick="document.getElementById('addMemoryModal').style.display='none'">Cancel</button>
+<button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 whitespace-nowrap">Save Memory</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const addMemoryBtn = document.getElementById('addMemoryBtn');
+  const addMemoryModal = document.getElementById('addMemoryModal');
+  const memoryForm = document.getElementById('memoryForm');
+  addMemoryBtn.addEventListener('click', function() {
+    addMemoryModal.style.display = 'block';
+  });
+  window.addEventListener('click', function(event) {
+    if (event.target === addMemoryModal) {
+      addMemoryModal.style.display = 'none';
+    }
+  });
+  memoryForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    showToast('Memory saved successfully!');
+    addMemoryModal.style.display = 'none';
+    memoryForm.reset();
+  });
+});
+</script>
+</div>
+</div>
+</header>
+<main class="container mx-auto px-4 py-8">
+<!-- 2025 Memories -->
+<div class="mb-12">
+<div class="year-divider mb-6 bg-white/80 py-3">
+<h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+<div class="w-6 h-6 flex items-center justify-center mr-2 text-primary">
+<i class="ri-calendar-line"></i>
+</div>
+2025
+</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Memory Card 1 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=a%20couple%20enjoying%20a%20sunset%20on%20a%20beach%2C%20romantic%20atmosphere%2C%20golden%20hour%20light%2C%20silhouettes%20against%20orange%20sky%2C%20holding%20hands%2C%20palm%20trees%20in%20background%2C%20waves%20gently%20lapping%20at%20shore%2C%20footprints%20in%20sand%2C%20intimate%20moment&width=600&height=400&seq=1&orientation=landscape" alt="Spring Beach Getaway" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+April 12, 2025
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Spring Beach Getaway</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Malibu, California</span>
+</div>
+<p class="text-gray-600 text-sm">The way your eyes sparkled as we watched the sunset together made my heart skip a beat. I'll never forget how you whispered 'I love you' with the sound of waves in the background.</p>
+</div>
+</div>
+<!-- Memory Card 2 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20hiking%20in%20mountains%2C%20beautiful%20vista%2C%20alpine%20landscape%2C%20backpacks%2C%20clear%20blue%20sky%2C%20spring%20wildflowers%2C%20holding%20hands%20on%20mountain%20peak%2C%20achievement%2C%20panoramic%20view%2C%20adventure%20together%2C%20casual%20hiking%20clothes&width=600&height=400&seq=2&orientation=landscape" alt="Mountain Hiking Adventure" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+March 18, 2025
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Mountain Hiking Adventure</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Rocky Mountains, Colorado</span>
+</div>
+<p class="text-gray-600 text-sm">Every step was worth it because I was with you. At the summit, you held me close and said 'with you, I feel like I can conquer any mountain.' My heart soared higher than the peaks.</p>
+</div>
+</div>
+<!-- Memory Card 3 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20cooking%20together%20in%20modern%20kitchen%2C%20laughing%2C%20flour%20on%20faces%2C%20homemade%20pasta%2C%20wine%20glasses%2C%20intimate%20lighting%2C%20casual%20home%20clothes%2C%20ingredients%20spread%20on%20counter%2C%20teamwork%2C%20joyful%20moment%2C%20cozy%20atmosphere&width=600&height=400&seq=3&orientation=landscape" alt="Cooking Class Date" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+February 14, 2025
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Cooking Class Date</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Little Italy, New York</span>
+</div>
+<p class="text-gray-600 text-sm">You had flour on your nose and sauce on your cheek, but you've never looked more beautiful. The way you laugh makes my whole world brighter. Every day feels like Valentine's Day with you.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- 2024 Memories -->
+<div class="mb-12">
+<div class="year-divider mb-6 bg-white/80 py-3">
+<h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+<div class="w-6 h-6 flex items-center justify-center mr-2 text-primary">
+<i class="ri-calendar-line"></i>
+</div>
+2024
+</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Memory Card 4 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20at%20winter%20cabin%2C%20snowy%20landscape%2C%20fireplace%20glowing%2C%20cozy%20blankets%2C%20hot%20chocolate%20mugs%2C%20large%20windows%20showing%20snow%20falling%2C%20rustic%20wooden%20interior%2C%20intimate%20setting%2C%20warm%20lighting%2C%20holiday%20decorations%2C%20romantic%20winter%20getaway&width=600&height=400&seq=4&orientation=landscape" alt="Winter Cabin Getaway" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+December 24, 2024
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Winter Cabin Getaway</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Aspen, Colorado</span>
+</div>
+<p class="text-gray-600 text-sm">Wrapped in blankets, your head on my shoulder, watching snowflakes dance outside. You whispered 'this is perfect' and I realized home isn't a place - it's wherever I'm with you. Our own Christmas miracle.</p>
+</div>
+</div>
+<!-- Memory Card 5 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20at%20outdoor%20concert%2C%20summer%20festival%20atmosphere%2C%20crowd%20in%20background%2C%20sunset%20lighting%2C%20casual%20summer%20clothes%2C%20dancing%20together%2C%20live%20music%20stage%20visible%2C%20colorful%20festival%20decorations%2C%20joyful%20expressions%2C%20holding%20drinks%2C%20carefree%20moment&width=600&height=400&seq=5&orientation=landscape" alt="Summer Music Festival" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+August 15, 2024
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Summer Music Festival</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Austin, Texas</span>
+</div>
+<p class="text-gray-600 text-sm">When our song played and you pulled me close to dance, the whole world disappeared. The way you looked at me under the starlit sky made me fall in love with you all over again. Every melody reminds me of your smile.</p>
+</div>
+</div>
+<!-- Memory Card 6 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20on%20road%20trip%2C%20convertible%20car%2C%20coastal%20highway%2C%20wind%20in%20hair%2C%20sunglasses%2C%20blue%20ocean%20beside%20road%2C%20carefree%20smiles%2C%20map%20on%20dashboard%2C%20suitcases%20in%20back%20seat%2C%20sunny%20day%2C%20adventure%20together%2C%20scenic%20route&width=600&height=400&seq=6&orientation=landscape" alt="Pacific Coast Road Trip" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+June 5, 2024
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Pacific Coast Road Trip</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Highway 1, California</span>
+</div>
+<p class="text-gray-600 text-sm">With the wind in your hair and that adventurous spark in your eyes, you made every mile magical. You said 'let's get lost together' and I realized I'd follow you anywhere. Every detour led us closer to each other.</p>
+</div>
+</div>
+<!-- Memory Card 7 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20having%20picnic%20in%20spring%20park%2C%20cherry%20blossoms%20overhead%2C%20picnic%20blanket%20on%20grass%2C%20wine%20glasses%2C%20cheese%20board%2C%20books%2C%20casual%20spring%20attire%2C%20intimate%20moment%2C%20dappled%20sunlight%20through%20trees%2C%20romantic%20atmosphere%2C%20peaceful%20setting&width=600&height=400&seq=7&orientation=landscape" alt="Cherry Blossom Picnic" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+April 2, 2024
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Cherry Blossom Picnic</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Washington DC</span>
+</div>
+<p class="text-gray-600 text-sm">As cherry blossoms danced around us, you read love poems that made my heart flutter. When a petal landed in your hair, you looked so enchanting I forgot how to breathe. Some moments are simply written in the stars.</p>
+</div>
+</div>
+<!-- Memory Card 8 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20ice%20skating%20in%20city%20rink%2C%20winter%20evening%2C%20city%20lights%20in%20background%2C%20holding%20hands%20while%20skating%2C%20warm%20winter%20clothes%2C%20scarves%2C%20holiday%20decorations%20around%20rink%2C%20smiling%20at%20each%20other%2C%20slight%20snowfall%2C%20romantic%20winter%20activity%2C%20joyful%20moment&width=600&height=400&seq=8&orientation=landscape" alt="Ice Skating Date" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+January 15, 2024
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Ice Skating Date</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Rockefeller Center, New York</span>
+</div>
+<p class="text-gray-600 text-sm">Each time I stumbled, you caught me with a smile that melted my heart faster than snow. 'I'll never let you fall,' you promised, and I knew I'd found my forever. Even the stars seemed to twinkle just for us that night.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- 2023 Memories -->
+<div>
+<div class="year-divider mb-6 bg-white/80 py-3">
+<h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+<div class="w-6 h-6 flex items-center justify-center mr-2 text-primary">
+<i class="ri-calendar-line"></i>
+</div>
+2023
+</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Memory Card 9 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20at%20fancy%20restaurant%2C%20anniversary%20dinner%2C%20candlelight%2C%20elegant%20formal%20attire%2C%20champagne%20glasses%2C%20fine%20dining%20setting%2C%20intimate%20table%20for%20two%2C%20romantic%20atmosphere%2C%20city%20lights%20visible%20through%20window%2C%20special%20occasion%2C%20upscale%20interior&width=600&height=400&seq=9&orientation=landscape" alt="First Anniversary Dinner" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+November 22, 2023
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">First Anniversary Dinner</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Le Bernardin, New York</span>
+</div>
+<p class="text-gray-600 text-sm">As you held my hand across the table where our story began, your eyes full of love, I realized one year felt like a beautiful lifetime. When you surprised me with Paris tickets, my happy tears told the story my heart couldn't put into words.</p>
+</div>
+</div>
+<!-- Memory Card 10 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20kayaking%20on%20calm%20lake%2C%20summer%20day%2C%20mountains%20in%20background%2C%20life%20vests%2C%20sunhats%2C%20clear%20blue%20water%2C%20reflection%20on%20lake%20surface%2C%20adventure%20together%2C%20peaceful%20nature%20setting%2C%20forest%20shoreline%2C%20sunny%20weather&width=600&height=400&seq=10&orientation=landscape" alt="Lake Kayaking Adventure" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+July 8, 2023
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Lake Kayaking Adventure</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Lake Tahoe, Nevada</span>
+</div>
+<p class="text-gray-600 text-sm">In our secret paradise, you said I make your heart as calm as these waters and as vast as this view. We carved our initials in the sand, and though waves washed them away, our love only grows deeper with each passing day.</p>
+</div>
+</div>
+<!-- Memory Card 11 -->
+<div class="memory-card bg-white rounded-lg shadow-md overflow-hidden">
+<div class="h-64 overflow-hidden relative">
+<img src="https://readdy.ai/api/search-image?query=couple%20meeting%20for%20first%20time%2C%20coffee%20shop%20setting%2C%20nervous%20smiles%2C%20casual%20stylish%20clothes%2C%20coffee%20cups%20on%20table%2C%20soft%20cafe%20lighting%2C%20other%20patrons%20blurred%20in%20background%2C%20intimate%20moment%2C%20urban%20cafe%20interior%2C%20spring%20day%2C%20beginning%20of%20relationship&width=600&height=400&seq=11&orientation=landscape" alt="Our First Date" class="memory-image w-full h-full object-cover object-top">
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+March 15, 2023
+</div>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-semibold text-gray-800 mb-1">Our First Date</h3>
+<div class="flex items-center text-gray-500 text-sm mb-2">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>Bluestone Lane, Brooklyn</span>
+</div>
+<p class="text-gray-600 text-sm">The moment you laughed at my spilled coffee, my heart knew it had found its home. Your eyes held galaxies of possibilities, and your smile promised adventures untold. That nervous first hello turned into the most beautiful chapter of my life.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white border-t border-gray-200 mt-12">
+<div class="container mx-auto px-4 py-8">
+<div class="text-center">
+<p class="text-gray-600 text-sm">Created with ❤️ | Last updated: April 24, 2025</p>
+<div class="mt-4 flex justify-center gap-4">
+<button class="text-gray-500 hover:text-primary transition-colors">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-download-line"></i>
+</div>
+</button>
+<button class="text-gray-500 hover:text-primary transition-colors">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-share-line"></i>
+</div>
+</button>
+<button class="text-gray-500 hover:text-primary transition-colors">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-heart-line"></i>
+</div>
+</button>
+</div>
+</div>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const yearFilterBtn = document.getElementById('yearFilterBtn');
+  const yearFilterDropdown = document.getElementById('yearFilterDropdown');
+  
+  yearFilterBtn.addEventListener('click', function() {
+    yearFilterDropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function(event) {
+    if (!yearFilterBtn.contains(event.target) && !yearFilterDropdown.contains(event.target)) {
+      yearFilterDropdown.classList.add('hidden');
+    }
+  });
+  const searchInput = document.querySelector('input[type="text"]');
+  searchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.memory-card');
+    
+    cards.forEach(card => {
+      const title = card.querySelector('h3').textContent.toLowerCase();
+      const location = card.querySelector('.text-gray-500').textContent.toLowerCase();
+      const description = card.querySelector('.text-gray-600').textContent.toLowerCase();
+      
+      if (title.includes(searchTerm) || location.includes(searchTerm) || description.includes(searchTerm)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+  const yearCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+  yearCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const year = this.id.replace('year', '');
+      const yearSection = document.querySelector(`h2:contains('${year}')`).closest('div[class="mb-12"]');
+      
+      if (this.checked) {
+        yearSection.style.display = '';
+      } else {
+        yearSection.style.display = 'none';
+      }
+    });
+  });
+  const likeButtons = document.querySelectorAll('.memory-card');
+  likeButtons.forEach(card => {
+    const likeBtn = document.createElement('button');
+    likeBtn.className = 'like-button absolute top-3 left-3 bg-white/80 backdrop-blur-sm w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors';
+    likeBtn.innerHTML = '<i class="ri-heart-line"></i>';
+    
+    card.querySelector('.relative').appendChild(likeBtn);
+    
+    likeBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const icon = this.querySelector('i');
+      if (icon.classList.contains('ri-heart-line')) {
+        icon.classList.replace('ri-heart-line', 'ri-heart-fill');
+        icon.style.color = '#f43f5e';
+        this.classList.add('active');
+        showToast('Added to favorites!');
+      } else {
+        icon.classList.replace('ri-heart-fill', 'ri-heart-line');
+        icon.style.color = '';
+        this.classList.remove('active');
+        showToast('Removed from favorites');
+      }
+    });
+  });
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  }
+  const shareButtons = document.querySelectorAll('button:has(.ri-share-line)');
+  shareButtons.forEach(btn => {
+    const menu = document.createElement('div');
+    menu.className = 'share-menu';
+    menu.innerHTML = `
+      <div class="flex flex-col gap-2">
+        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-sm whitespace-nowrap">
+          <i class="ri-facebook-fill text-[#1877F2]"></i>
+          Share on Facebook
+        </button>
+        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-sm whitespace-nowrap">
+          <i class="ri-twitter-x-fill"></i>
+          Share on X
+        </button>
+        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded text-sm whitespace-nowrap">
+          <i class="ri-instagram-fill text-[#E4405F]"></i>
+          Share on Instagram
+        </button>
+      </div>
+    `;
+    
+    btn.parentElement.style.position = 'relative';
+    btn.parentElement.appendChild(menu);
+    
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    document.addEventListener('click', function() {
+      menu.style.display = 'none';
+    });
+  });
+});
+</script>
+</body>
+</html>
