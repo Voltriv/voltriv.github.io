@@ -114,6 +114,9 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
                 <p className="text-sm uppercase tracking-[0.4em] text-slate-600">
                   Softer hugs · brighter laughter · starlit wishes
                 </p>
+                <p className="text-sm font-medium text-rose-700">
+                  November 30 · your birthday and our monthsary
+                </p>
               </div>
 
               {!isBirthday && (
@@ -136,8 +139,14 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
               )}
 
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button size="lg" className="min-w-[180px]" onClick={onOpenStory}>
-                  See our story
+                <Button
+                  size="lg"
+                  className="min-w-[180px]"
+                  onClick={() => isBirthday && onOpenStory()}
+                  disabled={!isBirthday}
+                  title={isBirthday ? "Open our story" : "Unlocks once the countdown ends"}
+                >
+                  {isBirthday ? "See our story" : "See our story (soon)"}
                 </Button>
                 <Button
                   size="lg"
@@ -148,6 +157,11 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
                   Play birthday playlist
                 </Button>
               </div>
+              {!isBirthday && (
+                <p className="text-xs text-slate-600">
+                  The story unlocks the second the countdown hits zero on November 30.
+                </p>
+              )}
             </div>
 
             <div className="rounded-3xl bg-white/80 p-6 text-slate-900 shadow-lg shadow-rose-200/70">

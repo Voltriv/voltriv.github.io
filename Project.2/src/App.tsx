@@ -71,8 +71,15 @@ export default function App() {
           </div>
         </main>
 
-        <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 py-10 px-4 text-center text-sm text-muted-foreground">
-          Crafted with ♥ for Annielyn.
+        <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 py-10 px-4 text-center text-sm text-muted-foreground space-y-2">
+          <p>Crafted with ♥ for Annielyn.</p>
+          <button
+            type="button"
+            className="mx-auto block text-[11px] lowercase tracking-wide text-muted-foreground transition hover:text-foreground"
+            onClick={() => setView('admin')}
+          >
+            go to admin
+          </button>
         </footer>
 
         <Toaster />
@@ -86,12 +93,6 @@ export default function App() {
         onOpenStory={() => setView('story')}
         onOpenPlaylist={() => setShowPlaylist(true)}
       />
-
-      <div className="flex justify-center px-4">
-        <Button variant="ghost" onClick={() => setView('admin')}>
-          Go to admin
-        </Button>
-      </div>
 
       <Dialog open={showPlaylist} onOpenChange={setShowPlaylist}>
         <DialogContent className="max-w-2xl w-[90vw] bg-background">
