@@ -156,6 +156,15 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
                 >
                   Play birthday playlist
                 </Button>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="min-w-[200px] text-slate-900"
+                  onClick={onOpenStory}
+                  title="Skip straight to our story view"
+                >
+                  Go to our story
+                </Button>
               </div>
               {!isBirthday && (
                 <p className="text-xs text-slate-600">

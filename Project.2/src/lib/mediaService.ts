@@ -2,8 +2,8 @@ import {
   addDoc,
   collection,
   onSnapshot,
-  query,
   orderBy,
+  query,
   serverTimestamp,
 } from 'firebase/firestore';
 import {
