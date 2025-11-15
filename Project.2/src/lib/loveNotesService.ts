@@ -1,4 +1,4 @@
-import {
+﻿import {
   addDoc,
   collection,
   deleteDoc,
@@ -19,6 +19,7 @@ export interface LoveNoteRecord {
   date?: Date;
   isPinned: boolean;
   mood: string;
+  imageUrl?: string;
 }
 
 const notesCollection = collection(db, 'loveNotes');
@@ -35,7 +36,8 @@ export function subscribeToLoveNotes(callback: (notes: LoveNoteRecord[]) => void
         author: data.author,
         date: data.createdAt?.toDate(),
         isPinned: data.isPinned ?? false,
-        mood: data.mood ?? '😊',
+        mood: data.mood ?? 'dY~S',
+        imageUrl: data.imageUrl ?? undefined,
       };
     });
     callback(records);
@@ -45,6 +47,7 @@ export function subscribeToLoveNotes(callback: (notes: LoveNoteRecord[]) => void
 export async function addLoveNote(note: Omit<LoveNoteRecord, 'id' | 'date'>) {
   await addDoc(notesCollection, {
     ...note,
+    imageUrl: note.imageUrl ?? null,
     createdAt: serverTimestamp(),
   });
 }
@@ -57,6 +60,7 @@ export async function updateLoveNote(note: LoveNoteRecord) {
     author: note.author,
     isPinned: note.isPinned,
     mood: note.mood,
+    imageUrl: note.imageUrl ?? null,
   });
 }
 

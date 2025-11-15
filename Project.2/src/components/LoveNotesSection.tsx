@@ -15,6 +15,7 @@ import {
   togglePinLoveNote,
   updateLoveNote,
 } from '@/lib/loveNotesService';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface LoveNote extends LoveNoteRecord {
   date?: Date;
@@ -61,6 +62,7 @@ export function LoveNotesSection() {
     content: '',
     author: '',
     mood: '😊',
+    imageUrl: '',
   });
 
   const moodOptions = ['😊', '❤️', '🥰', '😍', '🤗', '☕', '🏔️', '🌟', '🎉', '💕'];
@@ -85,6 +87,7 @@ export function LoveNotesSection() {
       return;
     }
 
+    const trimmedImageUrl = newNote.imageUrl.trim() || undefined;
     try {
       await addLoveNote({
         title: newNote.title,
@@ -92,6 +95,7 @@ export function LoveNotesSection() {
         author: newNote.author,
         isPinned: false,
         mood: newNote.mood,
+        imageUrl: trimmedImageUrl,
       });
       if (!usingRemote) {
         setNotes([
@@ -103,11 +107,12 @@ export function LoveNotesSection() {
             date: new Date(),
             isPinned: false,
             mood: newNote.mood,
+            imageUrl: trimmedImageUrl,
           },
           ...notes,
         ]);
       }
-      setNewNote({ title: '', content: '', author: '', mood: '😊' });
+      setNewNote({ title: '', content: '', author: '', mood: '😊', imageUrl: '' });
       setIsAddingNote(false);
       toast.success('Love note added!');
     } catch (error) {
@@ -222,6 +227,15 @@ export function LoveNotesSection() {
                     rows={6}
                   />
                 </div>
+                <div>
+                  <label className="block text-sm mb-2">Image URL (optional)</label>
+                  <Input
+                    value={newNote.imageUrl}
+                    onChange={(e) => setNewNote({ ...newNote, imageUrl: e.target.value })}
+                    placeholder="https://example.com/our-photo.jpg"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">Drop in a hosted link to pair a photo with your note.</p>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm mb-2">From</label>
@@ -275,6 +289,15 @@ export function LoveNotesSection() {
                       <Badge className="text-base">{note.mood}</Badge>
                     </div>
                     <p className="text-muted-foreground mb-4">{note.content}</p>
+                    {note.imageUrl && (
+                      <div className="mb-4 overflow-hidden rounded-2xl border border-border/40 bg-muted/30">
+                        <ImageWithFallback
+                          src={note.imageUrl}
+                          alt={`${note.title} photo`}
+                          className="h-48 w-full object-cover"
+                        />
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">— {note.author}</span>
                       <div className="flex items-center space-x-2">
@@ -319,6 +342,15 @@ export function LoveNotesSection() {
                     <Badge>{note.mood}</Badge>
                   </div>
                   <p className="text-muted-foreground">{note.content}</p>
+                  {note.imageUrl && (
+                    <div className="overflow-hidden rounded-2xl border border-border/40 bg-muted/30">
+                      <ImageWithFallback
+                        src={note.imageUrl}
+                        alt={`${note.title} photo`}
+                        className="mt-2 h-40 w-full object-cover"
+                      />
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">— {note.author}</span>
                     <div className="flex items-center space-x-2">
@@ -392,6 +424,15 @@ export function LoveNotesSection() {
                     ))}
                   </div>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm mb-2">Image URL (optional)</label>
+                <Input
+                  value={editingNote.imageUrl ?? ''}
+                  onChange={(e) => setEditingNote({ ...editingNote, imageUrl: e.target.value })}
+                  placeholder="https://example.com/our-photo.jpg"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">Clear the field if you want a text-only note.</p>
               </div>
               <Button className="w-full" onClick={handleEditNote}>
                 Save Changes

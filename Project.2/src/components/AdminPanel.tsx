@@ -23,6 +23,7 @@ interface AdminPanelProps {
 }
 
 export function AdminPanel({ onBack }: AdminPanelProps) {
+  const bypassAuth = import.meta.env.VITE_BYPASS_ADMIN_AUTH !== 'false';
   const [entries, setEntries] = useState<MediaEntry[]>([]);
   const [loveNotes, setLoveNotes] = useState<LoveNoteRecord[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +43,9 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     author: '',
     mood: '😊',
     isPinned: false,
+    imageUrl: '',
   });
+  const [loveNoteImageFile, setLoveNoteImageFile] = useState<File | null>(null);
   const moodOptions = ['😊', '❤️', '🥰', '😍', '🤗', '☕', '🏔️', '🌟', '🎉', '💕'];
 
   useEffect(() => {
@@ -55,11 +58,16 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
   }, []);
 
   useEffect(() => {
+    if (bypassAuth) {
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (current) => {
       setUser(current);
     });
     return () => unsubscribe();
-  }, []);
+  }, [bypassAuth]);
+
+  const isAuthenticated = bypassAuth || !!user;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -98,15 +106,21 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     }
     try {
       setIsSavingNote(true);
+      let uploadedImageUrl = loveNoteForm.imageUrl?.trim() || undefined;
+      if (loveNoteImageFile) {
+        uploadedImageUrl = await uploadMediaFile(loveNoteImageFile, 'love-notes');
+      }
       await addLoveNote({
         title: loveNoteForm.title,
         content: loveNoteForm.content,
         author: loveNoteForm.author,
         isPinned: loveNoteForm.isPinned,
         mood: loveNoteForm.mood,
+        imageUrl: uploadedImageUrl,
       });
       toast.success('Love note saved');
-      setLoveNoteForm({ title: '', content: '', author: '', mood: '😊', isPinned: false });
+      setLoveNoteForm({ title: '', content: '', author: '', mood: '😊', isPinned: false, imageUrl: '' });
+      setLoveNoteImageFile(null);
     } catch (error) {
       console.error(error);
       toast.error('Failed to save love note');
@@ -135,6 +149,22 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     }
   };
 
+  const handleSignIn = () => {
+    if (bypassAuth) {
+      toast.success('Bypass mode enabled—no sign-in required.');
+      return;
+    }
+    signInWithPopup(auth, googleProvider);
+  };
+
+  const handleSignOut = () => {
+    if (bypassAuth) {
+      toast.info('Bypass mode is active. Disable it to use real auth.');
+      return;
+    }
+    signOut(auth);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground px-4 py-10 space-y-8">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -145,9 +175,14 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
             Upload photos, videos, audio, or heartfelt text entries. Everything you add will be available across the gallery and love notes sections.
           </p>
         </div>
-        <div className="flex gap-3">
-          {user && (
-            <Button variant="ghost" onClick={() => signOut(auth)}>
+        <div className="flex flex-wrap gap-3">
+          {bypassAuth && (
+            <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              Bypass mode
+            </span>
+          )}
+          {user && !bypassAuth && (
+            <Button variant="ghost" onClick={handleSignOut}>
               Sign out ({user.displayName || user.email})
             </Button>
           )}
@@ -157,14 +192,14 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
         </div>
       </div>
 
-      {!user ? (
+      {!isAuthenticated ? (
         <Card className="max-w-xl mx-auto">
           <CardContent className="p-8 text-center space-y-4">
             <h2 className="text-2xl font-semibold">Sign in to manage the memories</h2>
             <p className="text-muted-foreground">
               Only authenticated admins can upload photos, videos, or love notes.
             </p>
-            <Button className="w-full" onClick={() => signInWithPopup(auth, googleProvider)}>
+            <Button className="w-full" onClick={handleSignIn}>
               Continue with Google
             </Button>
           </CardContent>
@@ -327,6 +362,30 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
                   </div>
                 </div>
               </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">Photo URL (optional)</label>
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/photo.jpg"
+                    value={loveNoteForm.imageUrl}
+                    onChange={(e) => setLoveNoteForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">Use this if the photo is already hosted online.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">Or upload an image</label>
+                  <Input
+                    key={loveNoteImageFile?.name || 'empty'}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setLoveNoteImageFile(e.target.files?.[0] ?? null)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {loveNoteImageFile ? `Selected: ${loveNoteImageFile.name}` : 'PNG, JPG, or GIF up to 5MB.'}
+                  </p>
+                </div>
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   id="pin-note"
@@ -364,6 +423,13 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
                     <span className="text-lg">{note.mood}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">{note.content}</p>
+                  {note.imageUrl && (
+                    <img
+                      src={note.imageUrl}
+                      alt={`Photo for ${note.title}`}
+                      className="mb-2 mt-1 h-40 w-full rounded-xl object-cover"
+                    />
+                  )}
                   <div className="flex items-center justify-end gap-2">
                     <Button variant="ghost" size="icon" onClick={() => handleTogglePinned(note)}>
                       <Pin className={`w-4 h-4 ${note.isPinned ? 'text-primary' : ''}`} />

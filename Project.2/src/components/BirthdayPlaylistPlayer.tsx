@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ReactPlayer from 'react-player/lazy';
+import ReactPlayer from 'react-player/youtube';
 import { motion } from 'motion/react';
 import { Music2, SkipBack, SkipForward, Pause, Play, Sparkles } from 'lucide-react';
 import { Card, CardContent } from './ui/card';

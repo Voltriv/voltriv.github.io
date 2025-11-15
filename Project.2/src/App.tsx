@@ -12,6 +12,7 @@ import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { Button } from './components/ui/button';
 import { AdminPanel } from './components/AdminPanel';
 import { Toaster } from './components/ui/sonner';
+import { ProfilePage } from './components/ProfilePage';
 import {
   Dialog,
   DialogContent,
@@ -20,10 +21,10 @@ import {
   DialogTitle,
 } from './components/ui/dialog';
 
-type ViewMode = 'birthday' | 'story' | 'admin';
+type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
 
 export default function App() {
-  const [view, setView] = useState<ViewMode>('birthday');
+  const [view, setView] = useState<ViewMode>('profile');
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -40,7 +41,7 @@ export default function App() {
   }, [darkMode]);
 
   if (view === 'admin') {
-    return <AdminPanel onBack={() => setView('birthday')} />;
+    return <AdminPanel onBack={() => setView('profile')} />;
   }
 
   if (view === 'story') {
@@ -87,8 +88,30 @@ export default function App() {
     );
   }
 
+  if (view === 'profile') {
+    return (
+      <>
+        <ProfilePage
+          onViewBirthday={() => setView('birthday')}
+          darkMode={darkMode}
+          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-rose-100 text-foreground">
+      <div className="fixed right-4 top-4 z-50">
+        <Button
+          variant="outline"
+          className="bg-white/80 text-foreground hover:bg-white dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800"
+          onClick={() => setView('profile')}
+        >
+          Back to profile
+        </Button>
+      </div>
       <BirthdayBanner
         onOpenStory={() => setView('story')}
         onOpenPlaylist={() => setShowPlaylist(true)}
