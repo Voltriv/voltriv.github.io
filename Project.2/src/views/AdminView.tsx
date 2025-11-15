@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card, CardContent } from './ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Card, CardContent } from '../components/ui/card';
 import { createMediaEntry, MediaEntry, MediaType, subscribeToMediaEntries, uploadMediaFile } from '@/lib/mediaService';
 import {
   LoveNoteRecord,
@@ -18,11 +18,11 @@ import { auth, googleProvider } from '@/lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { Pin, Trash2 } from 'lucide-react';
 
-interface AdminPanelProps {
+interface AdminViewProps {
   onBack: () => void;
 }
 
-export function AdminPanel({ onBack }: AdminPanelProps) {
+export function AdminView({ onBack }: AdminViewProps) {
   const bypassAuth = import.meta.env.VITE_BYPASS_ADMIN_AUTH !== 'false';
   const [entries, setEntries] = useState<MediaEntry[]>([]);
   const [loveNotes, setLoveNotes] = useState<LoveNoteRecord[]>([]);
@@ -455,3 +455,4 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     </div>
   );
 }
+

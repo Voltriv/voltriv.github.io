@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Gift, Sparkles, CalendarDays, Music2 } from 'lucide-react';
 import { BIRTHDAY_DATE } from '@/lib/constants';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { HeartFireworks } from './HeartFireworks';
 
 const celebrationPromises = [
@@ -204,3 +204,4 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
     </section>
   );
 }
+

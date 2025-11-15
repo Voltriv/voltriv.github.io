@@ -14,6 +14,25 @@
 
   Run `npm run dev` to start the development server.
 
+  ## Project structure
+
+  ```
+  src/
+    views/             # Top-level experiences (Profile, Birthday, Story, Admin)
+    sections/          # Feature sections reused across views (About, Gallery, etc.)
+    components/
+      shared/          # Reusable UI atoms/molecules (banner, playlist, animations)
+      ui/              # Design-system primitives (buttons, cards, inputs, dialog, etc.)
+      figma/           # Visual helpers (ImageWithFallback, etc.)
+    data/              # Typed content (e.g., profile data)
+    hooks/             # Custom hooks (useSectionObserver)
+    lib/               # Firebase config, services, constants
+    styles/            # Global and preflight CSS
+    assets/            # Static fallback media referenced via mediaAsset
+  ```
+
+  `App.tsx` lazy-loads the views so each experience ships as its own chunk, and the sections/shared components can be composed freely inside those views.
+
   ## Deploying to lava.github.io
 
   1. Make sure you have a Git remote that points to `https://github.com/lava/lava.github.io.git` (create that repo in the Lava account if it doesn't exist yet).

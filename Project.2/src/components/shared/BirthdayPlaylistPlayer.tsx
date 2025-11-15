@@ -2,8 +2,8 @@ import { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { motion } from 'motion/react';
 import { Music2, SkipBack, SkipForward, Pause, Play, Sparkles } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
 
 const tracks = [
   {
@@ -111,3 +111,4 @@ export function BirthdayPlaylistPlayer() {
     </Card>
   );
 }
+

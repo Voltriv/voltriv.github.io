@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Card, CardContent } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Textarea } from '../components/ui/textarea';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Heart, Pin, Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -15,7 +15,7 @@ import {
   togglePinLoveNote,
   updateLoveNote,
 } from '@/lib/loveNotesService';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 interface LoveNote extends LoveNoteRecord {
   date?: Date;
@@ -444,3 +444,4 @@ export function LoveNotesSection() {
     </section>
   );
 }
+

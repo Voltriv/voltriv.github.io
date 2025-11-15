@@ -1,14 +1,14 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Toaster } from './components/ui/sonner';
 
-const ProfilePage = lazy(() =>
-  import('./components/ProfilePage').then((module) => ({ default: module.ProfilePage })),
+const ProfileView = lazy(() =>
+  import('./views/ProfileView').then((module) => ({ default: module.ProfileView })),
 );
-const AdminPanel = lazy(() =>
-  import('./components/AdminPanel').then((module) => ({ default: module.AdminPanel })),
+const AdminView = lazy(() =>
+  import('./views/AdminView').then((module) => ({ default: module.AdminView })),
 );
-const BirthdayExperience = lazy(() => import('./components/BirthdayExperience'));
-const StoryExperience = lazy(() => import('./components/StoryExperience'));
+const BirthdayView = lazy(() => import('./views/BirthdayView'));
+const StoryView = lazy(() => import('./views/StoryView'));
 
 type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
 
@@ -34,11 +34,11 @@ export default function App() {
 
   switch (view) {
     case 'admin':
-      content = <AdminPanel onBack={() => setView('profile')} />;
+      content = <AdminView onBack={() => setView('profile')} />;
       break;
     case 'story':
       content = (
-        <StoryExperience
+        <StoryView
           darkMode={darkMode}
           onToggleDarkMode={toggleDarkMode}
           onBackToBirthday={() => setView('birthday')}
@@ -48,7 +48,7 @@ export default function App() {
       break;
     case 'profile':
       content = (
-        <ProfilePage
+        <ProfileView
           onViewBirthday={() => setView('birthday')}
           darkMode={darkMode}
           onToggleDarkMode={toggleDarkMode}
@@ -57,7 +57,7 @@ export default function App() {
       break;
     default:
       content = (
-        <BirthdayExperience
+        <BirthdayView
           onBackToProfile={() => setView('profile')}
           onOpenStory={() => setView('story')}
         />

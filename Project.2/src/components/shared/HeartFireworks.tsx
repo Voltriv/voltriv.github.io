@@ -35,3 +35,4 @@ export function HeartFireworks({ active }: HeartFireworksProps) {
     </div>
   );
 }
+

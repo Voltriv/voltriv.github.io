@@ -1,3 +1,5 @@
+import { mediaAsset } from "@/lib/constants";
+
 export type NavLink = {
   href: string;
   label: string;
@@ -158,8 +160,8 @@ export const profileData: ProfileData = {
       href: "mailto:hello@elijahvinluan.com",
     },
   ],
-  profilePhoto: mediaAsset('pic1.jpg'),
-  profilePhotoAlt: 'Elijah and Annielyn sharing a quiet smile together',
-  profilePhotoCaption: 'One of our favorite captured moments — soft light, easy laughter, and no agenda except being together.',
+  profilePhoto: mediaAsset("pic1.jpg"),
+  profilePhotoAlt: "Elijah and Annielyn sharing a quiet smile together",
+  profilePhotoCaption:
+    "One of our favorite captured moments - soft light, easy laughter, and no agenda except being together.",
 };
-import { mediaAsset } from '@/lib/constants';

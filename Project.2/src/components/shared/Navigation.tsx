@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Switch } from './ui/switch';
+import { Button } from '../ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { Switch } from '../ui/switch';
 import { Menu, Moon, Sun, Heart } from 'lucide-react';
 import { InteractiveButton } from './InteractiveButton';
 

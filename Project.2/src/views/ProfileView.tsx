@@ -12,11 +12,11 @@ import {
 } from "lucide-react";
 import { profileData, type SocialLink } from "../data/profile";
 import { useSectionObserver } from "../hooks/useSectionObserver";
-import { Button } from "./ui/button";
-import { cn } from "./ui/utils";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Button } from "../components/ui/button";
+import { cn } from "../components/ui/utils";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
-type ProfilePageProps = {
+type ProfileViewProps = {
   onViewBirthday: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
@@ -46,11 +46,11 @@ const cardSurface =
 const pillSurface =
   "rounded-2xl border border-slate-200/60 bg-white/85 transition-colors dark:border-white/10 dark:bg-white/[0.04]";
 
-export function ProfilePage({
+export function ProfileView({
   onViewBirthday,
   darkMode,
   onToggleDarkMode,
-}: ProfilePageProps) {
+}: ProfileViewProps) {
   const sectionIds = useMemo(
     () => navLinks.map((link) => link.href.replace("#", "")),
     [],
@@ -400,3 +400,4 @@ export function ProfilePage({
     </div>
   );
 }
+

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { Card, CardContent } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Dialog, DialogContent, DialogTrigger } from '../components/ui/dialog';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { MediaEntry, subscribeToMediaEntries } from '@/lib/mediaService';
 import { mediaAsset } from '@/lib/constants';
 
@@ -258,3 +258,4 @@ export function GallerySection() {
     </section>
   );
 }
+

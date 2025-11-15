@@ -1,26 +1,26 @@
-import { AboutSection } from "./AboutSection";
-import { FloatingHearts } from "./FloatingHearts";
-import { GallerySection } from "./GallerySection";
-import { InteractiveBackground } from "./InteractiveBackground";
-import { LoveNotesSection } from "./LoveNotesSection";
-import { MilestonesSection } from "./MilestonesSection";
-import { Navigation } from "./Navigation";
-import { ScrollProgressBar } from "./ScrollProgressBar";
-import { Button } from "./ui/button";
+import { Button } from "../components/ui/button";
+import { FloatingHearts } from "../components/shared/FloatingHearts";
+import { InteractiveBackground } from "../components/shared/InteractiveBackground";
+import { Navigation } from "../components/shared/Navigation";
+import { ScrollProgressBar } from "../components/shared/ScrollProgressBar";
+import { AboutSection } from "../sections/AboutSection";
+import { GallerySection } from "../sections/GallerySection";
+import { LoveNotesSection } from "../sections/LoveNotesSection";
+import { MilestonesSection } from "../sections/MilestonesSection";
 
-type StoryExperienceProps = {
+type StoryViewProps = {
   darkMode: boolean;
   onToggleDarkMode: () => void;
   onBackToBirthday: () => void;
   onGoToAdmin: () => void;
 };
 
-export default function StoryExperience({
+export default function StoryView({
   darkMode,
   onToggleDarkMode,
   onBackToBirthday,
   onGoToAdmin,
-}: StoryExperienceProps) {
+}: StoryViewProps) {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <ScrollProgressBar />
@@ -61,4 +61,5 @@ export default function StoryExperience({
     </div>
   );
 }
+
 

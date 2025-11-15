@@ -1,24 +1,24 @@
 import { useState } from "react";
-import { BirthdayBanner } from "./BirthdayBanner";
-import { BirthdayPlaylistPlayer } from "./BirthdayPlaylistPlayer";
-import { Button } from "./ui/button";
+import { BirthdayBanner } from "../components/shared/BirthdayBanner";
+import { BirthdayPlaylistPlayer } from "../components/shared/BirthdayPlaylistPlayer";
+import { Button } from "../components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "../components/ui/dialog";
 
-type BirthdayExperienceProps = {
+type BirthdayViewProps = {
   onBackToProfile: () => void;
   onOpenStory: () => void;
 };
 
-export default function BirthdayExperience({
+export default function BirthdayView({
   onBackToProfile,
   onOpenStory,
-}: BirthdayExperienceProps) {
+}: BirthdayViewProps) {
   const [showPlaylist, setShowPlaylist] = useState(false);
 
   return (
@@ -56,4 +56,5 @@ export default function BirthdayExperience({
     </div>
   );
 }
+
 
