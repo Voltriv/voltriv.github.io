@@ -1,0 +1,64 @@
+import { AboutSection } from "./AboutSection";
+import { FloatingHearts } from "./FloatingHearts";
+import { GallerySection } from "./GallerySection";
+import { InteractiveBackground } from "./InteractiveBackground";
+import { LoveNotesSection } from "./LoveNotesSection";
+import { MilestonesSection } from "./MilestonesSection";
+import { Navigation } from "./Navigation";
+import { ScrollProgressBar } from "./ScrollProgressBar";
+import { Button } from "./ui/button";
+
+type StoryExperienceProps = {
+  darkMode: boolean;
+  onToggleDarkMode: () => void;
+  onBackToBirthday: () => void;
+  onGoToAdmin: () => void;
+};
+
+export default function StoryExperience({
+  darkMode,
+  onToggleDarkMode,
+  onBackToBirthday,
+  onGoToAdmin,
+}: StoryExperienceProps) {
+  return (
+    <div className="relative min-h-screen bg-background text-foreground">
+      <ScrollProgressBar />
+      <FloatingHearts />
+      <InteractiveBackground />
+      <Navigation darkMode={darkMode} toggleDarkMode={onToggleDarkMode} />
+
+      <main className="space-y-16 pb-16 pt-24">
+        <section className="space-y-3 px-4 text-center">
+          <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">Our story</p>
+          <h1 className="text-4xl font-semibold md:text-5xl">Elijah &amp; Annielyn</h1>
+          <p className="mx-auto max-w-3xl text-muted-foreground">
+            Our love story, captured in pixels and preserved in memories.
+          </p>
+          <Button variant="outline" className="mt-4" onClick={onBackToBirthday}>
+            Back to birthday surprise
+          </Button>
+        </section>
+
+        <div className="space-y-16">
+          <AboutSection />
+          <GallerySection />
+          <MilestonesSection />
+          <LoveNotesSection />
+        </div>
+      </main>
+
+      <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 px-4 py-10 text-center text-sm text-muted-foreground">
+        <p>Crafted with �T� for Annielyn.</p>
+        <button
+          type="button"
+          className="mx-auto block text-[11px] lowercase tracking-wide text-muted-foreground transition hover:text-foreground"
+          onClick={onGoToAdmin}
+        >
+          go to admin
+        </button>
+      </footer>
+    </div>
+  );
+}
+

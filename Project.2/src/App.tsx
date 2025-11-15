@@ -1,31 +1,19 @@
-import { useEffect, useState } from 'react';
-import { BirthdayBanner } from './components/BirthdayBanner';
-import { BirthdayPlaylistPlayer } from './components/BirthdayPlaylistPlayer';
-import { AboutSection } from './components/AboutSection';
-import { GallerySection } from './components/GallerySection';
-import { MilestonesSection } from './components/MilestonesSection';
-import { LoveNotesSection } from './components/LoveNotesSection';
-import { Navigation } from './components/Navigation';
-import { FloatingHearts } from './components/FloatingHearts';
-import { InteractiveBackground } from './components/InteractiveBackground';
-import { ScrollProgressBar } from './components/ScrollProgressBar';
-import { Button } from './components/ui/button';
-import { AdminPanel } from './components/AdminPanel';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Toaster } from './components/ui/sonner';
-import { ProfilePage } from './components/ProfilePage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './components/ui/dialog';
+
+const ProfilePage = lazy(() =>
+  import('./components/ProfilePage').then((module) => ({ default: module.ProfilePage })),
+);
+const AdminPanel = lazy(() =>
+  import('./components/AdminPanel').then((module) => ({ default: module.AdminPanel })),
+);
+const BirthdayExperience = lazy(() => import('./components/BirthdayExperience'));
+const StoryExperience = lazy(() => import('./components/StoryExperience'));
 
 type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
 
 export default function App() {
   const [view, setView] = useState<ViewMode>('profile');
-  const [showPlaylist, setShowPlaylist] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -40,98 +28,54 @@ export default function App() {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
-  if (view === 'admin') {
-    return <AdminPanel onBack={() => setView('profile')} />;
-  }
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
-  if (view === 'story') {
-    return (
-      <div className="min-h-screen bg-background text-foreground relative">
-        <ScrollProgressBar />
-        <FloatingHearts />
-        <InteractiveBackground />
-        <Navigation darkMode={darkMode} toggleDarkMode={() => setDarkMode((prev) => !prev)} />
+  let content: ReactNode = null;
 
-        <main className="pt-24 pb-16 space-y-16">
-          <section className="px-4 text-center space-y-3">
-            <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">Our story</p>
-            <h1 className="text-4xl md:text-5xl font-semibold">Elijah & Annielyn</h1>
-            <p className="text-muted-foreground max-w-3xl mx-auto">
-              Our love story, captured in pixels and preserved in memories.
-            </p>
-            <Button variant="outline" className="mt-4" onClick={() => setView('birthday')}>
-              Back to birthday surprise
-            </Button>
-          </section>
-
-          <div className="space-y-16">
-            <AboutSection />
-            <GallerySection />
-            <MilestonesSection />
-            <LoveNotesSection />
-          </div>
-        </main>
-
-        <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 py-10 px-4 text-center text-sm text-muted-foreground space-y-2">
-          <p>Crafted with ♥ for Annielyn.</p>
-          <button
-            type="button"
-            className="mx-auto block text-[11px] lowercase tracking-wide text-muted-foreground transition hover:text-foreground"
-            onClick={() => setView('admin')}
-          >
-            go to admin
-          </button>
-        </footer>
-
-        <Toaster />
-      </div>
-    );
-  }
-
-  if (view === 'profile') {
-    return (
-      <>
+  switch (view) {
+    case 'admin':
+      content = <AdminPanel onBack={() => setView('profile')} />;
+      break;
+    case 'story':
+      content = (
+        <StoryExperience
+          darkMode={darkMode}
+          onToggleDarkMode={toggleDarkMode}
+          onBackToBirthday={() => setView('birthday')}
+          onGoToAdmin={() => setView('admin')}
+        />
+      );
+      break;
+    case 'profile':
+      content = (
         <ProfilePage
           onViewBirthday={() => setView('birthday')}
           darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+          onToggleDarkMode={toggleDarkMode}
         />
-        <Toaster />
-      </>
-    );
+      );
+      break;
+    default:
+      content = (
+        <BirthdayExperience
+          onBackToProfile={() => setView('profile')}
+          onOpenStory={() => setView('story')}
+        />
+      );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-rose-100 text-foreground">
-      <div className="fixed right-4 top-4 z-50">
-        <Button
-          variant="outline"
-          className="bg-white/80 text-foreground hover:bg-white dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800"
-          onClick={() => setView('profile')}
-        >
-          Back to profile
-        </Button>
-      </div>
-      <BirthdayBanner
-        onOpenStory={() => setView('story')}
-        onOpenPlaylist={() => setShowPlaylist(true)}
-      />
-
-      <Dialog open={showPlaylist} onOpenChange={setShowPlaylist}>
-        <DialogContent className="max-w-2xl w-[90vw] bg-background">
-          <DialogHeader className="pb-2">
-            <DialogTitle>Birthday Playlist</DialogTitle>
-            <DialogDescription>Little songs for every version of your smile.</DialogDescription>
-          </DialogHeader>
-          <BirthdayPlaylistPlayer />
-        </DialogContent>
-      </Dialog>
-
-      <footer className="px-4 py-8 text-center text-xs text-muted-foreground">
-        Crafted with love for Annielyn&apos;s birthday.
-      </footer>
-
+    <>
+      <Suspense fallback={<ViewFallback />}>{content}</Suspense>
       <Toaster />
+    </>
+  );
+}
+
+function ViewFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-rose-50 via-white to-rose-100 text-muted-foreground">
+      <p className="text-xs uppercase tracking-[0.4em]">Loading view...</p>
     </div>
   );
 }
