@@ -37,6 +37,27 @@ export type FocusArea = {
   description: string;
 };
 
+export type ContactCTA = {
+  label: string;
+  href: string;
+  icon: "mail" | "calendar" | "external";
+  variant: "primary" | "outline";
+};
+
+export type ContactDetail = {
+  label: string;
+  value: string;
+  href?: string;
+};
+
+export type ContactInfo = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  ctas: ContactCTA[];
+  details: ContactDetail[];
+};
+
 export type SocialLink = {
   label: string;
   icon: "linkedin" | "twitter" | "email";
@@ -50,6 +71,7 @@ export type ProfileData = {
   experiences: Experience[];
   projects: Project[];
   focusAreas: FocusArea[];
+  contact: ContactInfo;
   socialLinks: SocialLink[];
   profilePhoto: string;
   profilePhotoAlt: string;
@@ -143,6 +165,42 @@ export const profileData: ProfileData = {
       description: "Exploring copilots that amplify creative work while honoring human nuance and accountability.",
     },
   ],
+  contact: {
+    eyebrow: "Stay in touch",
+    title: "Advising, collaborations, speaking",
+    description:
+      "Let's prototype future-ready public services, education systems, or venture playbooks. I give my best to teams who care about access, rigor, and cultural resonance.",
+    ctas: [
+      {
+        label: "Write me an email",
+        href: "mailto:elca.vinluan.up@phinmaed.com",
+        icon: "mail",
+        variant: "primary",
+      },
+      {
+        label: "Schedule coffee chat",
+        href: "https://cal.com/elijahvinluan/coffee-chat",
+        icon: "calendar",
+        variant: "outline",
+      },
+    ],
+    details: [
+      {
+        label: "Email",
+        value: "elca.vinluan.up@phinmaed.com",
+        href: "mailto:elca.vinluan.up@phinmaed.com",
+      },
+      {
+        label: "Phone",
+        value: "+63 910 558 4949",
+        href: "tel:+639105584949",
+      },
+      {
+        label: "Base",
+        value: "Dagupan City / Philippines / Remote",
+      },
+    ],
+  },
   socialLinks: [
     {
       label: "LinkedIn",
@@ -157,7 +215,7 @@ export const profileData: ProfileData = {
     {
       label: "Email",
       icon: "email",
-      href: "mailto:hello@elijahvinluan.com",
+      href: "elca.vinluan.up@phinmaed.com",
     },
   ],
   profilePhoto: mediaAsset("pic1.jpg"),

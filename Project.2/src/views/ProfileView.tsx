@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import {
   ArrowUpRight,
+  CalendarClock,
   ExternalLink,
   Linkedin,
   Mail,
@@ -10,7 +11,7 @@ import {
   SunMedium,
   Twitter,
 } from "lucide-react";
-import { profileData, type SocialLink } from "../data/profile";
+import { profileData, type ContactCTA, type SocialLink } from "../data/profile";
 import { useSectionObserver } from "../hooks/useSectionObserver";
 import { Button } from "../components/ui/button";
 import { cn } from "../components/ui/utils";
@@ -28,6 +29,7 @@ const {
   experiences,
   projects,
   focusAreas,
+  contact,
   socialLinks,
   profilePhoto,
   profilePhotoAlt,
@@ -40,11 +42,19 @@ const getSocialIcon = (icon: SocialLink["icon"]) => {
   return <Mail className="size-4" />;
 };
 
+const getCtaIcon = (icon: ContactCTA["icon"]) => {
+  if (icon === "calendar") return <CalendarClock className="size-4" />;
+  if (icon === "external") return <ArrowUpRight className="size-4" />;
+  return <Mail className="size-4" />;
+};
+
+const isExternalHref = (href: string) => /^https?:/i.test(href);
+
 const cardSurface =
-  "rounded-3xl border border-slate-200/70 bg-white/95 shadow-lg shadow-slate-200/40 transition-colors dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none";
+  "rounded-3xl border border-slate-200/70 bg-white/95 shadow-lg shadow-slate-200/40 transition-colors dark:border-white/10 dark:bg-slate-900/60 dark:shadow-[0_25px_60px_rgba(2,6,23,0.6)] dark:backdrop-blur-xl";
 
 const pillSurface =
-  "rounded-2xl border border-slate-200/60 bg-white/85 transition-colors dark:border-white/10 dark:bg-white/[0.04]";
+  "rounded-2xl border border-slate-200/60 bg-white/85 transition-colors dark:border-white/5 dark:bg-slate-900/40 dark:backdrop-blur";
 
 export function ProfileView({
   onViewBirthday,
@@ -207,26 +217,32 @@ export function ProfileView({
                   key={experience.company}
                   className={cn(
                     cardSurface,
-                    "p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:bg-gradient-to-br dark:from-white/[0.04] dark:to-transparent",
+                    "group relative overflow-hidden p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(15,23,42,0.12)] dark:border-white/5 dark:bg-gradient-to-br dark:from-slate-900/80 dark:via-slate-900/60 dark:to-slate-900/40 dark:shadow-[0_35px_80px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_45px_110px_rgba(2,6,23,0.7)]",
                   )}
                 >
-                  <div className="flex flex-wrap items-center gap-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-white/50">
-                    <span>{experience.period}</span>
-                    <span className="inline-block h-px w-10 bg-slate-300 dark:bg-white/30" />
-                    <span>{experience.role}</span>
+                  <span
+                    className="pointer-events-none absolute inset-0 z-0 opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/0 via-white/40 to-white/0 dark:from-white/[0.08] dark:via-white/[0.03] dark:to-transparent"
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10">
+                    <div className="flex flex-wrap items-center gap-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-white/50">
+                      <span>{experience.period}</span>
+                      <span className="inline-block h-px w-10 bg-slate-300 dark:bg-white/30" />
+                      <span>{experience.role}</span>
+                    </div>
+                    <h3 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-white">
+                      {experience.company}
+                    </h3>
+                    <p className="mt-3 text-base text-slate-600 dark:text-white/75">{experience.summary}</p>
+                    <ul className="mt-6 space-y-3 text-sm text-slate-600 dark:text-white/80">
+                      {experience.bullets.map((bullet) => (
+                        <li key={bullet} className="flex items-start gap-3">
+                          <Sparkles className="mt-1 size-4 text-amber-500" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <h3 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-white">
-                    {experience.company}
-                  </h3>
-                  <p className="mt-3 text-base text-slate-600 dark:text-white/70">{experience.summary}</p>
-                  <ul className="mt-6 space-y-3 text-sm text-slate-600 dark:text-white/80">
-                    {experience.bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-start gap-3">
-                        <Sparkles className="mt-1 size-4 text-amber-500" />
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </article>
               ))}
             </div>
@@ -322,49 +338,65 @@ export function ProfileView({
           <section id="contact" className="mt-24 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div className={cn(cardSurface, "p-10")}>
               <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
-                Stay in touch
+                {contact.eyebrow}
               </p>
               <h2 className="mt-4 text-3xl font-semibold text-slate-900 dark:text-white">
-                Advising, collaborations, speaking
+                {contact.title}
               </h2>
               <p className="mt-3 text-base text-slate-600 dark:text-white/70">
-                Let's prototype future-ready public services, education systems, or venture playbooks.
-                I give my best to teams who care about access, rigor, and cultural resonance.
+                {contact.description}
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90" size="lg">
-                  Write me an email
-                  <Mail className="size-4" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-slate-200 bg-white/80 text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-transparent dark:text-white dark:hover:bg-white/10"
-                >
-                  Schedule coffee chat
-                  <ArrowUpRight className="size-4" />
-                </Button>
+                {contact.ctas.map((cta) => {
+                  const isPrimary = cta.variant === "primary";
+                  const shouldOpenNewTab = isExternalHref(cta.href);
+
+                  return (
+                    <Button
+                      key={cta.label}
+                      className={cn(
+                        isPrimary
+                          ? "bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                          : "border-slate-200 bg-white/80 text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-transparent dark:text-white dark:hover:bg-white/10",
+                      )}
+                      size="lg"
+                      variant={isPrimary ? "default" : "outline"}
+                      asChild
+                    >
+                      <a
+                        href={cta.href}
+                        target={shouldOpenNewTab ? "_blank" : undefined}
+                        rel={shouldOpenNewTab ? "noreferrer" : undefined}
+                      >
+                        {cta.label}
+                        {getCtaIcon(cta.icon)}
+                      </a>
+                    </Button>
+                  );
+                })}
               </div>
               <div className="mt-10 grid gap-6 text-sm text-slate-600 dark:text-white/70 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <p className="uppercase tracking-[0.3em] text-slate-400 dark:text-white/40">Email</p>
-                  <a
-                    href="mailto:hello@elijahvinluan.com"
-                    className="text-slate-900 transition hover:underline dark:text-white"
-                  >
-                    hello@elijahvinluan.com
-                  </a>
-                </div>
-                <div className="space-y-2">
-                  <p className="uppercase tracking-[0.3em] text-slate-400 dark:text-white/40">Phone</p>
-                  <a href="tel:+639175553210" className="text-slate-900 hover:underline dark:text-white">
-                    +63 917 555 3210
-                  </a>
-                </div>
-                <div className="space-y-2">
-                  <p className="uppercase tracking-[0.3em] text-slate-400 dark:text-white/40">Base</p>
-                  <span className="text-slate-900 dark:text-white">Manila / Singapore / Remote</span>
-                </div>
+                {contact.details.map((detail) => {
+                  const detailIsExternal = detail.href ? isExternalHref(detail.href) : false;
+
+                  return (
+                    <div key={detail.label} className="space-y-2">
+                      <p className="uppercase tracking-[0.3em] text-slate-400 dark:text-white/40">{detail.label}</p>
+                      {detail.href ? (
+                        <a
+                          href={detail.href}
+                          className="text-slate-900 transition hover:underline dark:text-white"
+                          target={detailIsExternal ? "_blank" : undefined}
+                          rel={detailIsExternal ? "noreferrer" : undefined}
+                        >
+                          {detail.value}
+                        </a>
+                      ) : (
+                        <span className="text-slate-900 dark:text-white">{detail.value}</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="space-y-6">
