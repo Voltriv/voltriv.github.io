@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Dialog, DialogContent, DialogTrigger } from '../components/ui/dialog';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { MediaEntry, subscribeToMediaEntries } from '@/lib/mediaService';
-import { mediaAsset } from '@/lib/constants';
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Dialog, DialogContent } from "../components/ui/dialog";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { MediaEntry, subscribeToMediaEntries } from "@/lib/mediaService";
+import { mediaAsset } from "@/lib/constants";
 
-
+type AlbumId = "all" | "video" | "dates" | "favorites";
 
 type GalleryItem = {
   id: number | string;
@@ -21,31 +21,31 @@ type GalleryItem = {
 };
 
 export function GallerySection() {
-  const [selectedAlbum, setSelectedAlbum] = useState('all');
+  const [selectedAlbum, setSelectedAlbum] = useState<AlbumId>("all");
   const [lightboxImage, setLightboxImage] = useState<number | null>(null);
   const [remoteItems, setRemoteItems] = useState<GalleryItem[]>([]);
   const [isRemoteLoading, setIsRemoteLoading] = useState(true);
 
   const albums = [
-    { id: 'all', name: 'All Photos', count: 12 },
-    { id: 'video', name: 'Video', count: 4 },
-    { id: 'dates', name: 'Dates', count: 4 },
-    { id: 'favorites', name: 'Favorites', count: 4 },
+    { id: "all" as const, name: "All Photos" },
+    { id: "video" as const, name: "Video" },
+    { id: "dates" as const, name: "Dates" },
+    { id: "favorites" as const, name: "Favorites" },
   ];
 
   useEffect(() => {
     const unsubscribe = subscribeToMediaEntries((items: MediaEntry[]) => {
       setRemoteItems(
         items
-          .filter((entry) => entry.mediaType === 'photo' || entry.mediaType === 'video')
+          .filter((entry) => entry.mediaType === "photo" || entry.mediaType === "video")
           .map((entry) => ({
             id: entry.id,
-            src: entry.url ?? '',
+            src: entry.url ?? "",
             alt: entry.title,
-            category: entry.category || 'favorites',
-            caption: entry.description || '',
-            credit: 'Uploaded via admin',
-            isVideo: entry.mediaType === 'video',
+            category: entry.category || "favorites",
+            caption: entry.description || "",
+            credit: "Uploaded via admin",
+            isVideo: entry.mediaType === "video",
           }))
           .filter((entry) => entry.src),
       );
@@ -57,61 +57,120 @@ export function GallerySection() {
   const fallbackPhotos: GalleryItem[] = [
     {
       id: 1,
-      src: mediaAsset('pic1.jpg'),
-      alt: 'Our Beautiful Eyes',
-      category: 'dates',
-      caption: 'Restaurant date with my love ',
-      credit: 'Photo by Elijah'
+      src: mediaAsset("pic1.jpg"),
+      alt: "Our Beautiful Eyes",
+      category: "dates",
+      caption: "Restaurant date with my love.",
+      credit: "Photo by Elijah",
     },
     {
       id: 2,
-      src: mediaAsset('vid1.mp4'),
-      alt: 'Beach Date the',
-      category: 'video',
-      caption: 'Monthsary date in tondaligan beach',
-      credit: ''
+      src: mediaAsset("pic2.jpg"),
+      alt: "Garden Stroll",
+      category: "favorites",
+      caption: "A quiet afternoon walk where everything felt in bloom.",
+      credit: "Photo by Elijah",
     },
     {
       id: 3,
-      src: mediaAsset('vid2.mp4'),
-      alt: 'Beach Date the',
-      category: 'video',
-      caption: 'Monthsary date in tondaligan beach',
-      credit: ''
+      src: mediaAsset("pic3.jpg"),
+      alt: "Birthday Sparkles",
+      category: "favorites",
+      caption: "You, fairy lights, and the softest laughter.",
+      credit: "Photo by a kind stranger",
     },
     {
       id: 4,
-      src: mediaAsset('vid3.mp4'),
-      alt: 'Coffee date',
-      category: 'video',
-      caption: 'Sunday morning coffee run - our weekly tradition',
-      credit: 'Photo by Cafe Owner'
+      src: mediaAsset("vid1.mp4"),
+      alt: "Beach Date",
+      category: "video",
+      caption: "Monthsary date in Tondaligan Beach.",
+      credit: "",
     },
-    // Duplicating photos for demo purposes with different categories
     {
       id: 5,
-      src: mediaAsset('vid4.mp4'),
-      alt: 'Beach sunset favorite',
-      category: 'video',
-      caption: 'One of our all-time favorite moments',
-      credit: 'Photo by Alex'
+      src: mediaAsset("vid2.mp4"),
+      alt: "Sunset Stroll",
+      category: "video",
+      caption: "Practicing our slow dance as the sky blushed.",
+      credit: "",
     },
     {
       id: 6,
-      src: mediaAsset('vid5.mp4'),
-      alt: 'Mountain favorite',
-      category: 'video',
-      caption: 'The view that took our breath away',
-      credit: 'Photo by Sam'
-    },  
+      src: mediaAsset("vid3.mp4"),
+      alt: "Coffee Date",
+      category: "dates",
+      caption: "Sunday morning coffee run—our weekly tradition.",
+      credit: "Barista video",
+    },
+    {
+      id: 7,
+      src: mediaAsset("vid4.mp4"),
+      alt: "Boardwalk Laughter",
+      category: "video",
+      caption: "Laughs carried by the Lingayen Gulf breeze.",
+      credit: "",
+    },
+    {
+      id: 8,
+      src: mediaAsset("vid5.mp4"),
+      alt: "Mountain View",
+      category: "favorites",
+      caption: "That north-star view that took our breath away.",
+      credit: "",
+    },
+    {
+      id: 9,
+      src: mediaAsset("vid6.mp4"),
+      alt: "Road Trip Anthem",
+      category: "video",
+      caption: "Singing at the top of our lungs on the way home.",
+      credit: "",
+    },
+    {
+      id: 10,
+      src: mediaAsset("vid7.mp4"),
+      alt: "Rainy Day Serenade",
+      category: "video",
+      caption: "Dancing barefoot on the balcony as it drizzled.",
+      credit: "",
+    },
+    {
+      id: 11,
+      src: mediaAsset("vid8.mp4"),
+      alt: "Picnic Practice",
+      category: "dates",
+      caption: "Testing picnic recipes for your birthday surprise.",
+      credit: "",
+    },
+    {
+      id: 12,
+      src: mediaAsset("vid9.mp4"),
+      alt: "City Lights Ride",
+      category: "video",
+      caption: "Motorbike ride through Dagupan after dark.",
+      credit: "",
+    },
   ];
-
 
   const photos = useMemo(() => (remoteItems.length ? remoteItems : fallbackPhotos), [remoteItems]);
 
+  const albumCounts = useMemo(() => {
+    const counters = photos.reduce<Record<string, number>>((acc, photo) => {
+      acc[photo.category] = (acc[photo.category] ?? 0) + 1;
+      return acc;
+    }, {});
+    return {
+      all: photos.length,
+      video: counters.video ?? 0,
+      dates: counters.dates ?? 0,
+      favorites: counters.favorites ?? 0,
+    };
+  }, [photos]);
+
   const filteredPhotos = useMemo(
     () =>
-      selectedAlbum === 'all'
+      selectedAlbum === "all"
         ? photos
         : photos.filter((photo) => photo.category === selectedAlbum),
     [photos, selectedAlbum],
@@ -152,13 +211,13 @@ export function GallerySection() {
           {albums.map((album) => (
             <Button
               key={album.id}
-              variant={selectedAlbum === album.id ? 'default' : 'outline'}
+              variant={selectedAlbum === album.id ? "default" : "outline"}
               onClick={() => setSelectedAlbum(album.id)}
               className="flex items-center space-x-2"
             >
               <span>{album.name}</span>
               <Badge variant="secondary" className="ml-2">
-                {album.count}
+                {albumCounts[album.id] ?? 0}
               </Badge>
             </Button>
           ))}
@@ -178,8 +237,8 @@ export function GallerySection() {
                     <video
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       controls
-                      onMouseEnter={(e) => e.target.play()}  // Start playing on hover
-                      onMouseLeave={(e) => e.target.pause()} // Pause on hover out
+                      onMouseEnter={(e) => e.currentTarget.play()}  // Start playing on hover
+                      onMouseLeave={(e) => e.currentTarget.pause()} // Pause on hover out
                     >
                       <source src={photo.src} type="video/mp4" />
                       Your browser does not support the video tag.
@@ -232,8 +291,8 @@ export function GallerySection() {
                   <video
                     className="w-full h-auto max-h-[80vh] object-contain"
                     controls
-                    onMouseEnter={(e) => e.target.play()}  // Start playing on hover
-                    onMouseLeave={(e) => e.target.pause()} // Pause on hover out
+                    onMouseEnter={(e) => e.currentTarget.play()}  // Start playing on hover
+                    onMouseLeave={(e) => e.currentTarget.pause()} // Pause on hover out
                   >
                     <source src={filteredPhotos[lightboxImage].src} type="video/mp4" />
                     Your browser does not support the video tag.
