@@ -11,6 +11,12 @@ const BirthdayView = lazy(() => import('./views/BirthdayView'));
 const StoryView = lazy(() => import('./views/StoryView'));
 
 type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
+const VIEW_TITLES: Record<ViewMode, string> = {
+  profile: 'My Profile | Elijah Vinluan',
+  birthday: 'Birthday Surprise | Elijah & Annielyn',
+  story: 'Our Story | Elijah & Annielyn',
+  admin: 'Admin Dashboard | Elijah & Annielyn',
+};
 
 export default function App() {
   const [view, setView] = useState<ViewMode>('profile');
@@ -27,6 +33,10 @@ export default function App() {
     document.documentElement.classList.toggle('dark', darkMode);
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
+
+  useEffect(() => {
+    document.title = VIEW_TITLES[view];
+  }, [view]);
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
