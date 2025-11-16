@@ -105,35 +105,33 @@ export const profileData: ProfileData = {
       role: "Project Manager / Database Administrator",
       period: "August 2025 - November 2025",
       summary:
-        "Leading 0->1 design for policy intelligence copilots serving Southeast Asian governments and civic orgs.",
+        "Directed the delivery of an academic reporting suite for campus libraries—balancing PM, DBA, and stakeholder duties.",
       bullets: [
-        "Redesigned the mission-control cockpit, trimming research overhead by 63%.",
-        "Built an adaptive design system consumed by product, solutions, and data teams across 5 markets.",
-        "Partnered with founders on narrative demos that unlocked $4.1M in strategic funding.",
+        "Facilitated sprint rituals across engineering, QA, and client librarians to keep timelines healthy.",
+        "Maintained datasets and migrations that powered real-time usage dashboards.",
+        "Built alignment decks and mini demos so admins could adopt the tool with confidence.",
       ],
     },
     {
       company: "LibTrack",
       role: "UI/UX Designer & Quality Assurance Lead",
       period: "January 2025 - March 2025",
-      summary:
-        "Architected the Philippines' largest youth innovation network - spanning editorial platforms, summits, and accelerator programs.",
+      summary: "Owned both product design and QA for a circulation-tracker used by collegiate libraries.",
       bullets: [
-        "Launched StellarPH PH100 honoring the brightest Filipino builders under 30.",
-        "Directed hybrid community festivals with 12k+ attendees and 70+ partner orgs.",
-        "Mentored 40+ venture teams through civic-tech and social enterprise sprints; 9 secured seed funding.",
+        "Designed high-contrast UI patterns that worked well on kiosk terminals.",
+        "Authored end-to-end test scripts and defect workflows that cut release bugs.",
+        "Partnered with librarians to introduce features in weekly training clinics.",
       ],
     },
     {
       company: "FloodWatch",
       role: "UI/UX Designer",
       period: "August 2024 - November 2024",
-      summary:
-        "Partnering with civic orgs, startups, and universities on experience-led launches and capability building.",
+      summary: "Joined a civic-tech team to craft a flood monitoring experience for Northern Luzon communities.",
       bullets: [
-        "Built brand + product foundations for 15 venture-backed teams across APAC.",
-        "Published community-centered design playbooks used by 5 universities and 3 NGOs.",
-        "Guest lectured at DevCon, GDG, UNDP innovation labs, and university design programs.",
+        "Interviewed responders and barangay staff to map out real alert journeys.",
+        "Sketched responsive dashboards that elevated hazard data for mobile users.",
+        "Worked with eng to test SMS + push notification flows for early warnings.",
       ],
     },
   ],
@@ -163,11 +161,13 @@ export const profileData: ProfileData = {
       ],
     },
     {
-      title: "Kalandian",
-      description: "",
+      title: "DevOps & Cloud",
+      description: "Pipelines and infrastructure that keep deployments safe and observable.",
       items: [
-      
-
+        { name: "AWS", logo: "https://cdn.simpleicons.org/amazonaws/FF9900" },
+        { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED" },
+        { name: "Github Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
+        { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/000000" },
       ],
     },
   ],

@@ -6,19 +6,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { MediaEntry, subscribeToMediaEntries } from "@/lib/mediaService";
-import { mediaAsset } from "@/lib/constants";
-
-type AlbumId = "all" | "video" | "dates" | "favorites";
-
-type GalleryItem = {
-  id: number | string;
-  src: string;
-  alt: string;
-  category: string;
-  caption: string;
-  credit: string;
-  isVideo?: boolean;
-};
+import { LOCAL_MEDIA } from "@/data/localMediaManifest";
+import type { AlbumId, GalleryItem } from "@/features/story/sections/galleryTypes";
 
 export function GallerySection() {
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumId>("all");
@@ -54,106 +43,7 @@ export function GallerySection() {
     return () => unsubscribe();
   }, []);
 
-  const fallbackPhotos: GalleryItem[] = [
-    {
-      id: 1,
-      src: mediaAsset("pic1.jpg"),
-      alt: "Our Beautiful Eyes",
-      category: "dates",
-      caption: "",
-      credit: "Photo by Elijah",
-    },
-    {
-      id: 2,
-      src: mediaAsset("pic2.jpg"),
-      alt: "",
-      category: "favorites",
-      caption: "",
-      credit: "Photo by Elijah",
-    },
-    {
-      id: 3,
-      src: mediaAsset("pic3.jpg"),
-      alt: "",
-      category: "favorites",
-      caption: ".",
-      credit: "Photo by Elijah",
-    },
-    {
-      id: 4,
-      src: mediaAsset("vid1.mp4"),
-      alt: "Beach Date",
-      category: "video",
-      caption: "Monthsary date in Tondaligan Beach.",
-      credit: "",
-    },
-    {
-      id: 5,
-      src: mediaAsset("vid2.mp4"),
-      alt: "",
-      category: "video",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 6,
-      src: mediaAsset("vid3.mp4"),
-      alt: "",
-      category: "dates",
-      caption: "",
-      credit: "Barista video",
-    },
-    {
-      id: 7,
-      src: mediaAsset("vid4.mp4"),
-      alt: "",
-      category: "video",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 8,
-      src: mediaAsset("vid5.mp4"),
-      alt: "",
-      category: "favorites",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 9,
-      src: mediaAsset("vid6.mp4"),
-      alt: "",
-      category: "video",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 10,
-      src: mediaAsset("vid7.mp4"),
-      alt: "",
-      category: "video",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 11,
-      src: mediaAsset("vid8.mp4"),
-      alt: "",
-      category: "dates",
-      caption: "",
-      credit: "",
-    },
-    {
-      id: 12,
-      src: mediaAsset("vid9.mp4"),
-      alt: "",
-      category: "video",
-      caption: "",
-      credit: "",
-    },
-  ];
-
-  const photos = useMemo(() => (remoteItems.length ? remoteItems : fallbackPhotos), [remoteItems]);
+  const photos = useMemo(() => (remoteItems.length ? remoteItems : LOCAL_MEDIA), [remoteItems]);
 
   const albumCounts = useMemo(() => {
     const counters = photos.reduce<Record<string, number>>((acc, photo) => {
@@ -313,4 +203,3 @@ export function GallerySection() {
     </section>
   );
 }
-
