@@ -5,11 +5,6 @@ export type NavLink = {
   label: string;
 };
 
-export type Stat = {
-  label: string;
-  value: string;
-};
-
 export type Expertise = {
   title: string;
   description: string;
@@ -35,6 +30,26 @@ export type Project = {
 export type FocusArea = {
   title: string;
   description: string;
+};
+
+export type ProfileCard = {
+  name: string;
+  location: string;
+  roles: string[];
+  avatar: string;
+  verified?: boolean;
+  actions: ContactCTA[];
+};
+
+export type TechStackItem = {
+  name: string;
+  logo: string;
+};
+
+export type TechStackCategory = {
+  title: string;
+  description: string;
+  items: TechStackItem[];
 };
 
 export type ContactCTA = {
@@ -66,50 +81,24 @@ export type SocialLink = {
 
 export type ProfileData = {
   navLinks: NavLink[];
-  stats: Stat[];
-  expertise: Expertise[];
   experiences: Experience[];
   projects: Project[];
   focusAreas: FocusArea[];
+  techStack: TechStackCategory[];
+  profileCard: ProfileCard;
   contact: ContactInfo;
   socialLinks: SocialLink[];
-  profilePhoto: string;
-  profilePhotoAlt: string;
-  profilePhotoCaption: string;
 };
 
 export const profileData: ProfileData = {
   navLinks: [
     { href: "#overview", label: "Overview" },
+    { href: "#stack", label: "Stack" },
     { href: "#experience", label: "Experience" },
     { href: "#projects", label: "Selected Work" },
     { href: "#contact", label: "Contact" },
   ],
-  stats: [
-    { label: "Products & platforms shipped", value: "42" },
-    { label: "Communities activated", value: "1.8M+" },
-    { label: "Creative teams coached", value: "80+" },
-  ],
-  expertise: [
-    {
-      title: "Systems Design Leadership",
-      description:
-        "Building design languages, scaling documentation, and enabling multi-disciplinary squads to ship faster.",
-      highlights: ["Design systems", "Craft reviews", "Ops automation"],
-    },
-    {
-      title: "Product Strategy & Narrative",
-      description:
-        "Facilitating vision sprints, aligning founders and policy partners, and translating insights into shippable bets.",
-      highlights: ["North-star metrics", "Narrative roadmaps", "Stakeholder facilitation"],
-    },
-    {
-      title: "Responsible AI & GovTech",
-      description:
-        "Rapid prototyping for copilots that augment public servants, educators, and civic responders across APAC.",
-      highlights: ["AI copilots", "Civic UX", "Policy intelligence"],
-    },
-  ],
+
   experiences: [
     {
       company: "Orbit Labs",
@@ -151,6 +140,37 @@ export const profileData: ProfileData = {
   projects: [
     // Intentionally left empty so the UI shows a placeholder card.
   ],
+  techStack: [
+    {
+      title: "Frontend",
+      description: "Interfaces and systems for delightful product experiences.",
+      items: [
+        { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/F7DF1E" },
+        { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6" },
+        { name: "React", logo: "https://cdn.simpleicons.org/react/149ECA" },
+        { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000" },
+        { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4" },
+      ],
+    },
+    {
+      title: "Backend",
+      description: "APIs and services powering civic-grade platforms.",
+      items: [
+        { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/339933" },
+        { name: "Python", logo: "https://cdn.simpleicons.org/python/3776AB" },
+        { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4" },
+        { name: "MongoDB", logo: "https://cdn.simpleicons.org/mongodb/47A248" },
+      ],
+    },
+    {
+      title: "Kalandian",
+      description: "",
+      items: [
+      
+
+      ],
+    },
+  ],
   focusAreas: [
     {
       title: "GovTech & Civic Futures",
@@ -165,6 +185,27 @@ export const profileData: ProfileData = {
       description: "Exploring copilots that amplify creative work while honoring human nuance and accountability.",
     },
   ],
+  profileCard: {
+    name: "Elijah Meir C. Vinluan",
+    location: "Dagupan City, Philippines",
+    roles: ["UI/UX", "Project Manager", "CyberSecurity"],
+    verified: true,
+    avatar: mediaAsset("sample1.jpg"),
+    actions: [
+      {
+        label: "Schedule a Call",
+        href: "https://cal.com/elijahvinluan/coffee-chat",
+        icon: "calendar",
+        variant: "primary",
+      },
+      {
+        label: "Send Email",
+        href: "mailto:elca.vinluan.up@phinmaed.com",
+        icon: "mail",
+        variant: "outline",
+      },
+    ],
+  },
   contact: {
     eyebrow: "Stay in touch",
     title: "Advising, collaborations, speaking",
@@ -218,8 +259,4 @@ export const profileData: ProfileData = {
       href: "elca.vinluan.up@phinmaed.com",
     },
   ],
-  profilePhoto: mediaAsset("pic1.jpg"),
-  profilePhotoAlt: "Elijah and Annielyn sharing a quiet smile together",
-  profilePhotoCaption:
-    "One of our favorite captured moments - soft light, easy laughter, and no agenda except being together.",
 };

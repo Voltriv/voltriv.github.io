@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { auth, googleProvider } from '@/lib/firebase';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
 import { Pin, Trash2 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -29,7 +29,7 @@ export function AdminView({ onBack }: AdminViewProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [user, setUser] = useState<ReturnType<typeof auth['currentUser']> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [form, setForm] = useState({
     title: '',
     description: '',

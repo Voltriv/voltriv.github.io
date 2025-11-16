@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import {
   ArrowUpRight,
+  BadgeCheck,
   CalendarClock,
   ExternalLink,
   Linkedin,
   Mail,
+  MapPin,
   Moon,
   PlayCircle,
   Sparkles,
@@ -25,15 +27,13 @@ type ProfileViewProps = {
 
 const {
   navLinks,
-  expertise,
   experiences,
   projects,
   focusAreas,
+  techStack,
+  profileCard,
   contact,
   socialLinks,
-  profilePhoto,
-  profilePhotoAlt,
-  profilePhotoCaption,
 } = profileData;
 
 const getSocialIcon = (icon: SocialLink["icon"]) => {
@@ -66,6 +66,10 @@ export function ProfileView({
     [],
   );
   const activeSection = useSectionObserver(sectionIds);
+  const totalStackItems = techStack.reduce(
+    (sum, group) => sum + group.items.length,
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-500 dark:bg-[#05060a] dark:text-white">
@@ -124,72 +128,143 @@ export function ProfileView({
         </header>
 
         <main className="relative mx-auto max-w-6xl px-6 pb-32 pt-16">
-          <section id="overview" className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
-                  Product & Design
+          <section id="overview" className="space-y-10">
+            <article
+              className={cn(
+                cardSurface,
+                "flex flex-col gap-6 border-slate-200/70 p-6 sm:flex-row sm:items-center sm:gap-8",
+              )}
+            >
+              <ImageWithFallback
+                src={profileCard.avatar}
+                alt={`${profileCard.name} portrait`}
+                className="h-28 w-28 rounded-3xl object-cover shadow-lg shadow-slate-200/70 dark:shadow-slate-900/50"
+              />
+              <div className="flex-1 space-y-3 text-center sm:text-left">
+                <div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 text-2xl font-semibold text-slate-900 dark:text-white sm:justify-start">
+                    <span>{profileCard.name}</span>
+                    {profileCard.verified ? (
+                      <BadgeCheck className="size-5 text-emerald-500" aria-hidden="true" />
+                    ) : null}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-white/70 sm:justify-start">
+                    <MapPin className="size-4" aria-hidden="true" />
+                    <span>{profileCard.location}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-white/70">
+                  {profileCard.roles.join(" / ")}
                 </p>
-                <h1 className="text-4xl font-semibold leading-tight text-slate-900 dark:text-white sm:text-5xl">
-                  Building high-trust experiences for civic tech, education, and the people who lead
-                  them.
-                </h1>
-                <p className="text-lg text-slate-600 dark:text-white/70">
-                  Multidisciplinary designer blending systems thinking, editorial craft, and
-                  community strategy. Currently shipping AI copilots at Orbit Labs and advising youth
-                  innovation networks across APAC.
-                </p>
+                <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
+                  {profileCard.actions.map((cta) => {
+                    const isPrimary = cta.variant === "primary";
+                    const shouldOpenNewTab = isExternalHref(cta.href);
+                    return (
+                      <Button
+                        key={cta.label}
+                        asChild
+                        size="sm"
+                        variant={isPrimary ? "default" : "outline"}
+                        className={cn(
+                          isPrimary
+                            ? "bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                            : "border-slate-200 bg-white text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15",
+                        )}
+                      >
+                        <a
+                          href={cta.href}
+                          target={shouldOpenNewTab ? "_blank" : undefined}
+                          rel={shouldOpenNewTab ? "noreferrer" : undefined}
+                          className="inline-flex items-center gap-2"
+                        >
+                          {getCtaIcon(cta.icon)}
+                          {cta.label}
+                        </a>
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-4">
-                <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90" size="lg">
-                  Book a collaboration call
-                  <PlayCircle className="size-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-slate-200 bg-white/80 text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15"
-                >
-                  Download profile deck
-                  <ArrowUpRight className="size-4" />
-                </Button>
-              </div>
+            </article>
+
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
+                Product & Design
+              </p>
+              <h1 className="text-4xl font-semibold leading-tight text-slate-900 dark:text-white sm:text-5xl">
+                Building high-trust experiences for civic tech, education, and the people who lead
+                them.
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-white/70">
+                Multidisciplinary designer blending systems thinking, editorial craft, and community
+                strategy. Currently shipping AI copilots at Orbit Labs and advising youth innovation
+                networks across APAC.
+              </p>
             </div>
-            <div className="space-y-6">
-              <div className={cn(cardSurface, "overflow-hidden p-0")}>
-                <ImageWithFallback
-                  src={profilePhoto}
-                  alt={profilePhotoAlt}
-                  className="h-72 w-full object-cover"
-                />
-                <div className="space-y-2 px-6 py-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-white/60">Captured</p>
-                  <p className="text-sm text-slate-600 dark:text-white/70">{profilePhotoCaption}</p>
-                </div>
-              </div>
-              <div className={cn(cardSurface, "p-6")}>
-                <p className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-white/60">
-                  On rotation
+            <div className="flex flex-wrap gap-4">
+              <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90" size="lg">
+                Book a collaboration call
+                <PlayCircle className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-slate-200 bg-white/80 text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15"
+              >
+                Download profile deck
+                <ArrowUpRight className="size-4" />
+              </Button>
+            </div>
+          </section>
+
+          <section id="stack" className="mt-24 space-y-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
+                  Tech Stack
                 </p>
-                <div className="mt-4 space-y-5">
-                  {expertise.map((area) => (
-                    <div key={area.title} className={cn(pillSurface, "p-4")}>
-                      <p className="text-lg font-medium text-slate-900 dark:text-white">{area.title}</p>
-                      <p className="mt-2 text-sm text-slate-600 dark:text-white/70">{area.description}</p>
-                      <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-white/70">
-                        {area.highlights.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full border border-slate-200 px-3 py-1 dark:border-white/10"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
+                  Tools that keep me shipping
+                </h2>
+                <p className="mt-3 text-sm text-slate-600 dark:text-white/70">
+                  A blend of front-end craft, dependable services, and automation that keeps
+                  high-trust civic products resilient.
+                </p>
               </div>
+              <p className="text-xs font-medium uppercase tracking-[0.3em] text-slate-500 dark:text-white/50">
+                {totalStackItems} tools in rotation
+              </p>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-3">
+              {techStack.map((group) => (
+                <article key={group.title} className={cn(cardSurface, "flex h-full flex-col p-6")}>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-white/50">
+                      {group.title}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-white/70">{group.description}</p>
+                  </div>
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    {group.items.map((item) => (
+                      <span
+                        key={item.name}
+                        className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/80 px-3 py-2 text-sm text-slate-800 transition-colors dark:border-white/10 dark:bg-white/5 dark:text-white/80"
+                      >
+                        <span className="flex size-7 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10">
+                          <img
+                            src={item.logo}
+                            alt={`${item.name} logo`}
+                            loading="lazy"
+                            className="h-4 w-4"
+                          />
+                        </span>
+                        {item.name}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
 
