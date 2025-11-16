@@ -18,7 +18,6 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
     { href: '#home', label: 'Home' },
     { href: '#about', label: 'About Us' },
     { href: '#gallery', label: 'Gallery' },
-    { href: '#milestones', label: 'Milestones' },
     { href: '#notes', label: 'Love Notes' },
 
   ];

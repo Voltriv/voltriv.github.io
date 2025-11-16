@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +16,7 @@ import {
   updateLoveNote,
 } from '@/lib/loveNotesService';
 import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
+import { uploadMediaFile } from '@/lib/mediaService';
 
 interface LoveNote extends LoveNoteRecord {
   date?: Date;
@@ -29,7 +30,7 @@ const fallbackNotes: LoveNote[] = [
     author: 'Alex',
     date: new Date('2024-01-15'),
     isPinned: true,
-    mood: '😊',
+    mood: '??',
   },
   {
     id: '2',
@@ -38,7 +39,7 @@ const fallbackNotes: LoveNote[] = [
     author: 'Sam',
     date: new Date('2024-01-10'),
     isPinned: false,
-    mood: '😍',
+    mood: '??',
   },
   {
     id: '3',
@@ -47,7 +48,7 @@ const fallbackNotes: LoveNote[] = [
     author: 'Alex',
     date: new Date('2024-01-08'),
     isPinned: true,
-    mood: '☕',
+    mood: '?',
   },
 ];
 
@@ -61,11 +62,14 @@ export function LoveNotesSection() {
     title: '',
     content: '',
     author: '',
-    mood: '😊',
+    mood: '??',
     imageUrl: '',
   });
 
-  const moodOptions = ['😊', '❤️', '🥰', '😍', '🤗', '☕', '🏔️', '🌟', '🎉', '💕'];
+  const [newNoteFile, setNewNoteFile] = useState<File | null>(null);
+  const [isSavingNewNote, setIsSavingNewNote] = useState(false);
+
+  const moodOptions = ['??', '??', '??', '??', '??', '?', '???', '??', '??', '??'];
 
   useEffect(() => {
     const unsubscribe = subscribeToLoveNotes((records) => {
@@ -81,21 +85,27 @@ export function LoveNotesSection() {
     return () => unsubscribe();
   }, []);
 
-  const handleAddNote = async () => {
+  const handleAddNote = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (!newNote.title || !newNote.content || !newNote.author) {
       toast.error('Please fill in all fields');
       return;
     }
 
-    const trimmedImageUrl = newNote.imageUrl.trim() || undefined;
+    const trimmedImageUrl = newNote.imageUrl.trim();
+    let resolvedImageUrl: string | undefined = trimmedImageUrl || undefined;
     try {
+      setIsSavingNewNote(true);
+      if (newNoteFile) {
+        resolvedImageUrl = await uploadMediaFile(newNoteFile, 'love-notes');
+      }
       await addLoveNote({
         title: newNote.title,
         content: newNote.content,
         author: newNote.author,
         isPinned: false,
         mood: newNote.mood,
-        imageUrl: trimmedImageUrl,
+        imageUrl: resolvedImageUrl,
       });
       if (!usingRemote) {
         setNotes([
@@ -107,17 +117,20 @@ export function LoveNotesSection() {
             date: new Date(),
             isPinned: false,
             mood: newNote.mood,
-            imageUrl: trimmedImageUrl,
+            imageUrl: resolvedImageUrl,
           },
           ...notes,
         ]);
       }
-      setNewNote({ title: '', content: '', author: '', mood: '😊', imageUrl: '' });
+      setNewNote({ title: '', content: '', author: '', mood: '??', imageUrl: '' });
+      setNewNoteFile(null);
       setIsAddingNote(false);
       toast.success('Love note added!');
     } catch (error) {
       console.error(error);
       toast.error('Failed to add love note');
+    } finally {
+      setIsSavingNewNote(false);
     }
   };
 
@@ -190,7 +203,7 @@ export function LoveNotesSection() {
             A collection of sweet messages, random thoughts, and love letters we've shared with each other.
           </p>
           {isRemoteLoading && (
-            <p className="text-sm text-muted-foreground">Loading your real notes…</p>
+            <p className="text-sm text-muted-foreground">Loading your real notes�</p>
           )}
           {!isRemoteLoading && !usingRemote && (
             <p className="text-sm text-muted-foreground">
@@ -209,7 +222,7 @@ export function LoveNotesSection() {
               <DialogHeader>
                 <DialogTitle>Write a Love Note</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <form className="space-y-4" onSubmit={handleAddNote}>
                 <div>
                   <label className="block text-sm mb-2">Title</label>
                   <Input
@@ -235,6 +248,18 @@ export function LoveNotesSection() {
                     placeholder="https://example.com/our-photo.jpg"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">Drop in a hosted link to pair a photo with your note.</p>
+                </div>
+                <div>
+                  <label className="block text-sm mb-2">Or upload an image</label>
+                  <Input
+                    key={newNoteFile?.name || 'empty'}
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setNewNoteFile(event.target.files?.[0] ?? null)}
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {newNoteFile ? `Selected: ${newNoteFile.name}` : 'PNG, JPG, or GIF up to 5MB.'}
+                  </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -263,10 +288,10 @@ export function LoveNotesSection() {
                     </div>
                   </div>
                 </div>
-                <Button className="w-full" onClick={handleAddNote}>
-                  Save Love Note
+                <Button className="w-full" type="submit" disabled={isSavingNewNote}>
+                  {isSavingNewNote ? 'Saving...' : 'Save Love Note'}
                 </Button>
-              </div>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
@@ -299,7 +324,7 @@ export function LoveNotesSection() {
                       </div>
                     )}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">— {note.author}</span>
+                      <span className="text-sm text-muted-foreground">� {note.author}</span>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="ghost"
@@ -352,7 +377,7 @@ export function LoveNotesSection() {
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">— {note.author}</span>
+                    <span className="text-sm text-muted-foreground">� {note.author}</span>
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="icon" onClick={() => togglePin(note)}>
                         <Pin className="w-4 h-4" />
@@ -444,4 +469,6 @@ export function LoveNotesSection() {
     </section>
   );
 }
+
+
 

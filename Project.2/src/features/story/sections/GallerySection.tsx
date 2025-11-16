@@ -27,7 +27,7 @@ export function GallerySection() {
   const [isRemoteLoading, setIsRemoteLoading] = useState(true);
 
   const albums = [
-    { id: "all" as const, name: "All Photos" },
+    { id: "all" as const, name: "All" },
     { id: "video" as const, name: "Video" },
     { id: "dates" as const, name: "Dates" },
     { id: "favorites" as const, name: "Favorites" },
@@ -60,24 +60,24 @@ export function GallerySection() {
       src: mediaAsset("pic1.jpg"),
       alt: "Our Beautiful Eyes",
       category: "dates",
-      caption: "Restaurant date with my love.",
+      caption: "",
       credit: "Photo by Elijah",
     },
     {
       id: 2,
       src: mediaAsset("pic2.jpg"),
-      alt: "Garden Stroll",
+      alt: "",
       category: "favorites",
-      caption: "A quiet afternoon walk where everything felt in bloom.",
+      caption: "",
       credit: "Photo by Elijah",
     },
     {
       id: 3,
       src: mediaAsset("pic3.jpg"),
-      alt: "Birthday Sparkles",
+      alt: "",
       category: "favorites",
-      caption: "You, fairy lights, and the softest laughter.",
-      credit: "Photo by a kind stranger",
+      caption: ".",
+      credit: "Photo by Elijah",
     },
     {
       id: 4,
@@ -90,65 +90,65 @@ export function GallerySection() {
     {
       id: 5,
       src: mediaAsset("vid2.mp4"),
-      alt: "Sunset Stroll",
+      alt: "",
       category: "video",
-      caption: "Practicing our slow dance as the sky blushed.",
+      caption: "",
       credit: "",
     },
     {
       id: 6,
       src: mediaAsset("vid3.mp4"),
-      alt: "Coffee Date",
+      alt: "",
       category: "dates",
-      caption: "Sunday morning coffee run—our weekly tradition.",
+      caption: "",
       credit: "Barista video",
     },
     {
       id: 7,
       src: mediaAsset("vid4.mp4"),
-      alt: "Boardwalk Laughter",
+      alt: "",
       category: "video",
-      caption: "Laughs carried by the Lingayen Gulf breeze.",
+      caption: "",
       credit: "",
     },
     {
       id: 8,
       src: mediaAsset("vid5.mp4"),
-      alt: "Mountain View",
+      alt: "",
       category: "favorites",
-      caption: "That north-star view that took our breath away.",
+      caption: "",
       credit: "",
     },
     {
       id: 9,
       src: mediaAsset("vid6.mp4"),
-      alt: "Road Trip Anthem",
+      alt: "",
       category: "video",
-      caption: "Singing at the top of our lungs on the way home.",
+      caption: "",
       credit: "",
     },
     {
       id: 10,
       src: mediaAsset("vid7.mp4"),
-      alt: "Rainy Day Serenade",
+      alt: "",
       category: "video",
-      caption: "Dancing barefoot on the balcony as it drizzled.",
+      caption: "",
       credit: "",
     },
     {
       id: 11,
       src: mediaAsset("vid8.mp4"),
-      alt: "Picnic Practice",
+      alt: "",
       category: "dates",
-      caption: "Testing picnic recipes for your birthday surprise.",
+      caption: "",
       credit: "",
     },
     {
       id: 12,
       src: mediaAsset("vid9.mp4"),
-      alt: "City Lights Ride",
+      alt: "",
       category: "video",
-      caption: "Motorbike ride through Dagupan after dark.",
+      caption: "",
       credit: "",
     },
   ];
@@ -199,11 +199,7 @@ export function GallerySection() {
           {isRemoteLoading && (
             <p className="text-sm text-muted-foreground">Loading uploaded memories…</p>
           )}
-          {!isRemoteLoading && remoteItems.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No uploads yet, so we&apos;re showing our curated gallery. Add your own from the admin panel anytime.
-            </p>
-          )}
+
         </div>
 
         {/* Album Filters */}

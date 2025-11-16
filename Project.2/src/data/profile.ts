@@ -101,9 +101,9 @@ export const profileData: ProfileData = {
 
   experiences: [
     {
-      company: "Orbit Labs",
-      role: "Founding Product Designer",
-      period: "2023 - Present",
+      company: "LibReport",
+      role: "Project Manager / Database Administrator",
+      period: "August 2025 - November 2025",
       summary:
         "Leading 0->1 design for policy intelligence copilots serving Southeast Asian governments and civic orgs.",
       bullets: [
@@ -113,9 +113,9 @@ export const profileData: ProfileData = {
       ],
     },
     {
-      company: "StellarPH Network",
-      role: "Chief Product & Experience Officer",
-      period: "2021 - 2023",
+      company: "LibTrack",
+      role: "UI/UX Designer & Quality Assurance Lead",
+      period: "January 2025 - March 2025",
       summary:
         "Architected the Philippines' largest youth innovation network - spanning editorial platforms, summits, and accelerator programs.",
       bullets: [
@@ -125,9 +125,9 @@ export const profileData: ProfileData = {
       ],
     },
     {
-      company: "Vinluan Studio / Advisory",
-      role: "Product Designer & Creative Director",
-      period: "2018 - Present",
+      company: "FloodWatch",
+      role: "UI/UX Designer",
+      period: "August 2024 - November 2024",
       summary:
         "Partnering with civic orgs, startups, and universities on experience-led launches and capability building.",
       bullets: [
@@ -190,7 +190,7 @@ export const profileData: ProfileData = {
     location: "Dagupan City, Philippines",
     roles: ["UI/UX", "Project Manager", "CyberSecurity"],
     verified: true,
-    avatar: mediaAsset("sample1.jpg"),
+    avatar: mediaAsset("e.jpg"),
     actions: [
       {
         label: "Schedule a Call",

@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { mediaAsset } from '@/lib/constants';
 import { Heart, MapPin, Calendar } from 'lucide-react';
 
 export function AboutSection() {
@@ -40,8 +41,8 @@ export function AboutSection() {
           <Card className="p-6">
             <CardContent className="flex flex-col items-center text-center space-y-4">
               <Avatar className="w-24 h-24">
-                <AvatarImage src="/api/placeholder/150/150" alt="Elijah " />
-                <AvatarFallback>A</AvatarFallback>
+                <AvatarImage src={mediaAsset('pic1.jpg')} alt="Elijah portrait" />
+                <AvatarFallback>E</AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="text-xl mb-2">Elijah</h3>
@@ -64,8 +65,8 @@ export function AboutSection() {
           <Card className="p-6">
             <CardContent className="flex flex-col items-center text-center space-y-4">
               <Avatar className="w-24 h-24">
-                <AvatarImage src="/api/placeholder/150/150" alt="Annielyn" />
-                <AvatarFallback>S</AvatarFallback>
+                <AvatarImage src={mediaAsset('pic2.jpg')} alt="Annielyn portrait" />
+                <AvatarFallback>A</AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="text-xl mb-2">Annielyn</h3>

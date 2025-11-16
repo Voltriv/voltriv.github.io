@@ -6,7 +6,6 @@ import { ScrollProgressBar } from "./components/ScrollProgressBar";
 import { AboutSection } from "./sections/AboutSection";
 import { GallerySection } from "./sections/GallerySection";
 import { LoveNotesSection } from "./sections/LoveNotesSection";
-import { MilestonesSection } from "./sections/MilestonesSection";
 
 type StoryViewProps = {
   darkMode: boolean;
@@ -43,13 +42,12 @@ export default function StoryView({
         <div className="space-y-16">
           <AboutSection />
           <GallerySection />
-          <MilestonesSection />
           <LoveNotesSection />
         </div>
       </main>
 
       <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 px-4 py-10 text-center text-sm text-muted-foreground">
-        <p>Crafted with �T� for Annielyn.</p>
+        <p>Crafted with Heart for Annielyn.</p>
         <button
           type="button"
           className="mx-auto block text-[11px] lowercase tracking-wide text-muted-foreground transition hover:text-foreground"

@@ -190,31 +190,13 @@ export function ProfileView({
 
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
-                Product & Design
+                About Me
               </p>
-              <h1 className="text-4xl font-semibold leading-tight text-slate-900 dark:text-white sm:text-5xl">
-                Building high-trust experiences for civic tech, education, and the people who lead
-                them.
-              </h1>
               <p className="text-lg text-slate-600 dark:text-white/70">
                 Multidisciplinary designer blending systems thinking, editorial craft, and community
                 strategy. Currently shipping AI copilots at Orbit Labs and advising youth innovation
                 networks across APAC.
               </p>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-white/90" size="lg">
-                Book a collaboration call
-                <PlayCircle className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-slate-200 bg-white/80 text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/15"
-              >
-                Download profile deck
-                <ArrowUpRight className="size-4" />
-              </Button>
             </div>
           </section>
 
@@ -275,7 +257,7 @@ export function ProfileView({
                   Experience
                 </p>
                 <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
-                  Designing for impact & scale
+                  Projects
                 </h2>
               </div>
               <Button
@@ -326,10 +308,10 @@ export function ProfileView({
           <section id="projects" className="mt-24 space-y-10">
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
-                Selected work
+                NONE
               </p>
               <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
-                Flagship builds & narratives
+               NONE
               </h2>
             </div>
             {projects.length ? (
@@ -396,7 +378,7 @@ export function ProfileView({
                 </h2>
                 <p className="mt-4 text-base text-slate-600 dark:text-white/70">
                   Partnering with leaders who obsess over public-good technology, immersive
-                  education, and AI copilots that protect human nuance.
+                  education.
                 </p>
               </div>
               <div className="space-y-4">
@@ -507,4 +489,3 @@ export function ProfileView({
     </div>
   );
 }
-
