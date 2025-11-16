@@ -1,12 +1,12 @@
-import { Button } from "../components/ui/button";
-import { FloatingHearts } from "../components/shared/FloatingHearts";
-import { InteractiveBackground } from "../components/shared/InteractiveBackground";
-import { Navigation } from "../components/shared/Navigation";
-import { ScrollProgressBar } from "../components/shared/ScrollProgressBar";
-import { AboutSection } from "../sections/AboutSection";
-import { GallerySection } from "../sections/GallerySection";
-import { LoveNotesSection } from "../sections/LoveNotesSection";
-import { MilestonesSection } from "../sections/MilestonesSection";
+import { Button } from "@/components/ui/button";
+import { FloatingHearts } from "./components/FloatingHearts";
+import { InteractiveBackground } from "./components/InteractiveBackground";
+import { Navigation } from "./components/Navigation";
+import { ScrollProgressBar } from "./components/ScrollProgressBar";
+import { AboutSection } from "./sections/AboutSection";
+import { GallerySection } from "./sections/GallerySection";
+import { LoveNotesSection } from "./sections/LoveNotesSection";
+import { MilestonesSection } from "./sections/MilestonesSection";
 
 type StoryViewProps = {
   darkMode: boolean;

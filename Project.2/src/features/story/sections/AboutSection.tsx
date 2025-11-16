@@ -1,6 +1,6 @@
-import { Card, CardContent } from '../components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { Badge } from '../components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Heart, MapPin, Calendar } from 'lucide-react';
 
 export function AboutSection() {

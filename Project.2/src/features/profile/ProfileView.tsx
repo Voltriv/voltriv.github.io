@@ -11,11 +11,11 @@ import {
   SunMedium,
   Twitter,
 } from "lucide-react";
-import { profileData, type ContactCTA, type SocialLink } from "../data/profile";
-import { useSectionObserver } from "../hooks/useSectionObserver";
-import { Button } from "../components/ui/button";
-import { cn } from "../components/ui/utils";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { profileData, type ContactCTA, type SocialLink } from "@/data/profile";
+import { useSectionObserver } from "@/hooks/useSectionObserver";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/components/ui/utils";
+import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 
 type ProfileViewProps = {
   onViewBirthday: () => void;

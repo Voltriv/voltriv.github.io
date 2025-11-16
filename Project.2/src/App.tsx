@@ -2,13 +2,13 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Toaster } from './components/ui/sonner';
 
 const ProfileView = lazy(() =>
-  import('./views/ProfileView').then((module) => ({ default: module.ProfileView })),
+  import('./features/profile/ProfileView').then((module) => ({ default: module.ProfileView })),
 );
 const AdminView = lazy(() =>
   import('./views/AdminView').then((module) => ({ default: module.AdminView })),
 );
-const BirthdayView = lazy(() => import('./views/BirthdayView'));
-const StoryView = lazy(() => import('./views/StoryView'));
+const BirthdayView = lazy(() => import('./features/birthday/BirthdayView'));
+const StoryView = lazy(() => import('./features/story/StoryView'));
 
 type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
 const VIEW_TITLES: Record<ViewMode, string> = {

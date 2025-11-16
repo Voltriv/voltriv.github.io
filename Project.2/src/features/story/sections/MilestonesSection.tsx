@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Heart, Star, Gift, Home, Sparkles, Cake, PartyPopper } from 'lucide-react';
-import { AnimatedCounter } from '../components/shared/AnimatedCounter';
-import { ParallaxSection } from '../components/shared/ParallaxSection';
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { ParallaxSection } from '../components/ParallaxSection';
 
 export function MilestonesSection() {
   const [viewMode, setViewMode] = useState<'cards' | 'timeline'>('cards');

@@ -1,6 +1,6 @@
 import { useState, forwardRef } from 'react';
 import { motion } from 'motion/react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 interface InteractiveButtonProps extends React.ComponentProps<typeof Button> {
   children: React.ReactNode;

@@ -18,10 +18,18 @@
 
   ```
   src/
-    views/             # Top-level experiences (Profile, Birthday, Story, Admin)
-    sections/          # Feature sections reused across views (About, Gallery, etc.)
+    features/
+      birthday/
+        components/    # Birthday-only UI like the banner, playlist, fireworks
+        BirthdayView.tsx
+      story/
+        components/    # Story-specific nav, backgrounds, counters, parallax, etc.
+        sections/      # About, Gallery, Milestones, Love Notes
+        StoryView.tsx
+      profile/
+        ProfileView.tsx # Portfolio/resume experience
+    views/             # Remaining experiences (Admin dashboard, etc.)
     components/
-      shared/          # Reusable UI atoms/molecules (banner, playlist, animations)
       ui/              # Design-system primitives (buttons, cards, inputs, dialog, etc.)
       figma/           # Visual helpers (ImageWithFallback, etc.)
     data/              # Typed content (e.g., profile data)

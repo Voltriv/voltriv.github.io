@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { BirthdayBanner } from "../components/shared/BirthdayBanner";
-import { BirthdayPlaylistPlayer } from "../components/shared/BirthdayPlaylistPlayer";
-import { Button } from "../components/ui/button";
+import { BirthdayBanner } from "./components/BirthdayBanner";
+import { BirthdayPlaylistPlayer } from "./components/BirthdayPlaylistPlayer";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
+} from "@/components/ui/dialog";
 
 type BirthdayViewProps = {
   onBackToProfile: () => void;
