@@ -11,14 +11,12 @@ type StoryViewProps = {
   darkMode: boolean;
   onToggleDarkMode: () => void;
   onBackToBirthday: () => void;
-  onGoToAdmin: () => void;
 };
 
 export default function StoryView({
   darkMode,
   onToggleDarkMode,
   onBackToBirthday,
-  onGoToAdmin,
 }: StoryViewProps) {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -48,16 +46,8 @@ export default function StoryView({
 
       <footer className="bg-gradient-to-r from-muted/20 via-accent/10 to-muted/20 px-4 py-10 text-center text-sm text-muted-foreground">
         <p>Crafted with Heart for Annielyn.</p>
-        <button
-          type="button"
-          className="mx-auto block text-[11px] lowercase tracking-wide text-muted-foreground transition hover:text-foreground"
-          onClick={onGoToAdmin}
-        >
-          go to admin
-        </button>
       </footer>
     </div>
   );
 }
-
 

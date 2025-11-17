@@ -14,7 +14,8 @@
     "credit": "Photo by Elijah"
   },
   "sample1.jpg": {
-    "skip": true
+    "category": "favorites",
+    "caption": "Sample memory placeholder"
   },
   "vid1.mp4": {
     "alt": "Beach Date",

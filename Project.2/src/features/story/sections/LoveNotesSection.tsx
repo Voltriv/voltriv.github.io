@@ -7,20 +7,50 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Heart, Pin, Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  LoveNoteRecord,
-  addLoveNote,
-  deleteLoveNote,
-  subscribeToLoveNotes,
-  togglePinLoveNote,
-  updateLoveNote,
-} from '@/lib/loveNotesService';
 import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
-import { uploadMediaFile } from '@/lib/mediaService';
 
-interface LoveNote extends LoveNoteRecord {
+type LoveNote = {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
   date?: Date;
-}
+  isPinned: boolean;
+  mood: string;
+  imageUrl?: string;
+};
+
+const STORAGE_KEY = 'love-notes';
+
+const reviveNotes = (payload: unknown): LoveNote[] => {
+  if (!Array.isArray(payload)) return [];
+  return payload
+    .map((entry) => ({
+      ...entry,
+      date: entry?.date ? new Date(entry.date) : undefined,
+    }))
+    .filter((entry) => entry.id && entry.title);
+};
+
+const loadStoredNotes = (): LoveNote[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return reviveNotes(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+};
+
+const persistNotes = (notes: LoveNote[]) => {
+  if (typeof window === 'undefined') return;
+  const serialisable = notes.map((note) => ({
+    ...note,
+    date: note.date?.toISOString(),
+  }));
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serialisable));
+};
 
 const fallbackNotes: LoveNote[] = [
   {
@@ -54,8 +84,6 @@ const fallbackNotes: LoveNote[] = [
 
 export function LoveNotesSection() {
   const [notes, setNotes] = useState<LoveNote[]>(fallbackNotes);
-  const [usingRemote, setUsingRemote] = useState(false);
-  const [isRemoteLoading, setIsRemoteLoading] = useState(true);
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [editingNote, setEditingNote] = useState<LoveNote | null>(null);
   const [newNote, setNewNote] = useState({
@@ -63,67 +91,49 @@ export function LoveNotesSection() {
     content: '',
     author: '',
     mood: '??',
-    imageUrl: '',
   });
 
-  const [newNoteFile, setNewNoteFile] = useState<File | null>(null);
   const [isSavingNewNote, setIsSavingNewNote] = useState(false);
 
   const moodOptions = ['??', '??', '??', '??', '??', '?', '???', '??', '??', '??'];
 
   useEffect(() => {
-    const unsubscribe = subscribeToLoveNotes((records) => {
-      if (records.length) {
-        setNotes(records);
-        setUsingRemote(true);
-      } else {
-        setNotes(fallbackNotes);
-        setUsingRemote(false);
-      }
-      setIsRemoteLoading(false);
-    });
-    return () => unsubscribe();
+    const stored = loadStoredNotes();
+    if (stored.length) {
+      setNotes(stored);
+    } else {
+      persistNotes(fallbackNotes);
+    }
   }, []);
 
-  const handleAddNote = async (event: FormEvent<HTMLFormElement>) => {
+  const updateNotes = (updater: (current: LoveNote[]) => LoveNote[]) => {
+    setNotes((current) => {
+      const next = updater(current);
+      persistNotes(next);
+      return next;
+    });
+  };
+
+  const handleAddNote = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!newNote.title || !newNote.content || !newNote.author) {
       toast.error('Please fill in all fields');
       return;
     }
 
-    const trimmedImageUrl = newNote.imageUrl.trim();
-    let resolvedImageUrl: string | undefined = trimmedImageUrl || undefined;
     try {
       setIsSavingNewNote(true);
-      if (newNoteFile) {
-        resolvedImageUrl = await uploadMediaFile(newNoteFile, 'love-notes');
-      }
-      await addLoveNote({
+      const created: LoveNote = {
+        id: Date.now().toString(),
         title: newNote.title,
         content: newNote.content,
         author: newNote.author,
+        date: new Date(),
         isPinned: false,
         mood: newNote.mood,
-        imageUrl: resolvedImageUrl,
-      });
-      if (!usingRemote) {
-        setNotes([
-          {
-            id: Date.now().toString(),
-            title: newNote.title,
-            content: newNote.content,
-            author: newNote.author,
-            date: new Date(),
-            isPinned: false,
-            mood: newNote.mood,
-            imageUrl: resolvedImageUrl,
-          },
-          ...notes,
-        ]);
-      }
-      setNewNote({ title: '', content: '', author: '', mood: '??', imageUrl: '' });
-      setNewNoteFile(null);
+      };
+      updateNotes((current) => [created, ...current]);
+      setNewNote({ title: '', content: '', author: '', mood: '??' });
       setIsAddingNote(false);
       toast.success('Love note added!');
     } catch (error) {
@@ -134,15 +144,11 @@ export function LoveNotesSection() {
     }
   };
 
-  const handleEditNote = async () => {
+  const handleEditNote = () => {
     if (!editingNote) return;
 
     try {
-      if (usingRemote) {
-        await updateLoveNote(editingNote);
-      } else {
-        setNotes(notes.map((note) => (note.id === editingNote.id ? editingNote : note)));
-      }
+      updateNotes((current) => current.map((note) => (note.id === editingNote.id ? editingNote : note)));
       setEditingNote(null);
       toast.success('Love note updated!');
     } catch (error) {
@@ -151,15 +157,11 @@ export function LoveNotesSection() {
     }
   };
 
-  const togglePin = async (note: LoveNote) => {
+  const togglePin = (note: LoveNote) => {
     try {
-      if (usingRemote) {
-        await togglePinLoveNote(note.id, !note.isPinned);
-      } else {
-        setNotes(
-          notes.map((item) => (item.id === note.id ? { ...item, isPinned: !item.isPinned } : item)),
-        );
-      }
+      updateNotes((current) =>
+        current.map((item) => (item.id === note.id ? { ...item, isPinned: !item.isPinned } : item)),
+      );
       toast.success('Note pin status updated!');
     } catch (error) {
       console.error(error);
@@ -167,13 +169,9 @@ export function LoveNotesSection() {
     }
   };
 
-  const deleteNoteLocal = async (note: LoveNote) => {
+  const deleteNoteLocal = (note: LoveNote) => {
     try {
-      if (usingRemote) {
-        await deleteLoveNote(note.id);
-      } else {
-        setNotes(notes.filter((item) => item.id !== note.id));
-      }
+      updateNotes((current) => current.filter((item) => item.id !== note.id));
       toast.success('Love note deleted');
     } catch (error) {
       console.error(error);
@@ -202,14 +200,9 @@ export function LoveNotesSection() {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             A collection of sweet messages, random thoughts, and love letters we've shared with each other.
           </p>
-          {isRemoteLoading && (
-            <p className="text-sm text-muted-foreground">Loading your real notes…</p>
-          )}
-          {!isRemoteLoading && !usingRemote && (
-            <p className="text-sm text-muted-foreground">
-              No notes saved yet, so enjoy these sample messages until you add your own.
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground">
+            Notes you add here stay on this device, so feel free to make it yours.
+          </p>
 
           <Dialog open={isAddingNote} onOpenChange={setIsAddingNote}>
             <DialogTrigger asChild>
@@ -239,27 +232,6 @@ export function LoveNotesSection() {
                     placeholder="Write your heartfelt message..."
                     rows={6}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm mb-2">Image URL (optional)</label>
-                  <Input
-                    value={newNote.imageUrl}
-                    onChange={(e) => setNewNote({ ...newNote, imageUrl: e.target.value })}
-                    placeholder="https://example.com/our-photo.jpg"
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">Drop in a hosted link to pair a photo with your note.</p>
-                </div>
-                <div>
-                  <label className="block text-sm mb-2">Or upload an image</label>
-                  <Input
-                    key={newNoteFile?.name || 'empty'}
-                    type="file"
-                    accept="image/*"
-                    onChange={(event) => setNewNoteFile(event.target.files?.[0] ?? null)}
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {newNoteFile ? `Selected: ${newNoteFile.name}` : 'PNG, JPG, or GIF up to 5MB.'}
-                  </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -324,7 +296,7 @@ export function LoveNotesSection() {
                       </div>
                     )}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">— {note.author}</span>
+                      <span className="text-sm text-muted-foreground">Â— {note.author}</span>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="ghost"
@@ -377,7 +349,7 @@ export function LoveNotesSection() {
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">— {note.author}</span>
+                    <span className="text-sm text-muted-foreground">Â— {note.author}</span>
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="icon" onClick={() => togglePin(note)}>
                         <Pin className="w-4 h-4" />
@@ -449,15 +421,6 @@ export function LoveNotesSection() {
                     ))}
                   </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm mb-2">Image URL (optional)</label>
-                <Input
-                  value={editingNote.imageUrl ?? ''}
-                  onChange={(e) => setEditingNote({ ...editingNote, imageUrl: e.target.value })}
-                  placeholder="https://example.com/our-photo.jpg"
-                />
-                <p className="mt-1 text-xs text-muted-foreground">Clear the field if you want a text-only note.</p>
               </div>
               <Button className="w-full" onClick={handleEditNote}>
                 Save Changes

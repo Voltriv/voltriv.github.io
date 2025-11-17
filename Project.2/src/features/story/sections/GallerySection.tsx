@@ -1,19 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
-import { MediaEntry, subscribeToMediaEntries } from "@/lib/mediaService";
 import { LOCAL_MEDIA } from "@/data/localMediaManifest";
 import type { AlbumId, GalleryItem } from "@/features/story/sections/galleryTypes";
 
 export function GallerySection() {
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumId>("all");
   const [lightboxImage, setLightboxImage] = useState<number | null>(null);
-  const [remoteItems, setRemoteItems] = useState<GalleryItem[]>([]);
-  const [isRemoteLoading, setIsRemoteLoading] = useState(true);
 
   const albums = [
     { id: "all" as const, name: "All" },
@@ -22,28 +18,7 @@ export function GallerySection() {
     { id: "favorites" as const, name: "Favorites" },
   ];
 
-  useEffect(() => {
-    const unsubscribe = subscribeToMediaEntries((items: MediaEntry[]) => {
-      setRemoteItems(
-        items
-          .filter((entry) => entry.mediaType === "photo" || entry.mediaType === "video")
-          .map((entry) => ({
-            id: entry.id,
-            src: entry.url ?? "",
-            alt: entry.title,
-            category: entry.category || "favorites",
-            caption: entry.description || "",
-            credit: "Uploaded via admin",
-            isVideo: entry.mediaType === "video",
-          }))
-          .filter((entry) => entry.src),
-      );
-      setIsRemoteLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const photos = useMemo(() => (remoteItems.length ? remoteItems : LOCAL_MEDIA), [remoteItems]);
+  const photos: GalleryItem[] = useMemo(() => LOCAL_MEDIA, []);
 
   const albumCounts = useMemo(() => {
     const counters = photos.reduce<Record<string, number>>((acc, photo) => {
@@ -86,10 +61,6 @@ export function GallerySection() {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             A collection of our favorite moments, adventures, and everyday magic captured through the lens.
           </p>
-          {isRemoteLoading && (
-            <p className="text-sm text-muted-foreground">Loading uploaded memories…</p>
-          )}
-
         </div>
 
         {/* Album Filters */}

@@ -4,18 +4,14 @@ import { Toaster } from './components/ui/sonner';
 const ProfileView = lazy(() =>
   import('./features/profile/ProfileView').then((module) => ({ default: module.ProfileView })),
 );
-const AdminView = lazy(() =>
-  import('./views/AdminView').then((module) => ({ default: module.AdminView })),
-);
 const BirthdayView = lazy(() => import('./features/birthday/BirthdayView'));
 const StoryView = lazy(() => import('./features/story/StoryView'));
 
-type ViewMode = 'profile' | 'birthday' | 'story' | 'admin';
+type ViewMode = 'profile' | 'birthday' | 'story';
 const VIEW_TITLES: Record<ViewMode, string> = {
   profile: 'My Profile | Elijah Vinluan',
   birthday: 'Birthday Surprise | Elijah & Annielyn',
   story: 'Our Story | Elijah & Annielyn',
-  admin: 'Admin Dashboard | Elijah & Annielyn',
 };
 
 export default function App() {
@@ -43,16 +39,12 @@ export default function App() {
   let content: ReactNode = null;
 
   switch (view) {
-    case 'admin':
-      content = <AdminView onBack={() => setView('profile')} />;
-      break;
     case 'story':
       content = (
         <StoryView
           darkMode={darkMode}
           onToggleDarkMode={toggleDarkMode}
           onBackToBirthday={() => setView('birthday')}
-          onGoToAdmin={() => setView('admin')}
         />
       );
       break;

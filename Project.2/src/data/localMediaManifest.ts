@@ -29,6 +29,14 @@ export const LOCAL_MEDIA: GalleryItem[] = [
     credit: "Photo by Elijah",
   },
   {
+    id: "sample1.jpg",
+    src: mediaAsset("sample1.jpg"),
+    alt: "",
+    category: "favorites",
+    caption: "Sample memory placeholder",
+    credit: "",
+  },
+  {
     id: "vid1.mp4",
     src: mediaAsset("vid1.mp4"),
     alt: "Beach Date",
