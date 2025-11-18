@@ -82,8 +82,16 @@ const fallbackNotes: LoveNote[] = [
   },
 ];
 
+const getInitialNotes = (): LoveNote[] => {
+  const stored = loadStoredNotes();
+  if (stored.length) {
+    return stored;
+  }
+  return fallbackNotes;
+};
+
 export function LoveNotesSection() {
-  const [notes, setNotes] = useState<LoveNote[]>(fallbackNotes);
+  const [notes, setNotes] = useState<LoveNote[]>(() => getInitialNotes());
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [editingNote, setEditingNote] = useState<LoveNote | null>(null);
   const [newNote, setNewNote] = useState({
@@ -98,21 +106,8 @@ export function LoveNotesSection() {
   const moodOptions = ['??', '??', '??', '??', '??', '?', '???', '??', '??', '??'];
 
   useEffect(() => {
-    const stored = loadStoredNotes();
-    if (stored.length) {
-      setNotes(stored);
-    } else {
-      persistNotes(fallbackNotes);
-    }
-  }, []);
-
-  const updateNotes = (updater: (current: LoveNote[]) => LoveNote[]) => {
-    setNotes((current) => {
-      const next = updater(current);
-      persistNotes(next);
-      return next;
-    });
-  };
+    persistNotes(notes);
+  }, [notes]);
 
   const handleAddNote = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -132,7 +127,7 @@ export function LoveNotesSection() {
         isPinned: false,
         mood: newNote.mood,
       };
-      updateNotes((current) => [created, ...current]);
+      setNotes((current) => [created, ...current]);
       setNewNote({ title: '', content: '', author: '', mood: '??' });
       setIsAddingNote(false);
       toast.success('Love note added!');
@@ -148,7 +143,7 @@ export function LoveNotesSection() {
     if (!editingNote) return;
 
     try {
-      updateNotes((current) => current.map((note) => (note.id === editingNote.id ? editingNote : note)));
+      setNotes((current) => current.map((note) => (note.id === editingNote.id ? editingNote : note)));
       setEditingNote(null);
       toast.success('Love note updated!');
     } catch (error) {
@@ -159,7 +154,7 @@ export function LoveNotesSection() {
 
   const togglePin = (note: LoveNote) => {
     try {
-      updateNotes((current) =>
+      setNotes((current) =>
         current.map((item) => (item.id === note.id ? { ...item, isPinned: !item.isPinned } : item)),
       );
       toast.success('Note pin status updated!');
@@ -171,7 +166,7 @@ export function LoveNotesSection() {
 
   const deleteNoteLocal = (note: LoveNote) => {
     try {
-      updateNotes((current) => current.filter((item) => item.id !== note.id));
+      setNotes((current) => current.filter((item) => item.id !== note.id));
       toast.success('Love note deleted');
     } catch (error) {
       console.error(error);
