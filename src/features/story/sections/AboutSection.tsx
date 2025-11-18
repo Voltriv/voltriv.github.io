@@ -7,22 +7,22 @@ import { Heart, MapPin, Calendar } from 'lucide-react';
 export function AboutSection() {
   const timelineEvents = [
     {
-      date: 'March 2020',
+      date: '2021',
       title: 'First Met',
-      description: 'Bumped into each other at a coffee shop in downtown',
-      icon: '☕',
+      description: 'Eye contacttt sa palengkeeeee arghhhh! ang ingay nag lalako pero masipag',
+      icon: '👀',
     },
     {
-      date: 'April 2020',
+      date: 'December 2021',
       title: 'First Date',
-      description: 'Dinner at that little Italian place we still love',
-      icon: '🍝',
+      description: 'Tondaligan Beach',
+      icon: '🏖️',
     },
     {
-      date: 'July 2020',
+      date: 'i forgot the date but i think 3yrs na dapat kami kapag di nag bre-break',
       title: 'Made it Official',
       description: 'Under the stars at Central Park',
-      icon: '⭐',
+      icon: '💞',
     },
   ];
 
