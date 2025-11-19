@@ -21,7 +21,7 @@ export function AboutSection() {
     {
       date: 'i forgot the date but i think 3yrs na dapat kami kapag di nag bre-break',
       title: 'Made it Official',
-      description: 'Under the stars at Central Park',
+      description: 'We decided to take our relationship to the next level and became official.',
       icon: '💞',
     },
   ];
@@ -93,7 +93,7 @@ export function AboutSection() {
             <Heart className="w-8 h-8 text-red-500 mx-auto mb-4" />
             <h3 className="text-2xl mb-4">How We Met</h3>
             <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              We met at Food market in Dagupan City, a serendipitous encounter that sparked an instant connection.
+              We met at Malimgas market in Dagupan City, a serendipitous encounter that sparked an instant connection.
               From that moment on, our journey together began, filled with laughter, shared dreams, and countless 
               unforgettable memories. Every day since has been a new chapter in our love story, and we can't wait to see
               where the next pages take us.

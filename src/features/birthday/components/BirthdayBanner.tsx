@@ -1,24 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Gift, Sparkles, CalendarDays, Music2 } from 'lucide-react';
+import { Sparkles, CalendarDays } from 'lucide-react';
 import { BIRTHDAY_DATE } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { HeartFireworks } from './HeartFireworks';
-
-const celebrationPromises = [
-  {
-    title: 'Sunrise wishes',
-    detail: 'Reading the love letter while the sun rises over Dagupan Bay.',
-  },
-  {
-    title: 'Secret serenade',
-    detail: 'A mini concert of your favorite songs (yes, I practiced!).',
-  },
-  {
-    title: 'Polaroid adventure',
-    detail: '12 snapshots for 12 wishes we will make together.',
-  },
-];
 
 interface BirthdayBannerProps {
   onOpenStory: () => void;
@@ -94,7 +79,7 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
 
           <HeartFireworks active={isBirthday} />
 
-          <div className="relative z-10 grid items-center gap-10 text-slate-900 md:grid-cols-[1.6fr,1fr]">
+          <div className="relative z-10 grid items-center gap-10 text-slate-900">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-800">
                 <Sparkles className="h-4 w-4" />
@@ -156,15 +141,6 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
                 >
                   Play birthday playlist
                 </Button>
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  className="min-w-[200px] text-slate-900"
-                  onClick={onOpenStory}
-                  title="Skip straight to our story view"
-                >
-                  Go to our story
-                </Button>
               </div>
               {!isBirthday && (
                 <p className="text-xs text-slate-600">
@@ -173,31 +149,6 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
               )}
             </div>
 
-            <div className="rounded-3xl bg-white/80 p-6 text-slate-900 shadow-lg shadow-rose-200/70">
-              <div className="flex items-center gap-3">
-                <Gift className="h-10 w-10 text-amber-500" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Highlight of the night</p>
-                  <p className="text-lg font-semibold">Star-gazing dessert picnic</p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-slate-600">
-                Handmade cake, fairy lights, and a playlist that ends with the song we danced to the first night we met.
-                I&apos;m handling every detail—you just bring your brightest smile.
-              </p>
-
-              <div className="mt-5 space-y-3">
-                {celebrationPromises.map((promise) => (
-                  <div key={promise.title} className="flex gap-3 rounded-2xl bg-slate-900/5 px-3 py-2 shadow-inner">
-                    <Music2 className="h-5 w-5 text-rose-500" />
-                    <div>
-                      <p className="text-sm font-semibold">{promise.title}</p>
-                      <p className="text-xs text-slate-600">{promise.detail}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </motion.div>
       </div>

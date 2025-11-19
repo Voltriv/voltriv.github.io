@@ -165,9 +165,16 @@ export const profileData: ProfileData = {
       description: "Pipelines and infrastructure that keep deployments safe and observable.",
       items: [
         { name: "AWS", logo: "https://cdn.simpleicons.org/amazonaws/FF9900" },
-        { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED" },
         { name: "Github Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
-        { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/000000" },
+      ],
+    },
+    {
+      title: "Cybersecurity (Kali Linux)",
+      description: "Tools I lean on for red-team practice, capture-the-flag, and keeping systems hardened.",
+      items: [
+        { name: "Nmap", logo: "https://cdn.simpleicons.org/nmap/4681AA" },
+        { name: "Masscan", logo: "https://cdn.simpleicons.org/masscan/2F74C0" },
+        { name: "Maltego", logo: "https://cdn.simpleicons.org/maltego/FF5F00" },
       ],
     },
   ],
@@ -188,9 +195,9 @@ export const profileData: ProfileData = {
   profileCard: {
     name: "Elijah Meir C. Vinluan",
     location: "Dagupan City, Philippines",
-    roles: ["UI/UX", "Project Manager", "CyberSecurity"],
+    roles: ["UI/UX", "Project Manager", "CyberSecurity Student"],
     verified: true,
-    avatar: mediaAsset("e.jpg"),
+    avatar: mediaAsset("pic4.png"),
     actions: [
       {
         label: "Schedule a Call",
@@ -247,11 +254,6 @@ export const profileData: ProfileData = {
       label: "LinkedIn",
       icon: "linkedin",
       href: "https://www.linkedin.com/in/elijahvinluan",
-    },
-    {
-      label: "Twitter",
-      icon: "twitter",
-      href: "https://twitter.com/elijahvinluan",
     },
     {
       label: "Email",

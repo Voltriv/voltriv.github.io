@@ -193,9 +193,11 @@ export function ProfileView({
                 About Me
               </p>
               <p className="text-lg text-slate-600 dark:text-white/70">
-                Multidisciplinary designer blending systems thinking, editorial craft, and community
-                strategy. Currently shipping AI copilots at Orbit Labs and advising youth innovation
-                networks across APAC.
+                I&apos;m a junior pursuing a Bachelor of Science in Information Technology with a solid
+                foundation in networking and UI/UX. I bring a diverse skill set and a strong track record
+                of excellence to every role, and my reputation for reliability, professionalism, and
+                high-quality work speaks for itself. I&apos;m also learning cybersecurity tools like Nmap,
+                Masscan, and Maltego to round out my toolkit.
               </p>
             </div>
           </section>
