@@ -138,7 +138,7 @@ export function ProfileView({
               <ImageWithFallback
                 src={profileCard.avatar}
                 alt={`${profileCard.name} portrait`}
-                className="h-28 w-28 rounded-3xl object-cover shadow-lg shadow-slate-200/70 dark:shadow-slate-900/50"
+                className="block h-28 w-28 rounded-3xl object-cover shadow-lg shadow-slate-200/70 mx-auto sm:mx-0 dark:shadow-slate-900/50"
               />
               <div className="flex-1 space-y-3 text-center sm:text-left">
                 <div>
@@ -196,8 +196,9 @@ export function ProfileView({
                 I&apos;m a junior pursuing a Bachelor of Science in Information Technology with a solid
                 foundation in networking and UI/UX. I bring a diverse skill set and a strong track record
                 of excellence to every role, and my reputation for reliability, professionalism, and
-                high-quality work speaks for itself. I&apos;m also learning cybersecurity tools like Nmap,
-                Masscan, and Maltego to round out my toolkit.
+                high-quality work speaks for itself. I also serve in the College Information Technology
+                Student Council, and I&apos;m learning cybersecurity tools like Nmap, Masscan, and Maltego to
+                round out my toolkit.
               </p>
             </div>
           </section>
@@ -444,14 +445,14 @@ export function ProfileView({
                       {detail.href ? (
                         <a
                           href={detail.href}
-                          className="text-slate-900 transition hover:underline dark:text-white"
+                          className="break-words text-slate-900 transition hover:underline dark:text-white"
                           target={detailIsExternal ? "_blank" : undefined}
                           rel={detailIsExternal ? "noreferrer" : undefined}
                         >
                           {detail.value}
                         </a>
                       ) : (
-                        <span className="text-slate-900 dark:text-white">{detail.value}</span>
+                        <span className="break-words text-slate-900 dark:text-white">{detail.value}</span>
                       )}
                     </div>
                   );

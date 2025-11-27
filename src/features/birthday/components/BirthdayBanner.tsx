@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
-import { Sparkles, CalendarDays } from 'lucide-react';
-import { BIRTHDAY_DATE } from '@/lib/constants';
-import { Button } from '@/components/ui/button';
-import { HeartFireworks } from './HeartFireworks';
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import { Sparkles, CalendarDays } from "lucide-react";
+import { BIRTHDAY_DATE } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { HeartFireworks } from "./HeartFireworks";
 
 interface BirthdayBannerProps {
   onOpenStory: () => void;
   onOpenPlaylist: () => void;
+  onFireworksChange?: (active: boolean) => void;
 }
 
-export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerProps) {
+export function BirthdayBanner({
+  onOpenStory,
+  onOpenPlaylist,
+  onFireworksChange,
+}: BirthdayBannerProps) {
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -42,16 +47,27 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    onFireworksChange?.(isBirthday);
+  }, [isBirthday, onFireworksChange]);
+
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-rose-50 via-white to-rose-100 px-4 py-16">
+    <section className="relative min-h-screen px-4 py-16">
       <div className="container mx-auto max-w-5xl">
         <motion.div
-          className="relative overflow-hidden rounded-[2.5rem] border border-white/50 bg-gradient-to-r from-pink-200 via-rose-200 to-amber-100 p-10 shadow-[0_35px_80px_-30px_rgba(244,114,182,0.8)]"
+          className="relative overflow-hidden rounded-[2.5rem] border border-white/50 bg-gradient-to-r from-pink-200/75 via-rose-200/75 to-amber-100/75 p-10 shadow-[0_35px_80px_-30px_rgba(244,114,182,0.8)] backdrop-blur"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
+          {isBirthday && (
+            <HeartFireworks
+              active
+              count={180}
+              className="mix-blend-screen opacity-95"
+            />
+          )}
           <div className="absolute inset-0 opacity-30">
             {[...Array(16)].map((_, i) => (
               <motion.span
@@ -77,8 +93,6 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
             ))}
           </div>
 
-          <HeartFireworks active={isBirthday} />
-
           <div className="relative z-10 grid items-center gap-10 text-slate-900">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-800">
@@ -88,35 +102,32 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
               </div>
               <div className="space-y-2">
                 <h1 className="text-4xl font-semibold md:text-5xl">
-                  {isBirthday ? 'Happy Birthday, Annielyn! 🎉' : 'Happy birthday month, Annielyn! 🎂'}
+                  {isBirthday ? "Happy Birthday, Annielyn!" : "Happy birthday month, Annielyn!"}
                 </h1>
                 <p className="text-lg text-slate-700">
-                  {isBirthday
-                    ? 'Tonight we celebrate you completely—cake, music, letters, and a sky full of heart fireworks.'
-                    : "I want every moment of your day to feel soft, magical, and completely yours. Here's what I'm preparing while we count down the last few sleeps."
-                  }
+                  With every day we count down to your birthday and our monthsary, I want you wrapped in calm, softness, and proof of how deeply I cherish you. Here is what I am preparing for you.
                 </p>
                 <p className="text-sm uppercase tracking-[0.4em] text-slate-600">
-                  Softer hugs · brighter laughter · starlit wishes
+                  Softer hugs - brighter laughter - starlit wishes
                 </p>
                 <p className="text-sm font-medium text-rose-700">
-                  November 30 · your birthday and our monthsary
+                  November 30 - your birthday and our monthsary
                 </p>
               </div>
 
               {!isBirthday && (
                 <div className="flex flex-wrap gap-4 text-slate-900">
                   {[
-                    { label: 'Days', value: countdown.days },
-                    { label: 'Hours', value: countdown.hours },
-                    { label: 'Minutes', value: countdown.minutes },
-                    { label: 'Seconds', value: countdown.seconds },
+                    { label: "Days", value: countdown.days },
+                    { label: "Hours", value: countdown.hours },
+                    { label: "Minutes", value: countdown.minutes },
+                    { label: "Seconds", value: countdown.seconds },
                   ].map((item) => (
                     <div
                       key={item.label}
                       className="flex min-w-[110px] flex-col rounded-2xl bg-white/80 px-4 py-3 text-center shadow-sm"
                     >
-                      <span className="text-3xl font-bold">{item.value.toString().padStart(2, '0')}</span>
+                      <span className="text-3xl font-bold">{item.value.toString().padStart(2, "0")}</span>
                       <span className="text-xs uppercase tracking-wide text-slate-500">{item.label}</span>
                     </div>
                   ))}
@@ -148,11 +159,9 @@ export function BirthdayBanner({ onOpenStory, onOpenPlaylist }: BirthdayBannerPr
                 </p>
               )}
             </div>
-
           </div>
         </motion.div>
       </div>
     </section>
   );
 }
-

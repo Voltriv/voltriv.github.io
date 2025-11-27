@@ -164,7 +164,6 @@ export const profileData: ProfileData = {
       title: "DevOps & Cloud",
       description: "Pipelines and infrastructure that keep deployments safe and observable.",
       items: [
-        { name: "AWS", logo: "https://cdn.simpleicons.org/amazonaws/FF9900" },
         { name: "Github Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
       ],
     },
@@ -180,31 +179,17 @@ export const profileData: ProfileData = {
   ],
   focusAreas: [
     {
-      title: "GovTech & Civic Futures",
-      description: "Designing high-trust products for transparency, policy intelligence, and rapid response.",
-    },
-    {
-      title: "Learning Communities",
-      description: "Prototyping mixed-format programs that blend immersive education, mentorship, and ecosystems.",
-    },
-    {
-      title: "AI x Experience",
-      description: "Exploring copilots that amplify creative work while honoring human nuance and accountability.",
+      title: "Exploring",
+      description: "Passionate about discovering new technologies, methodologies, and ideas that can enhance my skills and broaden my perspective.",
     },
   ],
   profileCard: {
     name: "Elijah Meir C. Vinluan",
     location: "Dagupan City, Philippines",
-    roles: ["UI/UX", "Project Manager", "CyberSecurity Student"],
+    roles: ["Project Manager", "UI/UX", "CyberSecurity Student"],
     verified: true,
     avatar: mediaAsset("pic4.png"),
     actions: [
-      {
-        label: "Schedule a Call",
-        href: "https://cal.com/elijahvinluan/coffee-chat",
-        icon: "calendar",
-        variant: "primary",
-      },
       {
         label: "Send Email",
         href: "mailto:elca.vinluan.up@phinmaed.com",
@@ -215,21 +200,15 @@ export const profileData: ProfileData = {
   },
   contact: {
     eyebrow: "Stay in touch",
-    title: "Advising, collaborations, speaking",
+    title: "A collaborations, or freelance?",
     description:
-      "Let's prototype future-ready public services, education systems, or venture playbooks. I give my best to teams who care about access, rigor, and cultural resonance.",
+      "Let's prototype future-ready public services, education systems, or venture playbooks. I give my best to teams who care about access, security, and lasting impact.",
     ctas: [
       {
         label: "Write me an email",
         href: "mailto:elca.vinluan.up@phinmaed.com",
         icon: "mail",
         variant: "primary",
-      },
-      {
-        label: "Schedule coffee chat",
-        href: "https://cal.com/elijahvinluan/coffee-chat",
-        icon: "calendar",
-        variant: "outline",
       },
     ],
     details: [
@@ -254,11 +233,6 @@ export const profileData: ProfileData = {
       label: "LinkedIn",
       icon: "linkedin",
       href: "https://www.linkedin.com/in/elijahvinluan",
-    },
-    {
-      label: "Email",
-      icon: "email",
-      href: "elca.vinluan.up@phinmaed.com",
     },
   ],
 };

@@ -21,6 +21,16 @@ const tracks = [
     dedication: 'Because every hug feels like a quiet waltz.',
     url: 'https://www.youtube.com/watch?v=w1oM3kQpXRo',
   },
+  {
+    title: 'To the Bone',
+    dedication: 'Because you inspire me to love deeply, without holding back, all the way to the bone.',
+    url: 'https://www.youtube.com/watch?v=3apmLyz7ehs',
+  },
+  {
+    title: 'Birthday Song',
+    dedication: 'Your day, your glow—this is our soundtrack to celebrate you.',
+    url: 'https://www.youtube.com/watch?v=hmVvKJ5FJqQ',
+  },
 ];
 
 export function BirthdayPlaylistPlayer() {
@@ -86,26 +96,6 @@ export function BirthdayPlaylistPlayer() {
           <Button variant="ghost" onClick={playNext} aria-label="Next song">
             <SkipForward className="h-5 w-5" />
           </Button>
-        </div>
-
-        <div className="space-y-2 text-sm">
-          {tracks.map((track, index) => (
-            <button
-              key={track.title}
-              onClick={() => {
-                setCurrentIndex(index);
-                setIsPlaying(true);
-              }}
-              className={`w-full rounded-xl border px-4 py-2 text-left transition-all ${
-                currentIndex === index
-                  ? 'border-primary bg-primary/10'
-                  : 'border-border hover:bg-muted/30'
-              }`}
-            >
-              <p className="font-medium">{track.title}</p>
-              <p className="text-muted-foreground text-xs">{track.dedication}</p>
-            </button>
-          ))}
         </div>
       </CardContent>
     </Card>

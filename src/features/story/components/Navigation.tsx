@@ -15,11 +15,9 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { href: '#home', label: 'Home' },
     { href: '#about', label: 'About Us' },
     { href: '#gallery', label: 'Gallery' },
     { href: '#notes', label: 'Love Notes' },
-
   ];
 
   const scrollToSection = (href: string) => {
