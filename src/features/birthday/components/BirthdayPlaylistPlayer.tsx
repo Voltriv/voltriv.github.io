@@ -9,7 +9,7 @@ const tracks = [
   {
     title: 'To the Bone',
     dedication: 'Because you inspire me to love deeply, without holding back, all the way to the bone.',
-    url: 'https://www.youtube.com/watch?v=3apmLyz7ehs',
+    url: 'https://youtu.be/oIYWenB637c?si=_EKIIdfRGAOhmKDk',
   },
 ];
 
@@ -41,13 +41,13 @@ export function BirthdayPlaylistPlayer() {
           key={currentTrack.title}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/20 bg-white/10 p-5 text-white shadow-inner"
+          className="rounded-2xl border border-white/50 bg-white/80 p-5 text-slate-900 shadow-lg backdrop-blur"
         >
           <div className="flex items-center gap-3">
-            <Sparkles className="h-5 w-5 text-yellow-200" />
+            <Sparkles className="h-5 w-5 text-yellow-500" />
             <div>
               <p className="text-base font-semibold">{currentTrack.title}</p>
-              <p className="text-sm text-white/80">{currentTrack.dedication}</p>
+              <p className="text-sm text-slate-700">{currentTrack.dedication}</p>
             </div>
           </div>
         </motion.div>

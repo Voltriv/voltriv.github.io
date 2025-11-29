@@ -138,11 +138,10 @@ export function BirthdayBanner({
                 <Button
                   size="lg"
                   className="min-w-[180px]"
-                  onClick={() => isBirthday && onOpenStory()}
-                  disabled={!isBirthday}
-                  title={isBirthday ? "Open our story" : "Unlocks once the countdown ends"}
+                  onClick={onOpenStory}
+                  title="Open our story"
                 >
-                  {isBirthday ? "See our story" : "See our story (soon)"}
+                  See our story
                 </Button>
                 <Button
                   size="lg"
@@ -155,7 +154,7 @@ export function BirthdayBanner({
               </div>
               {!isBirthday && (
                 <p className="text-xs text-slate-600">
-                  The story unlocks the second the countdown hits zero on November 30.
+                  Sneak preview unlocked early - enjoy anytime.
                 </p>
               )}
             </div>
@@ -165,3 +164,4 @@ export function BirthdayBanner({
     </section>
   );
 }
+
