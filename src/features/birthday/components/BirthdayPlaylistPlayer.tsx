@@ -7,29 +7,9 @@ import { Button } from '@/components/ui/button';
 
 const tracks = [
   {
-    title: 'She (Piano Cover)',
-    dedication: 'For the way you light up every room without trying.',
-    url: 'https://www.youtube.com/watch?v=_kJbjb1vseY',
-  },
-  {
-    title: 'Roses & Sunsets',
-    dedication: 'The soundtrack of our beach walks in Dagupan.',
-    url: 'https://www.youtube.com/watch?v=84tFJfY2_xQ',
-  },
-  {
-    title: 'Slow Dancing in a Dream',
-    dedication: 'Because every hug feels like a quiet waltz.',
-    url: 'https://www.youtube.com/watch?v=w1oM3kQpXRo',
-  },
-  {
     title: 'To the Bone',
     dedication: 'Because you inspire me to love deeply, without holding back, all the way to the bone.',
     url: 'https://www.youtube.com/watch?v=3apmLyz7ehs',
-  },
-  {
-    title: 'Birthday Song',
-    dedication: 'Your day, your glow—this is our soundtrack to celebrate you.',
-    url: 'https://www.youtube.com/watch?v=hmVvKJ5FJqQ',
   },
 ];
 
@@ -51,7 +31,7 @@ export function BirthdayPlaylistPlayer() {
           </div>
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
-              curated for annielyn
+              created for annielyn
             </p>
             <h3 className="text-xl font-semibold">Birthday Playlist</h3>
           </div>

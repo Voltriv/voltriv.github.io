@@ -29,6 +29,14 @@ export const LOCAL_MEDIA: GalleryItem[] = [
     credit: "Photo by Elijah",
   },
   {
+    id: "pic4.png",
+    src: mediaAsset("pic4.png"),
+    alt: "",
+    category: "favorites",
+    caption: "",
+    credit: "",
+  },
+  {
     id: "pic5.jpg",
     src: mediaAsset("pic5.jpg"),
     alt: "",
@@ -47,6 +55,22 @@ export const LOCAL_MEDIA: GalleryItem[] = [
   {
     id: "pic7.jpg",
     src: mediaAsset("pic7.jpg"),
+    alt: "",
+    category: "favorites",
+    caption: "",
+    credit: "",
+  },
+  {
+    id: "pic8.jpg",
+    src: mediaAsset("pic8.jpg"),
+    alt: "",
+    category: "favorites",
+    caption: "",
+    credit: "",
+  },
+  {
+    id: "pic9.jpg",
+    src: mediaAsset("pic9.jpg"),
     alt: "",
     category: "favorites",
     caption: "",
