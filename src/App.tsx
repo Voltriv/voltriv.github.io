@@ -5,13 +5,20 @@ const ProfileView = lazy(() =>
   import('./features/profile/ProfileView').then((module) => ({ default: module.ProfileView })),
 );
 const BirthdayView = lazy(() => import('./features/birthday/BirthdayView'));
-const StoryView = lazy(() => import('./features/story/StoryView'));
 
-type ViewMode = 'profile' | 'birthday' | 'story';
+function ViewFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-rose-50 via-white to-rose-100 text-muted-foreground">
+      <p className="text-xs uppercase tracking-[0.4em]">Loading view...</p>
+    </div>
+  );
+}
+
+
+type ViewMode = 'profile' | 'birthday';
 const VIEW_TITLES: Record<ViewMode, string> = {
   profile: 'My Profile | Elijah Vinluan',
-  birthday: 'Birthday Surprise | Elijah & Annielyn',
-  story: 'Our Story | Elijah & Annielyn',
+  birthday: 'Birthday Surprise',
 };
 
 export default function App() {
@@ -34,20 +41,11 @@ export default function App() {
     document.title = VIEW_TITLES[view];
   }, [view]);
 
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+  const toggleDarkMode = () => setDarkMode((prev: boolean) => !prev);
 
   let content: ReactNode = null;
 
   switch (view) {
-    case 'story':
-      content = (
-        <StoryView
-          darkMode={darkMode}
-          onToggleDarkMode={toggleDarkMode}
-          onBackToBirthday={() => setView('birthday')}
-        />
-      );
-      break;
     case 'profile':
       content = (
         <ProfileView
@@ -57,13 +55,14 @@ export default function App() {
         />
       );
       break;
-    default:
+    case 'birthday':
       content = (
         <BirthdayView
           onBackToProfile={() => setView('profile')}
-          onOpenStory={() => setView('story')}
+          onOpenStory={() => setView('profile')}
         />
       );
+      break;
   }
 
   return (
@@ -71,13 +70,5 @@ export default function App() {
       <Suspense fallback={<ViewFallback />}>{content}</Suspense>
       <Toaster />
     </>
-  );
-}
-
-function ViewFallback() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-rose-50 via-white to-rose-100 text-muted-foreground">
-      <p className="text-xs uppercase tracking-[0.4em]">Loading view...</p>
-    </div>
   );
 }

@@ -67,7 +67,7 @@ export function ProfileView({
   );
   const activeSection = useSectionObserver(sectionIds);
   const totalStackItems = techStack.reduce(
-    (sum, group) => sum + group.items.length,
+    (sum: number, group) => sum + group.items.length,
     0,
   );
 
@@ -120,7 +120,7 @@ export function ProfileView({
                 className="border-slate-900/10 bg-white text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/20"
                 onClick={onViewBirthday}
               >
-                Annielyn Birthday Present
+                Birthday Surprise
                 <ArrowUpRight className="size-4" />
               </Button>
             </div>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Sparkles, CalendarDays } from "lucide-react";
-import { BIRTHDAY_DATE } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { HeartFireworks } from "./HeartFireworks";
 
@@ -16,36 +15,7 @@ export function BirthdayBanner({
   onOpenPlaylist,
   onFireworksChange,
 }: BirthdayBannerProps) {
-  const [countdown, setCountdown] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [isBirthday, setIsBirthday] = useState(false);
-
-  useEffect(() => {
-    const target = BIRTHDAY_DATE.getTime();
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const difference = target - now;
-
-      if (difference > 0) {
-        setIsBirthday(false);
-        setCountdown({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / (1000 * 60)) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      } else {
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setIsBirthday(true);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  const [isBirthday, setIsBirthday] = useState(true);
 
   useEffect(() => {
     onFireworksChange?.(isBirthday);
@@ -97,40 +67,27 @@ export function BirthdayBanner({
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-800">
                 <Sparkles className="h-4 w-4" />
-                Birthday Countdown
+                Birthday Celebration
                 <CalendarDays className="h-4 w-4" />
               </div>
               <div className="space-y-2">
                 <h1 className="text-4xl font-semibold md:text-5xl">
-                  {isBirthday ? "Happy Birthday, Annielyn!" : "Happy birthday month, Annielyn!"}
+                  {isBirthday ? "Happy Birthday!" : "Happy Birthday Month!"}
                 </h1>
                 <p className="text-lg text-slate-700">
-                  With every day we count down to your birthday and our monthsary, I want you wrapped in calm, softness, and proof of how deeply I cherish you. Here is what I am preparing for you.
+                  Celebrating with joy and love.
                 </p>
                 <p className="text-sm uppercase tracking-[0.4em] text-slate-600">
-                  Softer hugs - brighter laughter - starlit wishes
+                  Joy - Laughter - Wishes
                 </p>
                 <p className="text-sm font-medium text-rose-700">
-                  November 30 - your birthday and our monthsary
+                  Special Day
                 </p>
               </div>
 
               {!isBirthday && (
                 <div className="flex flex-wrap gap-4 text-slate-900">
-                  {[
-                    { label: "Days", value: countdown.days },
-                    { label: "Hours", value: countdown.hours },
-                    { label: "Minutes", value: countdown.minutes },
-                    { label: "Seconds", value: countdown.seconds },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex min-w-[110px] flex-col rounded-2xl bg-white/80 px-4 py-3 text-center shadow-sm"
-                    >
-                      <span className="text-3xl font-bold">{item.value.toString().padStart(2, "0")}</span>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">{item.label}</span>
-                    </div>
-                  ))}
+                  <p>Countdown coming soon!</p>
                 </div>
               )}
 
@@ -154,7 +111,7 @@ export function BirthdayBanner({
               </div>
               {!isBirthday && (
                 <p className="text-xs text-slate-600">
-                  Sneak preview unlocked early - enjoy anytime.
+                  Enjoy the celebration!
                 </p>
               )}
             </div>
