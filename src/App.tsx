@@ -1,10 +1,9 @@
-import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Toaster } from './components/ui/sonner';
 
 const ProfileView = lazy(() =>
   import('./features/profile/ProfileView').then((module) => ({ default: module.ProfileView })),
 );
-const BirthdayView = lazy(() => import('./features/birthday/BirthdayView'));
 
 function ViewFallback() {
   return (
@@ -14,15 +13,9 @@ function ViewFallback() {
   );
 }
 
-
-type ViewMode = 'profile' | 'birthday';
-const VIEW_TITLES: Record<ViewMode, string> = {
-  profile: 'My Profile | Elijah Vinluan',
-  birthday: 'Birthday Surprise',
-};
+const PAGE_TITLE = 'My Profile | Elijah Vinluan';
 
 export default function App() {
-  const [view, setView] = useState<ViewMode>('profile');
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -38,36 +31,16 @@ export default function App() {
   }, [darkMode]);
 
   useEffect(() => {
-    document.title = VIEW_TITLES[view];
-  }, [view]);
+    document.title = PAGE_TITLE;
+  }, []);
 
   const toggleDarkMode = () => setDarkMode((prev: boolean) => !prev);
 
-  let content: ReactNode = null;
-
-  switch (view) {
-    case 'profile':
-      content = (
-        <ProfileView
-          onViewBirthday={() => setView('birthday')}
-          darkMode={darkMode}
-          onToggleDarkMode={toggleDarkMode}
-        />
-      );
-      break;
-    case 'birthday':
-      content = (
-        <BirthdayView
-          onBackToProfile={() => setView('profile')}
-          onOpenStory={() => setView('profile')}
-        />
-      );
-      break;
-  }
-
   return (
     <>
-      <Suspense fallback={<ViewFallback />}>{content}</Suspense>
+      <Suspense fallback={<ViewFallback />}>
+        <ProfileView darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+      </Suspense>
       <Toaster />
     </>
   );

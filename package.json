@@ -30,10 +30,7 @@
             "vite": "6.3.5"
       },
       "scripts": {
-            "generate-media": "node scripts/generate-media-manifest.mjs",
-            "predev": "npm run generate-media",
             "dev": "vite",
-            "prebuild": "npm run generate-media",
             "build": "vite build",
             "predeploy": "npm run build",
             "deploy": "gh-pages -d dist -r https://github.com/voltriv/voltriv.github.io.git"

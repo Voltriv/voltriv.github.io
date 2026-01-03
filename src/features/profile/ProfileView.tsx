@@ -20,7 +20,6 @@ import { cn } from "@/components/ui/utils";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 
 type ProfileViewProps = {
-  onViewBirthday: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
 };
@@ -57,7 +56,6 @@ const pillSurface =
   "rounded-2xl border border-slate-200/60 bg-white/85 transition-colors dark:border-white/5 dark:bg-slate-900/40 dark:backdrop-blur";
 
 export function ProfileView({
-  onViewBirthday,
   darkMode,
   onToggleDarkMode,
 }: ProfileViewProps) {
@@ -114,15 +112,6 @@ export function ProfileView({
               >
                 {darkMode ? <SunMedium className="size-4" /> : <Moon className="size-4" />}
               </button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-slate-900/10 bg-white text-slate-900 hover:bg-slate-100 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/20"
-                onClick={onViewBirthday}
-              >
-                Birthday Surprise
-                <ArrowUpRight className="size-4" />
-              </Button>
             </div>
           </div>
         </header>
