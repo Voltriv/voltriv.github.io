@@ -8,7 +8,6 @@ import {
   Mail,
   MapPin,
   Moon,
-  PlayCircle,
   Sparkles,
   SunMedium,
   Twitter,

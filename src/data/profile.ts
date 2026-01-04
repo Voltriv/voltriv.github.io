@@ -188,7 +188,7 @@ export const profileData: ProfileData = {
     location: "Dagupan City, Philippines",
     roles: ["Project Manager", "UI/UX", "CyberSecurity Student"],
     verified: true,
-    avatar: mediaAsset("pic4.png"),
+    avatar: mediaAsset("avatar.svg"),
     actions: [
       {
         label: "Send Email",
