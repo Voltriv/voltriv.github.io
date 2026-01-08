@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { ProfileView } from "@/features/profile/ProfileView";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -9,13 +9,13 @@ const getInitialDarkMode = () => {
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark") return true;
   if (stored === "light") return false;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return false;
 };
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(getInitialDarkMode);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.documentElement;
     root.classList.toggle("dark", darkMode);
     window.localStorage.setItem(THEME_STORAGE_KEY, darkMode ? "dark" : "light");

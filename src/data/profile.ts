@@ -32,6 +32,28 @@ export type FocusArea = {
   description: string;
 };
 
+export type ServiceItem = {
+  title: string;
+  summary: string;
+  includes: string[];
+};
+
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export type Collaboration = {
+  name: string;
+  location: string;
+};
+
+export type SecurityMeasure = {
+  title: string;
+  description: string;
+  items: string[];
+};
+
 export type ProfileCard = {
   name: string;
   location: string;
@@ -81,22 +103,64 @@ export type SocialLink = {
 
 export type ProfileData = {
   navLinks: NavLink[];
+  services: ServiceItem[];
   experiences: Experience[];
   projects: Project[];
   focusAreas: FocusArea[];
+  securityMeasures: SecurityMeasure[];
   techStack: TechStackCategory[];
   profileCard: ProfileCard;
   contact: ContactInfo;
   socialLinks: SocialLink[];
+  faqs: FaqItem[];
+  collaborations: Collaboration[];
 };
 
 export const profileData: ProfileData = {
   navLinks: [
     { href: "#overview", label: "Overview" },
-    { href: "#stack", label: "Stack" },
-    { href: "#experience", label: "Experience" },
-    { href: "#projects", label: "Selected Work" },
+    { href: "#services", label: "Services" },
+    { href: "#capabilities", label: "Capabilities" },
+    { href: "#security", label: "Security" },
+    { href: "#proof", label: "Proof" },
+    { href: "#faq", label: "FAQ" },
     { href: "#contact", label: "Contact" },
+  ],
+
+  services: [
+    {
+      title: "Discover",
+      summary:
+        "We align on goals, audiences, and the shape of the experience. This phase sets the strategy, structure, and voice before pixels move.",
+      includes: [
+        "Goal mapping",
+        "Experience audit",
+        "Content structure",
+        "Visual direction",
+      ],
+    },
+    {
+      title: "Design",
+      summary:
+        "High-fidelity UI that reflects your brand and guides users through each moment. Built with interaction in mind, ready for build.",
+      includes: [
+        "Interface design",
+        "Component system",
+        "Prototype flows",
+        "Motion concepts",
+      ],
+    },
+    {
+      title: "Deliver",
+      summary:
+        "Clean, responsive builds with performance and accessibility in focus. I ship with confidence and help with launch support.",
+      includes: [
+        "Responsive build",
+        "Motion polish",
+        "Performance pass",
+        "Launch support",
+      ],
+    },
   ],
 
   experiences: [
@@ -183,6 +247,32 @@ export const profileData: ProfileData = {
       description: "Passionate about discovering new technologies, methodologies, and ideas that can enhance my skills and broaden my perspective.",
     },
   ],
+  securityMeasures: [
+    {
+      title: "Threat modeling",
+      description:
+        "Map data flows early, identify risk areas, and lock decisions before build.",
+      items: ["Data flow mapping", "Risk checklist", "Misuse scenarios"],
+    },
+    {
+      title: "Secure build",
+      description:
+        "Harden UI patterns, reduce attack surface, and keep dependencies tidy.",
+      items: ["Input handling", "Safe dependencies", "Least privilege"],
+    },
+    {
+      title: "Privacy readiness",
+      description:
+        "Keep data use transparent, minimal, and aligned to user expectations.",
+      items: ["Data minimization", "Consent signals", "Storage review"],
+    },
+    {
+      title: "Launch guardrails",
+      description:
+        "Ship with checks in place and clear handoff for future maintenance.",
+      items: ["Header checklist", "Monitoring plan", "Security handoff"],
+    },
+  ],
   profileCard: {
     name: "Elijah Meir C. Vinluan",
     location: "Dagupan City, Philippines",
@@ -234,5 +324,40 @@ export const profileData: ProfileData = {
       icon: "linkedin",
       href: "https://www.linkedin.com/in/elijahvinluan",
     },
+  ],
+  faqs: [
+    {
+      question: "Do you offer both design and development?",
+      answer:
+        "Yes. I can take a project from discovery through delivery, or jump in for design-only or build-only engagements.",
+    },
+    {
+      question: "What does a typical timeline look like?",
+      answer:
+        "Most sprints run 4 to 8 weeks depending on scope. I share a detailed timeline once we agree on the requirements.",
+    },
+    {
+      question: "Can you work with existing designs?",
+      answer:
+        "I can build from polished designs or refine a direction if the system is consistent. I will flag any gaps early.",
+    },
+    {
+      question: "Do you add motion and interactions?",
+      answer:
+        "Yes. I layer in interactions and scroll reveals that support the story without slowing the experience.",
+    },
+    {
+      question: "What do you need to get started?",
+      answer:
+        "A quick briefing on your goals, audience, timeline, and any existing assets. From there we map the work.",
+    },
+  ],
+  collaborations: [
+    { name: "LibReport", location: "Dagupan City" },
+    { name: "LibTrack", location: "Campus Libraries" },
+    { name: "FloodWatch", location: "Northern Luzon" },
+    { name: "CIT Student Council", location: "Dagupan" },
+    { name: "UI/UX Study Group", location: "Remote" },
+    { name: "Security Lab", location: "Philippines" },
   ],
 };
