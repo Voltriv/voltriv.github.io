@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   ArrowUpRight,
   BadgeCheck,
-  CalendarClock,
   ChevronDown,
   ExternalLink,
   Linkedin,
@@ -12,9 +11,8 @@ import {
   ShieldCheck,
   Sparkles,
   SunMedium,
-  Twitter,
 } from "lucide-react";
-import { profileData, type ContactCTA, type SocialLink } from "@/data/profile";
+import { profileData } from "@/data/profile";
 import { useSectionObserver } from "@/hooks/useSectionObserver";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { Button } from "@/components/ui/button";
@@ -40,31 +38,21 @@ const {
   collaborations,
 } = profileData;
 
-const getSocialIcon = (icon: SocialLink["icon"]) => {
-  if (icon === "linkedin") return <Linkedin className="size-4" />;
-  if (icon === "twitter") return <Twitter className="size-4" />;
-  return <Mail className="size-4" />;
-};
-
-const getCtaIcon = (icon: ContactCTA["icon"]) => {
-  if (icon === "calendar") return <CalendarClock className="size-4" />;
-  if (icon === "external") return <ArrowUpRight className="size-4" />;
-  return <Mail className="size-4" />;
-};
+const getSocialIcon = () => <Linkedin className="size-4" />;
 
 const isExternalHref = (href: string) => /^https?:/i.test(href);
 
 const sectionEyebrow =
-  "font-profile-mono text-[11px] uppercase tracking-[0.4em] text-[var(--profile-muted)]";
+  "font-profile-mono text-[12px] uppercase tracking-[0.28em] text-[var(--profile-muted)]";
 const sectionTitle =
   "font-profile-display text-3xl leading-[1.15] text-[var(--profile-ink)] sm:text-4xl lg:text-5xl";
 const sectionCopy = "text-base text-[var(--profile-muted)] sm:text-lg";
 const panelSurface =
-  "profile-card rounded-[28px] border border-[var(--profile-border)] bg-[var(--profile-surface)] backdrop-blur-xl shadow-[0_25px_60px_rgba(10,10,10,0.12)]";
+  "profile-card rounded-[28px] border border-[var(--profile-border)] bg-[var(--profile-surface)] backdrop-blur-xl shadow-[0_18px_40px_rgba(10,10,10,0.12)]";
 const panelSurfaceStrong =
-  "profile-card rounded-[30px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] shadow-[0_30px_70px_rgba(10,10,10,0.16)]";
+  "profile-card rounded-[30px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] shadow-[0_24px_50px_rgba(10,10,10,0.14)]";
 const chipSurface =
-  "inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] px-3 py-1.5 text-xs font-profile-mono uppercase tracking-[0.2em] text-[var(--profile-muted)]";
+  "inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] px-3 py-1.5 text-xs font-profile-mono uppercase tracking-[0.16em] text-[var(--profile-muted)]";
 
 const revealStyle = (delay: number): CSSProperties =>
   ({
@@ -132,7 +120,7 @@ export function ProfileView({
           observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+      { threshold: 0.15, rootMargin: "0px 0px -12% 0px" },
     );
 
     elements.forEach((element) => observer.observe(element));
@@ -151,13 +139,13 @@ export function ProfileView({
   ];
   const marqueeItems = [...collaborations, ...collaborations];
   const heroLines = [
-    { text: "Services for teams", className: "" },
-    { text: "who ship with care", className: "text-[var(--profile-accent)]" },
+    { text: "Hello.", className: "" },
+    { text: "Welcome to my profile!", className: "text-[var(--profile-accent)]" },
   ];
 
   return (
-    <div className="profile-theme min-h-screen bg-[var(--profile-bg)] text-[var(--profile-ink)]">
-      <div className="relative overflow-hidden">
+    <div className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]">
+      <div className="relative">
         <div
           className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
           aria-hidden="true"
@@ -190,7 +178,7 @@ export function ProfileView({
           aria-hidden="true"
         />
 
-        <header className="sticky top-0 z-50 border-b border-[var(--profile-border)] bg-[var(--profile-header)] backdrop-blur-xl">
+        <header className="fixed left-0 right-0 top-0 z-50 border-b border-[var(--profile-border)] bg-[var(--profile-header)] backdrop-blur-xl">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-accent)] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
@@ -218,7 +206,7 @@ export function ProfileView({
                     href={link.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "profile-navlink font-profile-mono text-[11px] uppercase tracking-[0.3em] transition-colors",
+                      "profile-navlink font-profile-mono text-[11px] uppercase tracking-[0.22em] transition-colors",
                       isActive
                         ? "is-active text-[var(--profile-ink)]"
                         : "text-[var(--profile-muted)] hover:text-[var(--profile-ink)]",
@@ -253,9 +241,20 @@ export function ProfileView({
                   style={revealStyle(0)}
                 >
                   <span className={chipSurface}>What I do</span>
-                  <span className="font-profile-mono text-xs uppercase tracking-[0.32em] text-[var(--profile-muted)]">
+                  <span className="font-profile-mono text-xs uppercase tracking-[0.24em] text-[var(--profile-muted)]">
                     Available for 2025
                   </span>
+                </div>
+                <div
+                  className="profile-reveal profile-reveal--scale"
+                  style={revealStyle(80)}
+                >
+                  <ImageWithFallback
+                    src={profileCard.avatar}
+                    alt={`${profileCard.name} portrait`}
+                    loading="eager"
+                    className="profile-image h-24 w-24 rounded-full border border-[var(--profile-border)] object-cover shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
+                  />
                 </div>
                 <div className="space-y-5">
                   <h1
@@ -310,7 +309,7 @@ export function ProfileView({
                           rel={shouldOpenNewTab ? "noreferrer noopener" : undefined}
                           className="inline-flex items-center gap-2"
                         >
-                          {getCtaIcon(cta.icon)}
+                          <Mail className="size-4" />
                           {cta.label}
                         </a>
                       </Button>
@@ -361,7 +360,7 @@ export function ProfileView({
                             />
                           ) : null}
                         </div>
-                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.3em] text-white/70">
+                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
                           {profileCard.location}
                         </p>
                       </div>
@@ -422,7 +421,7 @@ export function ProfileView({
                     <div className="flex h-24 w-24 items-center justify-center rounded-[24px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)]">
                       <Sparkles className="size-5 text-[var(--profile-accent)]" />
                     </div>
-                    <div className="font-profile-mono text-xs uppercase tracking-[0.3em] text-[var(--profile-muted)]">
+                    <div className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                       {String(index + 1).padStart(2, "0")}
                     </div>
                   </div>
@@ -435,7 +434,7 @@ export function ProfileView({
                     </p>
                   </div>
                   <div className="space-y-3">
-                    <p className="font-profile-mono text-xs uppercase tracking-[0.3em] text-[var(--profile-muted)]">
+                    <p className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                       Includes
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -640,7 +639,7 @@ export function ProfileView({
                     )}
                     style={revealStyle(120 + index * 120)}
                   >
-                    <div className="flex flex-wrap items-center gap-3 font-profile-mono text-[11px] uppercase tracking-[0.3em] text-[var(--profile-muted)]">
+                    <div className="flex flex-wrap items-center gap-3 font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                       <span>{experience.period}</span>
                       <span className="inline-block h-px w-10 bg-[var(--profile-border)]" />
                       <span>{experience.role}</span>
@@ -843,7 +842,7 @@ export function ProfileView({
                         className="inline-flex items-center gap-2"
                       >
                         {cta.label}
-                        {getCtaIcon(cta.icon)}
+                        <Mail className="size-4" />
                       </a>
                     </Button>
                   );
@@ -870,7 +869,7 @@ export function ProfileView({
                         key={detail.label}
                         className="profile-button space-y-1"
                       >
-                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.3em] text-[var(--profile-muted)]">
+                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                           {detail.label}
                         </p>
                         {detail.href ? (
@@ -913,7 +912,7 @@ export function ProfileView({
                       )}
                     >
                       <div className="flex items-center gap-2">
-                        {getSocialIcon(link.icon)}
+                        {getSocialIcon()}
                         <span>{link.label}</span>
                       </div>
                       <ExternalLink className="size-4" />

@@ -5,12 +5,6 @@ export type NavLink = {
   label: string;
 };
 
-export type Expertise = {
-  title: string;
-  description: string;
-  highlights: string[];
-};
-
 export type Experience = {
   company: string;
   role: string;
@@ -22,9 +16,7 @@ export type Experience = {
 export type Project = {
   title: string;
   description: string;
-  metric: string;
   link: string;
-  tags: string[];
 };
 
 export type FocusArea = {
@@ -57,7 +49,6 @@ export type SecurityMeasure = {
 export type ProfileCard = {
   name: string;
   location: string;
-  roles: string[];
   avatar: string;
   verified?: boolean;
   actions: ContactCTA[];
@@ -77,7 +68,6 @@ export type TechStackCategory = {
 export type ContactCTA = {
   label: string;
   href: string;
-  icon: "mail" | "calendar" | "external";
   variant: "primary" | "outline";
 };
 
@@ -97,7 +87,6 @@ export type ContactInfo = {
 
 export type SocialLink = {
   label: string;
-  icon: "linkedin" | "twitter" | "email";
   href: string;
 };
 
@@ -276,14 +265,12 @@ export const profileData: ProfileData = {
   profileCard: {
     name: "Elijah Meir C. Vinluan",
     location: "Dagupan City, Philippines",
-    roles: ["Project Manager", "UI/UX", "CyberSecurity Student"],
     verified: true,
-    avatar: mediaAsset("avatar.svg"),
+    avatar: mediaAsset("PIC.png"),
     actions: [
       {
         label: "Send Email",
         href: "mailto:elca.vinluan.up@phinmaed.com",
-        icon: "mail",
         variant: "outline",
       },
     ],
@@ -297,7 +284,6 @@ export const profileData: ProfileData = {
       {
         label: "Write me an email",
         href: "mailto:elca.vinluan.up@phinmaed.com",
-        icon: "mail",
         variant: "primary",
       },
     ],
@@ -321,7 +307,6 @@ export const profileData: ProfileData = {
   socialLinks: [
     {
       label: "LinkedIn",
-      icon: "linkedin",
       href: "https://www.linkedin.com/in/elijahvinluan",
     },
   ],
