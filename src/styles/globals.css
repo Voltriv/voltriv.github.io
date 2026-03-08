@@ -249,6 +249,43 @@
     transition: filter 0.6s ease;
   }
 
+  .privacy-guard-enabled,
+  .privacy-guard-enabled * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .privacy-guard-enabled {
+    -webkit-touch-callout: none;
+  }
+
+  .privacy-shield {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .privacy-shield p {
+    font-family: var(--profile-font-mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .privacy-shield.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .profile-navlink {
     position: relative;
     padding-bottom: 4px;
@@ -463,6 +500,22 @@
       opacity: 1;
       transform: none;
       filter: none;
+    }
+  }
+
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+
+    .privacy-shield,
+    .privacy-shield * {
+      visibility: visible !important;
+    }
+
+    .privacy-shield {
+      opacity: 1 !important;
+      pointer-events: auto !important;
     }
   }
 }
