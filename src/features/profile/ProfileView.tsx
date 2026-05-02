@@ -245,17 +245,6 @@ export function ProfileView({
                     Available for 2025
                   </span>
                 </div>
-                <div
-                  className="profile-reveal profile-reveal--scale"
-                  style={revealStyle(80)}
-                >
-                  <ImageWithFallback
-                    src={profileCard.avatar}
-                    alt={`${profileCard.name} portrait`}
-                    loading="eager"
-                    className="profile-image h-24 w-24 rounded-full border border-[var(--profile-border)] object-cover shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
-                  />
-                </div>
                 <div className="space-y-5">
                   <h1
                     className="profile-heading profile-reveal profile-reveal--blur profile-reveal--scale font-profile-display text-5xl leading-[1.05] sm:text-6xl lg:text-7xl"
