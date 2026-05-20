@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 
-const DEFAULT_OPTIONS: IntersectionObserverInit = {
-  root: null,
-  rootMargin: "-45% 0px -45% 0px",
-  threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
-};
+const ACTIVE_SECTION_OFFSET_PX = 140;
 
-export function useSectionObserver(
-  sectionIds: string[],
-  options: IntersectionObserverInit = DEFAULT_OPTIONS,
-) {
+export function useSectionObserver(sectionIds: string[]) {
   const [activeSection, setActiveSection] = useState(sectionIds[0] ?? "");
 
   useEffect(() => {
@@ -21,27 +14,41 @@ export function useSectionObserver(
       return undefined;
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    let frameId: number | null = null;
 
-      if (visible[0]?.target.id) {
-        setActiveSection(visible[0].target.id);
-        return;
+    const updateActiveSection = () => {
+      frameId = null;
+
+      const scrollPosition = window.scrollY + ACTIVE_SECTION_OFFSET_PX;
+      let currentSection = elements[0];
+
+      for (const element of elements) {
+        if (element.offsetTop > scrollPosition) break;
+        currentSection = element;
       }
 
-      // fallback: find nearest section above viewport
-      const topEntry = entries.find((entry) => entry.boundingClientRect.top >= 0);
-      if (topEntry?.target.id) {
-        setActiveSection(topEntry.target.id);
+      if (currentSection.id) {
+        setActiveSection(currentSection.id);
       }
-    }, options);
+    };
 
-    elements.forEach((element) => observer.observe(element));
+    const scheduleUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateActiveSection);
+    };
 
-    return () => observer.disconnect();
-  }, [options, sectionIds]);
+    updateActiveSection();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, [sectionIds]);
 
   return activeSection;
 }

@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -41,6 +47,90 @@ const {
 const getSocialIcon = () => <Linkedin className="size-4" />;
 
 const isExternalHref = (href: string) => /^https?:/i.test(href);
+
+const HEADER_SCROLL_OFFSET_PX = 96;
+const MIN_SCROLL_DURATION_MS = 450;
+const MAX_SCROLL_DURATION_MS = 1100;
+
+let activeScrollFrame: number | null = null;
+
+const easeInOutCubic = (progress: number) =>
+  progress < 0.5
+    ? 4 * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const getScrollTargetTop = (element: HTMLElement) => {
+  const maxScrollTop =
+    document.documentElement.scrollHeight - window.innerHeight;
+  const targetTop =
+    element.getBoundingClientRect().top +
+    window.scrollY -
+    HEADER_SCROLL_OFFSET_PX;
+
+  return Math.min(Math.max(targetTop, 0), Math.max(maxScrollTop, 0));
+};
+
+const updateHash = (hash: string) => {
+  if (window.location.hash === hash) return;
+  window.history.pushState(null, "", hash);
+};
+
+const smoothScrollToHash = (hash: string) => {
+  if (!hash.startsWith("#")) return false;
+
+  const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+  if (!target) return false;
+
+  if (activeScrollFrame !== null) {
+    window.cancelAnimationFrame(activeScrollFrame);
+  }
+
+  const startTop = window.scrollY;
+  const targetTop = getScrollTargetTop(target);
+  const distance = targetTop - startTop;
+
+  if (prefersReducedMotion()) {
+    window.scrollTo({ top: targetTop, behavior: "auto" });
+    updateHash(hash);
+    return true;
+  }
+
+  if (Math.abs(distance) < 1) {
+    updateHash(hash);
+    return true;
+  }
+
+  const duration = Math.min(
+    MAX_SCROLL_DURATION_MS,
+    Math.max(MIN_SCROLL_DURATION_MS, Math.abs(distance) * 0.5),
+  );
+  const startTime = performance.now();
+
+  const step = (currentTime: number) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easedProgress = easeInOutCubic(progress);
+
+    window.scrollTo({
+      top: startTop + distance * easedProgress,
+      behavior: "auto",
+    });
+
+    if (progress < 1) {
+      activeScrollFrame = window.requestAnimationFrame(step);
+      return;
+    }
+
+    activeScrollFrame = null;
+    updateHash(hash);
+  };
+
+  activeScrollFrame = window.requestAnimationFrame(step);
+  return true;
+};
 
 const sectionEyebrow =
   "font-profile-mono text-[12px] uppercase tracking-[0.28em] text-[var(--profile-muted)]";
@@ -96,6 +186,69 @@ export function ProfileView({
   );
   const activeSection = useSectionObserver(sectionIds);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleAnchorClick = (
+    event: ReactMouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    if (smoothScrollToHash(href)) {
+      event.preventDefault();
+    }
+  };
+
+  useEffect(() => {
+    let frameId: number | null = null;
+
+    const updateScrollProgress = () => {
+      frameId = null;
+
+      const maxScrollTop =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress =
+        maxScrollTop > 0 ? Math.min(window.scrollY / maxScrollTop, 1) : 0;
+
+      setScrollProgress(nextProgress);
+    };
+
+    const scheduleUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateScrollProgress);
+    };
+
+    updateScrollProgress();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (activeScrollFrame !== null) {
+        window.cancelAnimationFrame(activeScrollFrame);
+        activeScrollFrame = null;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const elements = Array.from(
@@ -145,6 +298,11 @@ export function ProfileView({
 
   return (
     <div className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]">
+      <div
+        className="profile-scroll-progress"
+        style={{ transform: `scaleX(${scrollProgress})` }}
+        aria-hidden="true"
+      />
       <div className="relative">
         <div
           className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
@@ -204,6 +362,7 @@ export function ProfileView({
                   <a
                     key={link.href}
                     href={link.href}
+                    onClick={(event) => handleAnchorClick(event, link.href)}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "profile-navlink font-profile-mono text-[11px] uppercase tracking-[0.22em] transition-colors",
@@ -310,7 +469,11 @@ export function ProfileView({
                     variant="outline"
                     className="profile-button rounded-full border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-surface-strong)]"
                   >
-                    <a href="#proof" className="inline-flex items-center gap-2">
+                    <a
+                      href="#proof"
+                      onClick={(event) => handleAnchorClick(event, "#proof")}
+                      className="inline-flex items-center gap-2"
+                    >
                       View proof
                       <ArrowUpRight className="size-4" />
                     </a>
@@ -672,7 +835,11 @@ export function ProfileView({
                     size="lg"
                     className="profile-button rounded-full bg-[var(--profile-accent)] text-black hover:bg-[var(--profile-accent-strong)]"
                   >
-                    <a href="#contact" className="inline-flex items-center gap-2">
+                    <a
+                      href="#contact"
+                      onClick={(event) => handleAnchorClick(event, "#contact")}
+                      className="inline-flex items-center gap-2"
+                    >
                       Start a project
                       <ArrowUpRight className="size-4" />
                     </a>
