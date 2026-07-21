@@ -1,38 +1,57 @@
+# Elijah Meir Vinluan — Portfolio
 
-  # gf
-  
+A responsive portfolio for UI/UX design, front-end engineering, and
+security-aware delivery, built with React, TypeScript, Vite, and Tailwind CSS.
+The project also includes a static-host-safe credential index at
+[`/certifications/`](https://voltriv.github.io/certifications/).
 
+## Requirements
 
-  ## Tech stack
+- Node.js 20.19+ on the Node 20 release line, Node.js 22.12+ on the Node 22
+  release line, or Node.js 24+
+- npm 10
 
-  - [Vite](https://vitejs.dev/) + React 18 + TypeScript
-  - [Tailwind CSS](https://tailwindcss.com/) 3.x (configured via PostCSS)
+## Local development
 
-  ## Running the code
+```sh
+npm install
+npm run dev
+```
 
-  Run `npm i` to install the dependencies.
+Vite prints the local URL after the development server starts.
 
-  Run `npm run dev` to start the development server.
+## Quality checks
 
-  ## Project structure
+```sh
+npm run check
+```
 
-  ```
-  src/
-    features/
-      profile/
-        ProfileView.tsx # Portfolio/resume experience
-    components/
-      ui/              # Design-system primitives (button, toaster, helpers)
-      figma/           # Visual helpers (ImageWithFallback, etc.)
-    data/              # Typed content (e.g., profile data)
-    hooks/             # Custom hooks (useSectionObserver)
-    styles/            # Global and preflight CSS
-  ```
+The check command runs TypeScript, ESLint, the Vitest interaction suite, and a
+production build. To run an individual check, use `npm run typecheck`,
+`npm run lint`, `npm run test`, or `npm run build`.
 
-  `App.tsx` lazy-loads the profile view so it ships as its own chunk.
+## Project structure
 
-  ## Deploying to lava.github.io
+```text
+src/
+  components/          Shared UI components
+  data/                Typed portfolio and credential content
+  features/certifications/
+                      Searchable credential index
+  features/profile/    Main portfolio experience
+  hooks/               Reusable React hooks
+  styles/              Global and reset styles
+```
 
-  1. Make sure you have a Git remote that points to `https://github.com/lava/lava.github.io.git` (create that repo in the Lava account if it doesn't exist yet).
-  2. Run `npm run deploy`. This builds the Vite app into `dist/` and publishes the contents straight to the `lava.github.io` repo via the GitHub Pages helper.
-  3. Wait for the GitHub Pages deployment to finish, then visit https://lava.github.io to see the updated site.
+Credential counts and filters are generated from
+`src/data/certifications.ts`. Add only confirmed names, issuers, dates, IDs,
+and verification URLs; the page intentionally shows an unpublished state when
+that collection is empty.
+
+## Deployment
+
+Run `npm run deploy` to validate the project, build `dist/`, and publish it to
+the `gh-pages` branch of
+[`Voltriv/voltriv.github.io`](https://github.com/Voltriv/voltriv.github.io).
+The public site is available at
+[`https://voltriv.github.io/`](https://voltriv.github.io/).

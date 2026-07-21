@@ -50,13 +50,12 @@ export type ProfileCard = {
   name: string;
   location: string;
   avatar: string;
-  verified?: boolean;
   actions: ContactCTA[];
 };
 
 export type TechStackItem = {
   name: string;
-  logo: string;
+  logo?: string;
 };
 
 export type TechStackCategory = {
@@ -85,13 +84,23 @@ export type ContactInfo = {
   details: ContactDetail[];
 };
 
+export type HeroProfile = {
+  marker: string;
+  role: string;
+  headline: [string, string];
+  intro: string;
+  availability: string;
+};
+
 export type SocialLink = {
   label: string;
   href: string;
 };
 
 export type ProfileData = {
+  hero: HeroProfile;
   navLinks: NavLink[];
+  pageLinks: NavLink[];
   services: ServiceItem[];
   experiences: Experience[];
   projects: Project[];
@@ -106,15 +115,24 @@ export type ProfileData = {
 };
 
 export const profileData: ProfileData = {
+  hero: {
+    marker: "// profile.index",
+    role: "UI/UX designer · front-end developer · security-minded builder",
+    headline: ["I design, build", "& secure digital products."],
+    intro:
+      "I turn complex ideas into clear, accessible interfaces—then help teams ship them with thoughtful front-end engineering and practical security checks.",
+    availability: "Available for new projects",
+  },
   navLinks: [
-    { href: "#overview", label: "Overview" },
-    { href: "#services", label: "Services" },
-    { href: "#capabilities", label: "Capabilities" },
+    { href: "#overview", label: "Profile" },
+    { href: "#services", label: "Process" },
+    { href: "#capabilities", label: "Stack" },
     { href: "#security", label: "Security" },
-    { href: "#proof", label: "Proof" },
+    { href: "#proof", label: "Work" },
     { href: "#faq", label: "FAQ" },
     { href: "#contact", label: "Contact" },
   ],
+  pageLinks: [{ href: "/certifications/", label: "Credentials" }],
 
   services: [
     {
@@ -217,23 +235,34 @@ export const profileData: ProfileData = {
       title: "DevOps & Cloud",
       description: "Pipelines and infrastructure that keep deployments safe and observable.",
       items: [
-        { name: "Github Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
+        { name: "GitHub Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
       ],
     },
     {
       title: "Cybersecurity (Kali Linux)",
       description: "Tools I lean on for red-team practice, capture-the-flag, and keeping systems hardened.",
       items: [
-        { name: "Nmap", logo: "https://cdn.simpleicons.org/nmap/4681AA" },
-        { name: "Masscan", logo: "https://cdn.simpleicons.org/masscan/2F74C0" },
-        { name: "Maltego", logo: "https://cdn.simpleicons.org/maltego/FF5F00" },
+        { name: "Nmap" },
+        { name: "Masscan" },
+        { name: "Maltego" },
       ],
     },
   ],
   focusAreas: [
     {
-      title: "Exploring",
-      description: "Passionate about discovering new technologies, methodologies, and ideas that can enhance my skills and broaden my perspective.",
+      title: "Interface systems",
+      description:
+        "Clear flows, reusable components, and accessible visual patterns that help people move with confidence.",
+    },
+    {
+      title: "Front-end delivery",
+      description:
+        "Responsive React builds with practical performance, testing, and maintainability checks.",
+    },
+    {
+      title: "Security awareness",
+      description:
+        "Threat-minded product decisions, careful data handling, and safer launch habits from the start.",
     },
   ],
   securityMeasures: [
@@ -265,21 +294,20 @@ export const profileData: ProfileData = {
   profileCard: {
     name: "Elijah Meir C. Vinluan",
     location: "Dagupan City, Philippines",
-    verified: true,
-    avatar: mediaAsset("PIC.png"),
+    avatar: mediaAsset("PIC.jpg"),
     actions: [
       {
         label: "Send Email",
         href: "mailto:elca.vinluan.up@phinmaed.com",
-        variant: "outline",
+        variant: "primary",
       },
     ],
   },
   contact: {
     eyebrow: "Stay in touch",
-    title: "A collaborations, or freelance?",
+    title: "Have a useful problem? Let's build it.",
     description:
-      "Let's prototype future-ready public services, education systems, or venture playbooks. I give my best to teams who care about access, security, and lasting impact.",
+      "I collaborate on public-service, education, and product ideas with teams who care about access, security, and lasting impact.",
     ctas: [
       {
         label: "Write me an email",

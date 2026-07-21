@@ -19,16 +19,27 @@ export function useSectionObserver(sectionIds: string[]) {
     const updateActiveSection = () => {
       frameId = null;
 
+      const isAtBottom =
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 2;
       const scrollPosition = window.scrollY + ACTIVE_SECTION_OFFSET_PX;
-      let currentSection = elements[0];
+      let currentSection = isAtBottom
+        ? elements[elements.length - 1]
+        : elements[0];
 
-      for (const element of elements) {
-        if (element.offsetTop > scrollPosition) break;
-        currentSection = element;
+      if (!isAtBottom) {
+        for (const element of elements) {
+          const elementTop =
+            element.getBoundingClientRect().top + window.scrollY;
+          if (elementTop > scrollPosition) break;
+          currentSection = element;
+        }
       }
 
       if (currentSection.id) {
-        setActiveSection(currentSection.id);
+        setActiveSection((previous) =>
+          previous === currentSection.id ? previous : currentSection.id,
+        );
       }
     };
 

@@ -1,22 +1,26 @@
 import {
+  Fragment,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
   type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import {
   ArrowUpRight,
-  BadgeCheck,
   ChevronDown,
   ExternalLink,
-  Linkedin,
+  Link,
   Mail,
-  MapPin,
+  Menu,
   Moon,
+  Pause,
+  Play,
   ShieldCheck,
-  Sparkles,
   SunMedium,
+  X,
 } from "lucide-react";
 import { profileData } from "@/data/profile";
 import { useSectionObserver } from "@/hooks/useSectionObserver";
@@ -30,7 +34,9 @@ type ProfileViewProps = {
 };
 
 const {
+  hero,
   navLinks,
+  pageLinks,
   services,
   experiences,
   projects,
@@ -44,20 +50,27 @@ const {
   collaborations,
 } = profileData;
 
-const getSocialIcon = () => <Linkedin className="size-4" />;
+const LinkedInIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-4"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M5.34 7.43a2.06 2.06 0 1 0 0-4.12 2.06 2.06 0 0 0 0 4.12ZM3.86 20.45h2.95V9H3.86v11.45ZM9.35 9v11.45h3.55v-5.67c0-1.49.28-2.94 2.14-2.94 1.82 0 1.85 1.71 1.85 3.04v5.57h3.56v-6.28c0-3.09-.67-5.46-4.27-5.46-1.73 0-2.9.95-3.37 1.85h-.05V9H9.35Z" />
+  </svg>
+);
+
+const getSocialIcon = (label: string) =>
+  label.toLowerCase() === "linkedin" ? (
+    <LinkedInIcon />
+  ) : (
+    <Link className="size-4" aria-hidden="true" />
+  );
 
 const isExternalHref = (href: string) => /^https?:/i.test(href);
 
 const HEADER_SCROLL_OFFSET_PX = 96;
-const MIN_SCROLL_DURATION_MS = 450;
-const MAX_SCROLL_DURATION_MS = 1100;
-
-let activeScrollFrame: number | null = null;
-
-const easeInOutCubic = (progress: number) =>
-  progress < 0.5
-    ? 4 * progress * progress * progress
-    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -84,51 +97,13 @@ const smoothScrollToHash = (hash: string) => {
   const target = document.getElementById(decodeURIComponent(hash.slice(1)));
   if (!target) return false;
 
-  if (activeScrollFrame !== null) {
-    window.cancelAnimationFrame(activeScrollFrame);
-  }
-
-  const startTop = window.scrollY;
   const targetTop = getScrollTargetTop(target);
-  const distance = targetTop - startTop;
-
-  if (prefersReducedMotion()) {
-    window.scrollTo({ top: targetTop, behavior: "auto" });
-    updateHash(hash);
-    return true;
-  }
-
-  if (Math.abs(distance) < 1) {
-    updateHash(hash);
-    return true;
-  }
-
-  const duration = Math.min(
-    MAX_SCROLL_DURATION_MS,
-    Math.max(MIN_SCROLL_DURATION_MS, Math.abs(distance) * 0.5),
-  );
-  const startTime = performance.now();
-
-  const step = (currentTime: number) => {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const easedProgress = easeInOutCubic(progress);
-
-    window.scrollTo({
-      top: startTop + distance * easedProgress,
-      behavior: "auto",
-    });
-
-    if (progress < 1) {
-      activeScrollFrame = window.requestAnimationFrame(step);
-      return;
-    }
-
-    activeScrollFrame = null;
-    updateHash(hash);
-  };
-
-  activeScrollFrame = window.requestAnimationFrame(step);
+  window.scrollTo({
+    top: targetTop,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+  target.focus({ preventScroll: true });
+  updateHash(hash);
   return true;
 };
 
@@ -138,11 +113,9 @@ const sectionTitle =
   "font-profile-display text-3xl leading-[1.15] text-[var(--profile-ink)] sm:text-4xl lg:text-5xl";
 const sectionCopy = "text-base text-[var(--profile-muted)] sm:text-lg";
 const panelSurface =
-  "profile-card rounded-[28px] border border-[var(--profile-border)] bg-[var(--profile-surface)] backdrop-blur-xl shadow-[0_18px_40px_rgba(10,10,10,0.12)]";
+  "profile-card rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)]";
 const panelSurfaceStrong =
-  "profile-card rounded-[30px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] shadow-[0_24px_50px_rgba(10,10,10,0.14)]";
-const chipSurface =
-  "inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] px-3 py-1.5 text-xs font-profile-mono uppercase tracking-[0.16em] text-[var(--profile-muted)]";
+  "profile-card rounded-[20px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)]";
 
 const revealStyle = (delay: number): CSSProperties =>
   ({
@@ -151,30 +124,58 @@ const revealStyle = (delay: number): CSSProperties =>
 
 const wordStyle = (index: number): CSSProperties =>
   ({
-    "--word-index": index,
+    "--word-index": Math.min(index, 6),
   }) as CSSProperties;
 
-const splitWords = (text: string, offset: number) =>
-  text.split(" ").map((word, index) => (
-    <span
-      key={`${offset}-${index}-${word}`}
-      className="profile-word"
-      style={wordStyle(offset + index)}
-    >
-      {word}
-    </span>
+const splitWords = (text: string, offset: number) => {
+  const words = text.split(" ");
+
+  return words.map((word, index) => (
+    <Fragment key={`${offset}-${index}-${word}`}>
+      <span
+        className="profile-word"
+        style={wordStyle(offset + index)}
+      >
+        {word}
+      </span>
+      {index < words.length - 1 ? " " : null}
+    </Fragment>
   ));
+};
 
-const orbStyle = (
-  background: string,
-  duration: string,
-  delay: string,
-): CSSProperties =>
-  ({
-    background,
-    "--orb-duration": duration,
-    "--orb-delay": delay,
-  }) as CSSProperties;
+type TechLogoProps = {
+  name: string;
+  logo?: string;
+};
+
+const TechLogo = ({ name, logo }: TechLogoProps) => {
+  const [failedLogo, setFailedLogo] = useState<string>();
+  const showLogo = Boolean(logo && failedLogo !== logo);
+  const monogram = name
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-semibold tracking-normal text-neutral-800">
+      {showLogo ? (
+        <img
+          src={logo}
+          alt=""
+          width={16}
+          height={16}
+          loading="lazy"
+          className="profile-logo h-4 w-4"
+          onError={() => setFailedLogo(logo)}
+        />
+      ) : (
+        <span aria-hidden="true">{monogram}</span>
+      )}
+    </span>
+  );
+};
 
 export function ProfileView({
   darkMode,
@@ -186,7 +187,21 @@ export function ProfileView({
   );
   const activeSection = useSectionObserver(sectionIds);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [marqueePaused, setMarqueePaused] = useState(false);
+  const mobileNavButtonRef = useRef<HTMLButtonElement>(null);
+  const scrollProgressRef = useRef<HTMLDivElement>(null);
+  const profileRootRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const portraitBoundsRef = useRef<DOMRect | null>(null);
+  const portraitFrameRef = useRef<number | null>(null);
+  const portraitMotionRef = useRef<{
+    element: HTMLDivElement;
+    rotateX: number;
+    rotateY: number;
+    shiftX: number;
+    shiftY: number;
+  } | null>(null);
 
   const handleAnchorClick = (
     event: ReactMouseEvent<HTMLAnchorElement>,
@@ -208,6 +223,80 @@ export function ProfileView({
     }
   };
 
+  const handlePortraitPointerEnter = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (
+      event.pointerType !== "mouse" ||
+      prefersReducedMotion() ||
+      !window.matchMedia("(pointer: fine)").matches
+    ) {
+      return;
+    }
+
+    portraitBoundsRef.current = event.currentTarget.getBoundingClientRect();
+  };
+
+  const handlePortraitPointerMove = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (event.pointerType !== "mouse" || !portraitBoundsRef.current) return;
+
+    const bounds =
+      portraitBoundsRef.current ?? event.currentTarget.getBoundingClientRect();
+    portraitBoundsRef.current = bounds;
+    if (!bounds.width || !bounds.height) return;
+
+    const horizontal = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const vertical = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+    portraitMotionRef.current = {
+      element: event.currentTarget,
+      rotateX: vertical * -5,
+      rotateY: horizontal * 7,
+      shiftX: horizontal * 8,
+      shiftY: vertical * 8,
+    };
+
+    if (portraitFrameRef.current === null) {
+      portraitFrameRef.current = window.requestAnimationFrame(() => {
+        portraitFrameRef.current = null;
+        const motion = portraitMotionRef.current;
+        if (!motion) return;
+
+        motion.element.style.setProperty(
+          "--portrait-rotate-x",
+          `${motion.rotateX}deg`,
+        );
+        motion.element.style.setProperty(
+          "--portrait-rotate-y",
+          `${motion.rotateY}deg`,
+        );
+        motion.element.style.setProperty(
+          "--portrait-shift-x",
+          `${motion.shiftX}px`,
+        );
+        motion.element.style.setProperty(
+          "--portrait-shift-y",
+          `${motion.shiftY}px`,
+        );
+      });
+    }
+  };
+
+  const resetPortraitPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (portraitFrameRef.current !== null) {
+      window.cancelAnimationFrame(portraitFrameRef.current);
+      portraitFrameRef.current = null;
+    }
+    portraitMotionRef.current = null;
+    portraitBoundsRef.current = null;
+    event.currentTarget.style.removeProperty("--portrait-rotate-x");
+    event.currentTarget.style.removeProperty("--portrait-rotate-y");
+    event.currentTarget.style.removeProperty("--portrait-shift-x");
+    event.currentTarget.style.removeProperty("--portrait-shift-y");
+  };
+
   useEffect(() => {
     let frameId: number | null = null;
 
@@ -217,12 +306,18 @@ export function ProfileView({
       const maxScrollTop =
         document.documentElement.scrollHeight - window.innerHeight;
       const nextProgress =
-        maxScrollTop > 0 ? Math.min(window.scrollY / maxScrollTop, 1) : 0;
+        maxScrollTop > 0
+          ? Math.min(Math.max(window.scrollY / maxScrollTop, 0), 1)
+          : 0;
 
-      setScrollProgress(nextProgress);
+      scrollProgressRef.current?.style.setProperty(
+        "transform",
+        `scaleX(${nextProgress})`,
+      );
     };
 
     const scheduleUpdate = () => {
+      portraitBoundsRef.current = null;
       if (frameId !== null) return;
       frameId = window.requestAnimationFrame(updateScrollProgress);
     };
@@ -230,6 +325,11 @@ export function ProfileView({
     updateScrollProgress();
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
     window.addEventListener("resize", scheduleUpdate);
+    const resizeObserver =
+      "ResizeObserver" in window
+        ? new ResizeObserver(scheduleUpdate)
+        : undefined;
+    resizeObserver?.observe(document.body);
 
     return () => {
       if (frameId !== null) {
@@ -237,18 +337,54 @@ export function ProfileView({
       }
       window.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", scheduleUpdate);
+      resizeObserver?.disconnect();
     };
   }, []);
 
-  useEffect(
-    () => () => {
-      if (activeScrollFrame !== null) {
-        window.cancelAnimationFrame(activeScrollFrame);
-        activeScrollFrame = null;
+  useEffect(() => {
+    const root = profileRootRef.current;
+    if (!root) return undefined;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const finePointer = window.matchMedia("(pointer: fine)");
+    if (reduceMotion.matches || !finePointer.matches) return undefined;
+
+    let frameId: number | null = null;
+    let nextX = window.innerWidth / 2;
+    let nextY = window.innerHeight / 3;
+
+    const updateSpotlight = () => {
+      frameId = null;
+      root.style.setProperty("--pointer-x", `${nextX}px`);
+      root.style.setProperty("--pointer-y", `${nextY}px`);
+    };
+
+    const scheduleSpotlight = (event: PointerEvent) => {
+      nextX = event.clientX;
+      nextY = event.clientY;
+      if (frameId === null) {
+        frameId = window.requestAnimationFrame(updateSpotlight);
       }
-    },
-    [],
-  );
+    };
+
+    updateSpotlight();
+    window.addEventListener("pointermove", scheduleSpotlight, {
+      passive: true,
+    });
+
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+      if (portraitFrameRef.current !== null) {
+        window.cancelAnimationFrame(portraitFrameRef.current);
+        portraitFrameRef.current = null;
+      }
+      window.removeEventListener("pointermove", scheduleSpotlight);
+    };
+  }, []);
 
   useEffect(() => {
     const elements = Array.from(
@@ -261,6 +397,11 @@ export function ProfileView({
     ).matches;
 
     if (reduceMotion) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return undefined;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
       elements.forEach((element) => element.classList.add("is-visible"));
       return undefined;
     }
@@ -281,26 +422,91 @@ export function ProfileView({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const marquee = marqueeRef.current;
+    if (!marquee) return undefined;
+
+    const handleVisibilityChange = () => {
+      marquee.classList.toggle("is-page-hidden", document.hidden);
+    };
+
+    handleVisibilityChange();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    let observer: IntersectionObserver | undefined;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          marquee.classList.toggle("is-offscreen", !entry?.isIntersecting);
+        },
+        { rootMargin: "120px 0px" },
+      );
+      observer.observe(marquee);
+    }
+
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileNavOpen(false);
+        mobileNavButtonRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    const desktopBreakpoint = window.matchMedia("(min-width: 1280px)");
+    const closeAtDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setMobileNavOpen(false);
+      }
+    };
+
+    desktopBreakpoint.addEventListener("change", closeAtDesktop);
+    return () =>
+      desktopBreakpoint.removeEventListener("change", closeAtDesktop);
+  }, []);
+
   const totalStackItems = techStack.reduce(
     (sum: number, group) => sum + group.items.length,
     0,
   );
   const metrics = [
+    { label: "Base", value: "PH / Remote" },
+    { label: "Delivery highlights", value: experiences.length.toString() },
     { label: "Tools in rotation", value: totalStackItems.toString() },
-    { label: "Experience highlights", value: experiences.length.toString() },
-    { label: "Focus areas", value: focusAreas.length.toString() },
   ];
   const marqueeItems = [...collaborations, ...collaborations];
-  const heroLines = [
-    { text: "Hello.", className: "" },
-    { text: "Welcome to my profile!", className: "text-[var(--profile-accent)]" },
-  ];
+  const heroLines = hero.headline.map((line, index) => ({
+    text: line,
+    className: index === 1 ? "text-[var(--profile-accent)]" : "",
+  }));
 
   return (
-    <div className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]">
+    <div
+      ref={profileRootRef}
+      className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]"
+    >
+      <a
+        href="#main-content"
+        onClick={(event) => handleAnchorClick(event, "#main-content")}
+        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-full bg-[var(--profile-ink)] px-4 py-2 text-sm font-semibold text-[var(--profile-bg)] shadow-lg transition-transform focus-visible:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <div
+        ref={scrollProgressRef}
         className="profile-scroll-progress"
-        style={{ transform: `scaleX(${scrollProgress})` }}
         aria-hidden="true"
       />
       <div className="relative">
@@ -308,51 +514,27 @@ export function ProfileView({
           className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
           aria-hidden="true"
         />
-        <div
-          className="pointer-events-none absolute -top-36 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl profile-orb"
-          style={orbStyle(
-            "radial-gradient(circle, var(--profile-highlight) 0%, transparent 70%)",
-            "22s",
-            "-6s",
-          )}
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute right-[-120px] top-[120px] h-[320px] w-[320px] rounded-full blur-3xl profile-orb"
-          style={orbStyle(
-            "radial-gradient(circle, var(--profile-accent-soft) 0%, transparent 70%)",
-            "18s",
-            "-2s",
-          )}
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute bottom-[-160px] left-[-120px] h-[360px] w-[360px] rounded-full blur-3xl profile-orb"
-          style={orbStyle(
-            "radial-gradient(circle, var(--profile-accent-soft) 0%, transparent 70%)",
-            "26s",
-            "-10s",
-          )}
-          aria-hidden="true"
-        />
+        <div className="profile-pointer-glow" aria-hidden="true" />
+        <div className="profile-corner-glow" aria-hidden="true" />
 
-        <header className="fixed left-0 right-0 top-0 z-50 border-b border-[var(--profile-border)] bg-[var(--profile-header)] backdrop-blur-xl">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <header className="profile-header fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-5">
+          <div className="profile-header-shell mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-accent)] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                <Sparkles className="size-4" />
+              <div className="profile-brand-mark flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-ink)] font-profile-mono text-xs font-semibold tracking-[0.14em] text-[var(--profile-bg)]">
+                EV
               </div>
-              <div className="leading-tight">
-                <p className="font-profile-mono text-xs uppercase tracking-[0.4em] text-[var(--profile-muted)]">
-                  Services
+              <div className="hidden leading-tight sm:block">
+                <p className="flex items-center gap-2 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)]">
+                  <span className="profile-status-dot" aria-hidden="true" />
+                  {hero.availability}
                 </p>
-                <p className="max-w-[220px] truncate text-sm font-semibold">
-                  {profileCard.name}
+                <p className="mt-1 max-w-[250px] truncate text-xs font-semibold">
+                  Elijah / designer + engineer
                 </p>
               </div>
             </div>
             <nav
-              className="hidden items-center gap-6 md:flex"
+              className="hidden items-center gap-1 xl:flex"
               aria-label="Primary"
             >
               {navLinks.map((link) => {
@@ -363,11 +545,11 @@ export function ProfileView({
                     key={link.href}
                     href={link.href}
                     onClick={(event) => handleAnchorClick(event, link.href)}
-                    aria-current={isActive ? "page" : undefined}
+                    aria-current={isActive ? "location" : undefined}
                     className={cn(
-                      "profile-navlink font-profile-mono text-[11px] uppercase tracking-[0.22em] transition-colors",
+                      "profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] transition-colors",
                       isActive
-                        ? "is-active text-[var(--profile-ink)]"
+                        ? "is-active bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
                         : "text-[var(--profile-muted)] hover:text-[var(--profile-ink)]",
                     )}
                   >
@@ -375,39 +557,130 @@ export function ProfileView({
                   </a>
                 );
               })}
+              {pageLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[var(--profile-muted)] transition-colors hover:text-[var(--profile-ink)]"
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
-            <button
-              type="button"
-              onClick={onToggleDarkMode}
-              aria-label="Toggle theme"
-              className="inline-flex size-10 items-center justify-center rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-colors"
-            >
-              {darkMode ? (
-                <SunMedium className="size-4" />
-              ) : (
-                <Moon className="size-4" />
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                ref={mobileNavButtonRef}
+                type="button"
+                onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
+                aria-label={
+                  mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
+                }
+                aria-expanded={mobileNavOpen}
+                aria-controls="mobile-navigation"
+                className="profile-icon-button inline-flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] xl:hidden"
+              >
+                {mobileNavOpen ? (
+                  <X className="size-4" aria-hidden="true" />
+                ) : (
+                  <Menu className="size-4" aria-hidden="true" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={onToggleDarkMode}
+                aria-label={
+                  darkMode ? "Switch to light theme" : "Switch to dark theme"
+                }
+                className="profile-icon-button inline-flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] transition-colors"
+              >
+                {darkMode ? (
+                  <SunMedium className="size-4" aria-hidden="true" />
+                ) : (
+                  <Moon className="size-4" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
+          <nav
+            id="mobile-navigation"
+            hidden={!mobileNavOpen}
+            className={cn(
+              "profile-mobile-nav mx-auto mt-2 max-w-6xl grid-cols-2 gap-2 rounded-2xl border border-[var(--profile-border)] p-3 xl:hidden",
+              mobileNavOpen ? "grid" : "hidden",
+            )}
+            aria-label="Mobile primary"
+          >
+            {navLinks.map((link) => {
+              const isActive =
+                activeSection === link.href.replace("#", "");
+
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(event) => {
+                    handleAnchorClick(event, link.href);
+                    setMobileNavOpen(false);
+                  }}
+                  aria-current={isActive ? "location" : undefined}
+                  className={cn(
+                    "rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em]",
+                    isActive
+                      ? "bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
+                      : "text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]",
+                  )}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+            {pageLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
         </header>
 
-        <main className="relative mx-auto max-w-6xl px-6 pb-28 pt-24 sm:pt-28">
-          <section id="overview" className="scroll-mt-28 space-y-12">
-            <div className="grid items-end gap-12 lg:grid-cols-[0.6fr_0.4fr]">
-              <div className="space-y-8">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative mx-auto max-w-6xl px-5 pb-28 pt-32 sm:px-6 sm:pt-36"
+        >
+          <section
+            id="overview"
+            tabIndex={-1}
+            className="scroll-mt-28 space-y-10"
+          >
+            <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+              <div className="space-y-8 lg:col-span-7">
                 <div
-                  className="profile-reveal profile-reveal--blur flex flex-wrap items-center gap-3"
+                  className="profile-reveal flex flex-wrap items-center gap-3"
                   style={revealStyle(0)}
                 >
-                  <span className={chipSurface}>What I do</span>
-                  <span className="font-profile-mono text-xs uppercase tracking-[0.24em] text-[var(--profile-muted)]">
-                    Available for 2025
+                  <span className="profile-index-mark font-profile-mono text-xs font-semibold text-[var(--profile-ink)]">
+                    01
                   </span>
+                  <span
+                    className="h-px w-10 bg-[var(--profile-border-strong)]"
+                    aria-hidden="true"
+                  />
+                  <span className={sectionEyebrow}>{hero.marker}</span>
                 </div>
-                <div className="space-y-5">
+                <div className="space-y-6">
+                  <p
+                    className="profile-reveal font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
+                    style={revealStyle(60)}
+                  >
+                    {profileCard.name} / {hero.role}
+                  </p>
                   <h1
-                    className="profile-heading profile-reveal profile-reveal--blur profile-reveal--scale font-profile-display text-5xl leading-[1.05] sm:text-6xl lg:text-7xl"
-                    style={revealStyle(120)}
+                    className="profile-heading profile-reveal font-profile-display text-[clamp(3.25rem,7.2vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em]"
+                    style={revealStyle(100)}
                   >
                     {heroLines.map((line, lineIndex) => (
                       <span
@@ -415,24 +688,23 @@ export function ProfileView({
                         className={cn("block", line.className)}
                       >
                         {splitWords(line.text, lineIndex * 8)}
+                        {lineIndex < heroLines.length - 1 ? " " : null}
                       </span>
                     ))}
                   </h1>
                   <p
                     className={cn(
                       sectionCopy,
-                      "profile-reveal profile-reveal--blur max-w-xl text-lg",
+                      "profile-reveal max-w-2xl text-lg leading-relaxed",
                     )}
-                    style={revealStyle(220)}
+                    style={revealStyle(180)}
                   >
-                    I help teams move from idea to launch with UI/UX design,
-                    front-end builds, and security-aware delivery. Full sprints
-                    or focused collaborations.
+                    {hero.intro}
                   </p>
                 </div>
                 <div
-                  className="profile-reveal profile-reveal--scale flex flex-wrap gap-4"
-                  style={revealStyle(320)}
+                  className="profile-reveal flex flex-wrap items-center gap-3"
+                  style={revealStyle(240)}
                 >
                   {profileCard.actions.map((cta) => {
                     const isPrimary = cta.variant === "primary";
@@ -447,7 +719,7 @@ export function ProfileView({
                         className={cn(
                           "profile-button rounded-full px-6 text-sm font-semibold",
                           isPrimary
-                            ? "bg-[var(--profile-accent)] text-black hover:bg-[var(--profile-accent-strong)]"
+                            ? "bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
                             : "border-[var(--profile-accent)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-accent-soft)]",
                         )}
                       >
@@ -459,6 +731,7 @@ export function ProfileView({
                         >
                           <Mail className="size-4" />
                           {cta.label}
+                          <ArrowUpRight className="profile-cta-arrow size-4" />
                         </a>
                       </Button>
                     );
@@ -470,114 +743,155 @@ export function ProfileView({
                     className="profile-button rounded-full border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-surface-strong)]"
                   >
                     <a
-                      href="#proof"
-                      onClick={(event) => handleAnchorClick(event, "#proof")}
+                      href={pageLinks[0].href}
                       className="inline-flex items-center gap-2"
                     >
-                      View proof
-                      <ArrowUpRight className="size-4" />
+                      View credentials
+                      <ArrowUpRight className="profile-cta-arrow size-4" />
                     </a>
                   </Button>
                 </div>
+                <div
+                  className="profile-reveal flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)]"
+                  style={revealStyle(240)}
+                >
+                  <span className="profile-status-dot" aria-hidden="true" />
+                  <span>{hero.availability}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{profileCard.location}</span>
+                </div>
               </div>
               <div
-                className="profile-reveal profile-reveal--right"
-                style={revealStyle(200)}
+                className="profile-reveal profile-reveal--right lg:col-span-5"
+                style={revealStyle(140)}
               >
-                <div className="relative mx-auto max-w-sm">
-                  <div className="absolute -left-6 top-8 h-full w-full rounded-[32px] border border-[var(--profile-border)] bg-[var(--profile-surface)] opacity-70 -rotate-6" />
-                  <div className="absolute -right-6 top-14 h-full w-full rounded-[32px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] opacity-80 rotate-3" />
+                <div
+                  className="profile-portrait-stage relative mx-auto max-w-sm"
+                  onPointerEnter={handlePortraitPointerEnter}
+                  onPointerMove={handlePortraitPointerMove}
+                  onPointerLeave={resetPortraitPosition}
+                  onPointerCancel={resetPortraitPosition}
+                >
+                  <div
+                    className="profile-portrait-orbit absolute -inset-6"
+                    aria-hidden="true"
+                  >
+                    <span />
+                  </div>
+                  <p
+                    className="absolute -top-7 left-0 font-profile-mono text-[9px] uppercase tracking-[0.24em] text-[var(--profile-muted)]"
+                    aria-hidden="true"
+                  >
+                    VISUAL / IMG.01 / 16.0433° N
+                  </p>
                   <div
                     className={cn(
-                      panelSurfaceStrong,
-                      "profile-float relative z-10 overflow-hidden p-3",
+                      "profile-portrait-frame relative z-10 overflow-hidden rounded-[20px] border border-[var(--profile-border-strong)] bg-[var(--profile-surface)] p-2",
                     )}
                   >
-                    <div className="relative overflow-hidden rounded-[26px]">
+                    <span
+                      className="profile-frame-corner profile-frame-corner--tl"
+                      aria-hidden="true"
+                    />
+                    <span
+                      className="profile-frame-corner profile-frame-corner--br"
+                      aria-hidden="true"
+                    />
+                    <div className="relative overflow-hidden rounded-[13px] bg-black">
                       <ImageWithFallback
                         src={profileCard.avatar}
                         alt={`${profileCard.name} portrait`}
+                        width={864}
+                        height={1184}
                         loading="eager"
-                        className="profile-image h-full w-full object-cover"
+                        decoding="async"
+                        className="profile-image block aspect-[4/5] w-full object-cover object-top"
                       />
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4">
+                      <div
+                        className="profile-portrait-scan"
+                        aria-hidden="true"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 pt-16">
                         <div className="flex items-center gap-2 text-white">
                           <span className="text-sm font-semibold">
                             {profileCard.name}
                           </span>
-                          {profileCard.verified ? (
-                            <BadgeCheck
-                              className="size-4 text-[var(--profile-accent)]"
-                              aria-hidden="true"
-                            />
-                          ) : null}
                         </div>
-                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-                          {profileCard.location}
+                        <p className="font-profile-mono text-[10px] uppercase tracking-[0.18em] text-white/65">
+                          Designer / engineer / Philippines
                         </p>
                       </div>
+                    </div>
+                    <div className="flex items-center justify-between px-1 pb-1 pt-3 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)]">
+                      <span>Signal stable</span>
+                      <span>EV / 2026</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div
+              className="profile-status-rail profile-reveal grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] md:grid-cols-3"
+              style={revealStyle(220)}
+            >
               {metrics.map((metric, index) => (
                 <div
                   key={metric.label}
-                  className={cn(
-                    panelSurface,
-                    "profile-reveal profile-reveal--scale space-y-2 p-6",
-                    index % 2 === 0
-                      ? "profile-reveal--left"
-                      : "profile-reveal--right",
-                  )}
-                  style={revealStyle(240 + index * 120)}
+                  className="profile-status-cell flex items-end justify-between gap-4 p-5 sm:p-6"
                 >
-                  <p className={sectionEyebrow}>{metric.label}</p>
-                  <p className="text-2xl font-semibold text-[var(--profile-ink)]">
-                    {metric.value}
-                  </p>
+                  <div>
+                    <p className={sectionEyebrow}>{metric.label}</p>
+                    <p className="mt-2 text-xl font-semibold text-[var(--profile-ink)]">
+                      {metric.value}
+                    </p>
+                  </div>
+                  <span className="font-profile-mono text-[10px] text-[var(--profile-muted)]">
+                    0{index + 1}
+                  </span>
                 </div>
               ))}
             </div>
           </section>
 
-          <section id="services" className="mt-28 scroll-mt-28 space-y-12">
+          <section
+            id="services"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28 space-y-12"
+          >
             <div
-              className="profile-reveal profile-reveal--blur space-y-4"
+              className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
-              <p className={sectionEyebrow}>Services</p>
+              <p className={sectionEyebrow}>// 02 / process</p>
               <h2 className={sectionTitle}>From discovery to launch</h2>
               <p className={sectionCopy}>
                 Structured engagements that keep scope clear, quality high, and
                 collaboration smooth.
               </p>
             </div>
-            <div className="space-y-10">
+            <div className="profile-process-grid grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] lg:grid-cols-3">
               {services.map((service, index) => (
                 <article
                   key={service.title}
                   className={cn(
-                    panelSurface,
-                    "profile-reveal profile-reveal--blur profile-reveal--scale grid gap-8 p-6 lg:grid-cols-[0.28fr_0.42fr_0.3fr] lg:items-center",
+                    "profile-process-step profile-reveal flex min-h-full flex-col p-6 sm:p-8",
                     index % 2 === 0
                       ? "profile-reveal--left"
                       : "profile-reveal--right",
                   )}
-                  style={revealStyle(120 + index * 120)}
+                  style={revealStyle(100 + index * 70)}
                 >
-                  <div className="flex items-center gap-6">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-[24px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)]">
-                      <Sparkles className="size-5 text-[var(--profile-accent)]" />
-                    </div>
+                  <div className="flex items-center justify-between">
                     <div className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                       {String(index + 1).padStart(2, "0")}
                     </div>
+                    <span
+                      className="profile-process-signal size-2 rounded-full border border-[var(--profile-accent)]"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <div className="space-y-3">
+                  <div className="mt-16 space-y-3">
                     <h3 className="text-2xl font-semibold text-[var(--profile-ink)]">
                       {service.title}
                     </h3>
@@ -585,20 +899,24 @@ export function ProfileView({
                       {service.summary}
                     </p>
                   </div>
-                  <div className="space-y-3">
+                  <div className="mt-8 space-y-3 border-t border-[var(--profile-border)] pt-5">
                     <p className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
                       Includes
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <ul className="space-y-2">
                       {service.includes.map((item) => (
-                        <span
+                        <li
                           key={item}
-                          className="rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-3 py-1 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-ink)]"
+                          className="flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
                         >
+                          <span
+                            className="h-px w-4 bg-[var(--profile-accent)]"
+                            aria-hidden="true"
+                          />
                           {item}
-                        </span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </article>
               ))}
@@ -607,30 +925,47 @@ export function ProfileView({
 
           <section className="mt-20">
             <div
-              className={cn(
-                panelSurface,
-                "profile-reveal profile-reveal--scale overflow-hidden px-6 py-8",
-              )}
+              className="profile-signal-strip profile-reveal overflow-hidden border-y border-[var(--profile-border)] py-6"
               style={revealStyle(0)}
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className={sectionEyebrow}>Collaborations</p>
-                <p className="text-sm text-[var(--profile-muted)]">
-                  Teams and communities I have supported.
-                </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
+                  <h2 className={sectionEyebrow}>// signal / collaborations</h2>
+                  <p className="text-sm text-[var(--profile-muted)]">
+                    Teams and communities I have supported.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMarqueePaused((isPaused) => !isPaused)}
+                  className="profile-motion-control inline-flex w-fit items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-4 py-2 text-xs font-semibold text-[var(--profile-ink)]"
+                >
+                  {marqueePaused ? (
+                    <Play className="size-3.5" aria-hidden="true" />
+                  ) : (
+                    <Pause className="size-3.5" aria-hidden="true" />
+                  )}
+                  {marqueePaused ? "Resume movement" : "Pause movement"}
+                </button>
               </div>
               <div className="mt-6 overflow-hidden">
-                <div className="profile-marquee flex w-max gap-4">
+                <div
+                  ref={marqueeRef}
+                  className={cn(
+                    "profile-marquee flex w-max gap-4",
+                    marqueePaused && "is-paused",
+                  )}
+                >
                   {marqueeItems.map((item, index) => (
                     <div
                       key={`${item.name}-${index}`}
-                      className="flex items-center gap-3 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-4 py-2 text-xs font-profile-mono uppercase tracking-[0.2em] text-[var(--profile-muted)]"
+                      className="flex max-w-full flex-wrap items-center gap-3 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-4 py-2 text-xs font-profile-mono uppercase tracking-[0.2em] text-[var(--profile-muted)]"
                       aria-hidden={index >= collaborations.length}
                     >
                       <span className="text-[var(--profile-ink)]">
                         {item.name}
                       </span>
-                      <span className="opacity-70">{item.location}</span>
+                      <span>{item.location}</span>
                     </div>
                   ))}
                 </div>
@@ -638,13 +973,17 @@ export function ProfileView({
             </div>
           </section>
 
-          <section id="capabilities" className="mt-28 scroll-mt-28 space-y-12">
+          <section
+            id="capabilities"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28 space-y-12"
+          >
             <div className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr]">
               <div
                 className="profile-reveal profile-reveal--blur profile-reveal--left space-y-6"
                 style={revealStyle(0)}
               >
-                <p className={sectionEyebrow}>Capabilities</p>
+                <p className={sectionEyebrow}>// 03 / capability.stack</p>
                 <h2 className={sectionTitle}>The toolkit behind the work</h2>
                 <p className={sectionCopy}>
                   A blend of UI craft, dependable services, and security-aware
@@ -661,7 +1000,7 @@ export function ProfileView({
                           ? "profile-reveal--left"
                           : "profile-reveal--right",
                       )}
-                      style={revealStyle(120 + index * 120)}
+                      style={revealStyle(100 + index * 60)}
                     >
                       <p className="text-lg font-semibold text-[var(--profile-ink)]">
                         {area.title}
@@ -679,15 +1018,20 @@ export function ProfileView({
                     key={group.title}
                     className={cn(
                       panelSurface,
-                      "profile-reveal profile-reveal--scale flex h-full flex-col p-6",
+                      "profile-tech-card profile-reveal flex h-full flex-col p-6",
+                      (group.title === "Frontend" ||
+                        group.title.startsWith("Cybersecurity")) &&
+                        "lg:col-span-2",
+                      group.title.startsWith("Cybersecurity") &&
+                        "profile-tech-card--security",
                       index % 2 === 0
                         ? "profile-reveal--right"
                         : "profile-reveal--left",
                     )}
-                    style={revealStyle(180 + index * 120)}
+                    style={revealStyle(100 + index * 45)}
                   >
                     <div>
-                      <p className={sectionEyebrow}>{group.title}</p>
+                      <h3 className={sectionEyebrow}>{group.title}</h3>
                       <p className="mt-3 text-sm text-[var(--profile-muted)]">
                         {group.description}
                       </p>
@@ -698,14 +1042,7 @@ export function ProfileView({
                           key={item.name}
                           className="inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-3 py-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-ink)]"
                         >
-                          <span className="flex size-7 items-center justify-center rounded-full bg-[var(--profile-bg)]">
-                            <img
-                              src={item.logo}
-                              alt={`${item.name} logo`}
-                              loading="lazy"
-                              className="profile-logo h-4 w-4"
-                            />
-                          </span>
+                          <TechLogo name={item.name} logo={item.logo} />
                           {item.name}
                         </span>
                       ))}
@@ -716,45 +1053,55 @@ export function ProfileView({
             </div>
           </section>
 
-          <section id="security" className="mt-28 scroll-mt-28 space-y-12">
-            <div className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr]">
-              <div
-                className="profile-reveal profile-reveal--blur profile-reveal--left space-y-4"
-                style={revealStyle(0)}
-              >
-                <p className={sectionEyebrow}>Security</p>
-                <h2 className={sectionTitle}>Security measures baked in</h2>
-                <p className={sectionCopy}>
-                  Practical steps that reduce risk, protect users, and keep
-                  delivery accountable from discovery through launch.
-                </p>
+          <section
+            id="security"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28"
+          >
+            <div
+              className="profile-security-panel profile-reveal overflow-hidden rounded-[20px] border border-white/15 p-6 sm:p-10"
+              style={revealStyle(0)}
+            >
+              <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
+                <div className="space-y-4">
+                  <p className={sectionEyebrow}>// 04 / secure.delivery</p>
+                  <h2 className={sectionTitle}>
+                    Security measures baked in
+                  </h2>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/15 text-[var(--profile-accent)]">
+                    <ShieldCheck className="size-4" aria-hidden="true" />
+                  </div>
+                  <p className={sectionCopy}>
+                    Practical steps that reduce risk, protect users, and keep
+                    delivery accountable from discovery through launch.
+                  </p>
+                </div>
               </div>
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="profile-security-grid mt-10 grid border-t border-white/15 md:grid-cols-2">
                 {securityMeasures.map((measure, index) => (
                   <article
                     key={measure.title}
                     className={cn(
-                      panelSurface,
-                      "profile-reveal profile-reveal--scale space-y-4 p-6",
+                      "profile-security-step profile-reveal space-y-5 py-7 md:p-7",
                       index % 2 === 0
                         ? "profile-reveal--right"
                         : "profile-reveal--left",
                     )}
-                    style={revealStyle(120 + index * 120)}
+                    style={revealStyle(80 + index * 45)}
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-lg font-semibold text-[var(--profile-ink)]">
-                          {measure.title}
-                        </p>
-                        <p className="mt-2 text-sm text-[var(--profile-muted)]">
-                          {measure.description}
-                        </p>
-                      </div>
-                      <div className="flex size-10 items-center justify-center rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] text-[var(--profile-accent)]">
-                        <ShieldCheck className="size-4" />
-                      </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-lg font-semibold text-[var(--profile-ink)]">
+                        {measure.title}
+                      </h3>
+                      <span className="font-profile-mono text-[10px] tracking-[0.18em] text-[var(--profile-muted)]">
+                        SEC.{String(index + 1).padStart(2, "0")}
+                      </span>
                     </div>
+                    <p className="text-sm text-[var(--profile-muted)]">
+                      {measure.description}
+                    </p>
                     <ul className="space-y-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-muted)]">
                       {measure.items.map((item) => (
                         <li key={item} className="flex items-center gap-2">
@@ -769,60 +1116,74 @@ export function ProfileView({
             </div>
           </section>
 
-          <section id="proof" className="mt-28 scroll-mt-28 space-y-12">
+          <section
+            id="proof"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28 space-y-12"
+          >
             <div
-              className="profile-reveal profile-reveal--blur space-y-4"
+              className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
-              <p className={sectionEyebrow}>Proof</p>
-              <h2 className={sectionTitle}>Recent delivery highlights</h2>
+              <p className={sectionEyebrow}>// 05 / selected.work</p>
+              <h2 className={sectionTitle}>Selected delivery highlights</h2>
             </div>
-            <div className="grid gap-8 lg:grid-cols-[0.6fr_0.4fr]">
-              <div className="space-y-8">
+            <div className="grid gap-10 lg:grid-cols-[0.66fr_0.34fr]">
+              <div className="profile-timeline border-t border-[var(--profile-border)]">
                 {experiences.map((experience, index) => (
                   <article
                     key={experience.company}
                     className={cn(
-                      panelSurface,
-                      "profile-reveal profile-reveal--scale relative overflow-hidden p-7 sm:p-8",
+                      "profile-experience-entry profile-reveal border-b border-[var(--profile-border)] py-7 sm:grid sm:grid-cols-[5rem_1fr] sm:gap-6 sm:py-8",
                       index % 2 === 0
                         ? "profile-reveal--left"
                         : "profile-reveal--right",
                     )}
-                    style={revealStyle(120 + index * 120)}
+                    style={revealStyle(80 + index * 60)}
                   >
-                    <div className="flex flex-wrap items-center gap-3 font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
-                      <span>{experience.period}</span>
-                      <span className="inline-block h-px w-10 bg-[var(--profile-border)]" />
-                      <span>{experience.role}</span>
+                    <div className="mb-5 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)] sm:mb-0">
+                      <span className="block text-[var(--profile-accent)]">
+                        0{index + 1}
+                      </span>
+                      <span className="mt-2 block">Archive</span>
                     </div>
-                    <h3 className="mt-4 text-2xl font-semibold text-[var(--profile-ink)]">
-                      {experience.company}
-                    </h3>
-                    <p className="mt-3 text-base text-[var(--profile-muted)]">
-                      {experience.summary}
-                    </p>
-                    <ul className="mt-6 space-y-3 text-sm text-[var(--profile-muted)]">
-                      {experience.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-3">
-                          <span className="mt-2 size-2 rounded-full bg-[var(--profile-accent)]" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]">
+                        <span>{experience.period}</span>
+                        <span
+                          className="inline-block h-px w-8 bg-[var(--profile-border)]"
+                          aria-hidden="true"
+                        />
+                        <span>{experience.role}</span>
+                      </div>
+                      <h3 className="mt-4 text-2xl font-semibold text-[var(--profile-ink)]">
+                        {experience.company}
+                      </h3>
+                      <p className="mt-3 text-base text-[var(--profile-muted)]">
+                        {experience.summary}
+                      </p>
+                      <ul className="mt-6 space-y-3 text-sm text-[var(--profile-muted)]">
+                        {experience.bullets.map((bullet) => (
+                          <li key={bullet} className="flex items-start gap-3">
+                            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[var(--profile-accent)]" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </article>
                 ))}
               </div>
-              <div className="space-y-6">
+              <aside className="lg:sticky lg:top-28 lg:self-start">
                 <div
                   className={cn(
                     panelSurfaceStrong,
-                    "profile-reveal profile-reveal--scale space-y-4 p-6",
+                    "profile-availability-card profile-reveal space-y-4 p-6",
                     "profile-reveal--right",
                   )}
-                  style={revealStyle(180)}
+                  style={revealStyle(120)}
                 >
-                  <p className={sectionEyebrow}>Availability</p>
+                  <p className={sectionEyebrow}>// availability</p>
                   <p className="text-2xl font-semibold text-[var(--profile-ink)]">
                     Open for new collaborations
                   </p>
@@ -833,7 +1194,7 @@ export function ProfileView({
                   <Button
                     asChild
                     size="lg"
-                    className="profile-button rounded-full bg-[var(--profile-accent)] text-black hover:bg-[var(--profile-accent-strong)]"
+                    className="profile-button rounded-full bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
                   >
                     <a
                       href="#contact"
@@ -841,113 +1202,107 @@ export function ProfileView({
                       className="inline-flex items-center gap-2"
                     >
                       Start a project
-                      <ArrowUpRight className="size-4" />
+                      <ArrowUpRight className="profile-cta-arrow size-4" />
                     </a>
                   </Button>
-                </div>
-                <div
-                  className={cn(
-                    panelSurface,
-                    "profile-reveal profile-reveal--scale flex flex-col gap-4 p-6",
-                    "profile-reveal--right",
-                  )}
-                  style={revealStyle(300)}
-                >
-                  <p className={sectionEyebrow}>Case studies</p>
-                  {projects.length ? (
-                    <div className="space-y-4">
-                      {projects.map((project) => (
-                        <div key={project.title} className="space-y-2">
-                          <p className="text-lg font-semibold text-[var(--profile-ink)]">
-                            {project.title}
-                          </p>
-                          <p className="text-sm text-[var(--profile-muted)]">
-                            {project.description}
-                          </p>
-                          <Button
-                            variant="ghost"
-                            className="profile-button justify-start gap-2 text-[var(--profile-ink)] hover:bg-[var(--profile-surface-strong)]"
-                            asChild
-                          >
+                  <div className="border-t border-[var(--profile-border)] pt-5">
+                    <p className={sectionEyebrow}>Case studies</p>
+                    {projects.length ? (
+                      <div className="mt-4 space-y-4">
+                        {projects.map((project) => (
+                          <div key={project.title} className="space-y-2">
+                            <p className="font-semibold text-[var(--profile-ink)]">
+                              {project.title}
+                            </p>
+                            <p className="text-sm text-[var(--profile-muted)]">
+                              {project.description}
+                            </p>
                             <a
                               href={project.link}
                               target="_blank"
                               rel="noreferrer noopener"
+                              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)]"
                             >
                               View case study
                               <ExternalLink className="size-4" />
                             </a>
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="text-lg font-semibold text-[var(--profile-ink)]">
-                        Case studies in progress
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-sm text-[var(--profile-muted)]">
+                        Detailed case studies are being prepared. The delivery
+                        summary remains available above.
                       </p>
-                      <p className="text-sm text-[var(--profile-muted)]">
-                        I am gathering fresh artifacts and retrospective notes.
-                        Check back soon for full breakdowns.
-                      </p>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              </aside>
             </div>
           </section>
 
-          <section id="faq" className="mt-28 scroll-mt-28 space-y-10">
+          <section
+            id="faq"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28 space-y-10"
+          >
             <div
-              className="profile-reveal profile-reveal--blur space-y-4"
+              className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
-              <p className={sectionEyebrow}>FAQ</p>
+              <p className={sectionEyebrow}>// 06 / common.queries</p>
               <h2 className={sectionTitle}>Questions, answered</h2>
             </div>
-            <div className="space-y-4">
+            <div className="border-t border-[var(--profile-border)]">
               {faqs.map((faq, index) => {
                 const isOpen = openFaq === index;
+                const triggerId = `faq-trigger-${index}`;
+                const panelId = `faq-panel-${index}`;
                 return (
                   <div
                     key={faq.question}
                     className={cn(
-                      panelSurface,
-                      "profile-reveal profile-reveal--scale overflow-hidden",
+                      "profile-faq-row profile-reveal overflow-hidden border-b border-[var(--profile-border)]",
                       index % 2 === 0
                         ? "profile-reveal--left"
                         : "profile-reveal--right",
                     )}
-                    style={revealStyle(120 + index * 90)}
+                    style={revealStyle(70 + index * 35)}
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenFaq(isOpen ? null : index)
-                      }
-                      className="profile-button flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
-                    >
-                      <span className="text-base font-semibold text-[var(--profile-ink)]">
-                        {faq.question}
-                      </span>
-                      <ChevronDown
-                        className={cn(
-                          "size-5 text-[var(--profile-muted)] transition",
-                          isOpen && "rotate-180",
-                        )}
-                      />
-                    </button>
+                    <h3>
+                      <button
+                        id={triggerId}
+                        type="button"
+                        onClick={() => setOpenFaq(isOpen ? null : index)}
+                        aria-expanded={isOpen}
+                        aria-controls={panelId}
+                        className="profile-faq-trigger grid w-full grid-cols-[2rem_1fr_auto] items-center gap-4 py-6 text-left sm:grid-cols-[4rem_1fr_auto]"
+                      >
+                        <span className="font-profile-mono text-[10px] tracking-[0.18em] text-[var(--profile-accent)]">
+                          0{index + 1}
+                        </span>
+                        <span className="text-base font-semibold text-[var(--profile-ink)]">
+                          {faq.question}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            "size-5 text-[var(--profile-muted)] transition",
+                            isOpen && "rotate-180",
+                          )}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </h3>
                     <div
-                      className={cn(
-                        "grid transition-[grid-template-rows] duration-300",
-                        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-                      )}
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={triggerId}
+                      hidden={!isOpen}
+                      className="pb-6 pl-12 pr-10 sm:pl-20"
                     >
-                      <div className="overflow-hidden px-6 pb-5">
-                        <p className="text-sm text-[var(--profile-muted)]">
-                          {faq.answer}
-                        </p>
-                      </div>
+                      <p className="text-sm text-[var(--profile-muted)]">
+                        {faq.answer}
+                      </p>
                     </div>
                   </div>
                 );
@@ -957,137 +1312,120 @@ export function ProfileView({
 
           <section
             id="contact"
-            className="mt-28 scroll-mt-28 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
+            tabIndex={-1}
+            className="mt-28 scroll-mt-28"
           >
             <div
-              className={cn(
-                panelSurface,
-                "profile-reveal profile-reveal--scale profile-reveal--left p-10",
-              )}
-              style={revealStyle(120)}
+              className="profile-contact-panel profile-reveal overflow-hidden rounded-[20px] border border-black/15 p-6 sm:p-10"
+              style={revealStyle(0)}
             >
-              <p className={sectionEyebrow}>{contact.eyebrow}</p>
-              <h2 className="mt-4 text-3xl font-semibold text-[var(--profile-ink)]">
-                {contact.title}
-              </h2>
-              <p className="mt-3 text-base text-[var(--profile-muted)]">
-                {contact.description}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                {contact.ctas.map((cta) => {
-                  const isPrimary = cta.variant === "primary";
-                  const shouldOpenNewTab = isExternalHref(cta.href);
+              <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
+                <div>
+                  <p className={sectionEyebrow}>// 07 / open.channel</p>
+                  <h2 className="mt-5 max-w-3xl font-profile-display text-4xl font-semibold leading-[1] tracking-[-0.04em] text-[var(--profile-ink)] sm:text-5xl lg:text-6xl">
+                    {contact.title}
+                  </h2>
+                </div>
+                <div>
+                  <p className="text-base leading-relaxed text-[var(--profile-muted)]">
+                    {contact.description}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {contact.ctas.map((cta) => {
+                      const shouldOpenNewTab = isExternalHref(cta.href);
 
-                  return (
-                    <Button
-                      key={cta.label}
-                      className={cn(
-                        "profile-button rounded-full px-6 text-sm font-semibold",
-                        isPrimary
-                          ? "bg-[var(--profile-accent)] text-black hover:bg-[var(--profile-accent-strong)]"
-                          : "border-[var(--profile-accent)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-accent-soft)]",
-                      )}
-                      size="lg"
-                      variant={isPrimary ? "default" : "outline"}
-                      asChild
-                    >
-                      <a
-                        href={cta.href}
-                        target={shouldOpenNewTab ? "_blank" : undefined}
-                        rel={shouldOpenNewTab ? "noreferrer noopener" : undefined}
-                        className="inline-flex items-center gap-2"
-                      >
-                        {cta.label}
-                        <Mail className="size-4" />
-                      </a>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="space-y-6">
-              <div
-                className={cn(
-                  panelSurface,
-                  "profile-reveal profile-reveal--scale profile-reveal--right p-8",
-                )}
-                style={revealStyle(180)}
-              >
-                <p className={sectionEyebrow}>Contact details</p>
-                <div className="mt-6 space-y-4">
-                  {contact.details.map((detail) => {
-                    const detailIsExternal = detail.href
-                      ? isExternalHref(detail.href)
-                      : false;
-
-                    return (
-                      <div
-                        key={detail.label}
-                        className="profile-button space-y-1"
-                      >
-                        <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
-                          {detail.label}
-                        </p>
-                        {detail.href ? (
+                      return (
+                        <Button
+                          key={cta.label}
+                          className="profile-button rounded-full bg-[var(--profile-ink)] px-6 text-sm font-semibold text-[var(--profile-bg)] hover:bg-black"
+                          size="lg"
+                          asChild
+                        >
                           <a
-                            href={detail.href}
-                            className="text-base font-semibold text-[var(--profile-ink)] transition hover:underline"
-                            target={detailIsExternal ? "_blank" : undefined}
-                            rel={detailIsExternal ? "noreferrer noopener" : undefined}
+                            href={cta.href}
+                            target={shouldOpenNewTab ? "_blank" : undefined}
+                            rel={
+                              shouldOpenNewTab
+                                ? "noreferrer noopener"
+                                : undefined
+                            }
+                            className="inline-flex items-center gap-2"
                           >
-                            {detail.value}
+                            {cta.label}
+                            <Mail className="size-4" />
+                            <ArrowUpRight className="profile-cta-arrow size-4" />
                           </a>
-                        ) : (
-                          <p className="text-base font-semibold text-[var(--profile-ink)]">
-                            {detail.value}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-              <div
-                className={cn(
-                  panelSurface,
-                  "profile-reveal profile-reveal--scale profile-reveal--right p-8",
-                )}
-                style={revealStyle(260)}
-              >
-                <p className={sectionEyebrow}>Social</p>
-                <div className="mt-6 space-y-3">
-                  {socialLinks.map((link) => (
+              <div className="profile-contact-grid mt-10 grid border-t border-black/15 sm:grid-cols-2 lg:grid-cols-5">
+                {contact.details.map((detail) => {
+                  const detailIsExternal = detail.href
+                    ? isExternalHref(detail.href)
+                    : false;
+
+                  return (
+                    <div
+                      key={detail.label}
+                      className="profile-contact-cell min-w-0 py-5 sm:px-4 sm:first:pl-0 lg:py-6"
+                    >
+                      <p className={sectionEyebrow}>{detail.label}</p>
+                      {detail.href ? (
+                        <a
+                          href={detail.href}
+                          className="mt-2 block break-words text-sm font-semibold text-[var(--profile-ink)] hover:underline"
+                          target={detailIsExternal ? "_blank" : undefined}
+                          rel={
+                            detailIsExternal
+                              ? "noreferrer noopener"
+                              : undefined
+                          }
+                        >
+                          {detail.value}
+                        </a>
+                      ) : (
+                        <p className="mt-2 text-sm font-semibold text-[var(--profile-ink)]">
+                          {detail.value}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+                {socialLinks.map((link) => (
+                  <div
+                    key={link.label}
+                    className="profile-contact-cell py-5 sm:px-4 lg:py-6"
+                  >
+                    <p className={sectionEyebrow}>Social</p>
                     <a
-                      key={link.label}
                       href={link.href}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className={cn(
-                        "profile-button flex items-center justify-between rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface)] px-4 py-3 text-sm text-[var(--profile-muted)] transition",
-                        "hover:text-[var(--profile-ink)]",
-                      )}
+                      className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)] hover:underline"
                     >
-                      <div className="flex items-center gap-2">
-                        {getSocialIcon()}
-                        <span>{link.label}</span>
-                      </div>
-                      <ExternalLink className="size-4" />
+                      {getSocialIcon(link.label)}
+                      {link.label}
+                      <ExternalLink className="size-3.5" />
                     </a>
-                  ))}
+                  </div>
+                ))}
+                <div className="profile-contact-cell py-5 sm:px-4 lg:py-6">
+                  <p className={sectionEyebrow}>Credentials</p>
+                  <a
+                    href={pageLinks[0].href}
+                    className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)] hover:underline"
+                  >
+                    Certification index
+                    <ArrowUpRight className="size-3.5" />
+                  </a>
                 </div>
               </div>
-              <div
-                className={cn(
-                  panelSurface,
-                  "profile-reveal profile-reveal--scale profile-reveal--right p-8",
-                )}
-                style={revealStyle(340)}
-              >
-                <p className={sectionEyebrow}>Based</p>
-                <div className="flex items-center gap-2 text-sm text-[var(--profile-muted)]">
-                  <MapPin className="size-4" aria-hidden="true" />
-                  <span>{profileCard.location}</span>
-                </div>
+              <div className="flex flex-col gap-2 border-t border-black/15 pt-5 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)] sm:flex-row sm:items-center sm:justify-between">
+                <span>{profileCard.name}</span>
+                <span>Clear systems / thoughtful delivery / open channel</span>
               </div>
             </div>
           </section>
