@@ -1022,8 +1022,6 @@ export function ProfileView({
                       (group.title === "Frontend" ||
                         group.title.startsWith("Cybersecurity")) &&
                         "lg:col-span-2",
-                      group.title.startsWith("Cybersecurity") &&
-                        "profile-tech-card--security",
                       index % 2 === 0
                         ? "profile-reveal--right"
                         : "profile-reveal--left",
@@ -1059,7 +1057,7 @@ export function ProfileView({
             className="mt-28 scroll-mt-28"
           >
             <div
-              className="profile-security-panel profile-reveal overflow-hidden rounded-[20px] border border-white/15 p-6 sm:p-10"
+              className="profile-security-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
               style={revealStyle(0)}
             >
               <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
@@ -1070,7 +1068,7 @@ export function ProfileView({
                   </h2>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/15 text-[var(--profile-accent)]">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--profile-border)] text-[var(--profile-accent)]">
                     <ShieldCheck className="size-4" aria-hidden="true" />
                   </div>
                   <p className={sectionCopy}>
@@ -1079,7 +1077,7 @@ export function ProfileView({
                   </p>
                 </div>
               </div>
-              <div className="profile-security-grid mt-10 grid border-t border-white/15 md:grid-cols-2">
+              <div className="profile-security-grid mt-10 grid border-t border-[var(--profile-border)] md:grid-cols-2">
                 {securityMeasures.map((measure, index) => (
                   <article
                     key={measure.title}
@@ -1316,7 +1314,7 @@ export function ProfileView({
             className="mt-28 scroll-mt-28"
           >
             <div
-              className="profile-contact-panel profile-reveal overflow-hidden rounded-[20px] border border-black/15 p-6 sm:p-10"
+              className="profile-contact-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
               style={revealStyle(0)}
             >
               <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
@@ -1361,7 +1359,7 @@ export function ProfileView({
                   </div>
                 </div>
               </div>
-              <div className="profile-contact-grid mt-10 grid border-t border-black/15 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="profile-contact-grid mt-10 grid border-t border-[var(--profile-border)] sm:grid-cols-2 lg:grid-cols-5">
                 {contact.details.map((detail) => {
                   const detailIsExternal = detail.href
                     ? isExternalHref(detail.href)
@@ -1423,7 +1421,7 @@ export function ProfileView({
                   </a>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 border-t border-black/15 pt-5 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)] sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-2 border-t border-[var(--profile-border)] pt-5 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)] sm:flex-row sm:items-center sm:justify-between">
                 <span>{profileCard.name}</span>
                 <span>Clear systems / thoughtful delivery / open channel</span>
               </div>
