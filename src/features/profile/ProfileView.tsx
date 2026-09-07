@@ -520,8 +520,17 @@ export function ProfileView({
         <header className="profile-header fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-5">
           <div className="profile-header-shell mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-4">
             <div className="flex items-center gap-3">
-              <div className="profile-brand-mark flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-ink)] font-profile-mono text-xs font-semibold tracking-[0.14em] text-[var(--profile-bg)]">
-                EV
+              <div className="profile-brand-mark flex size-10 items-center justify-center rounded-lg border border-[var(--profile-border-strong)] bg-[var(--profile-surface)] font-profile-mono text-xs font-semibold tracking-[0.14em] text-[var(--profile-ink)]">
+                <span className="profile-mark-grid" aria-hidden="true" />
+                <span
+                  className="profile-mark-corner profile-mark-corner--tl"
+                  aria-hidden="true"
+                />
+                <span
+                  className="profile-mark-corner profile-mark-corner--br"
+                  aria-hidden="true"
+                />
+                <span className="relative z-[1]">EV</span>
               </div>
               <div className="hidden leading-tight sm:block">
                 <p className="flex items-center gap-2 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)]">

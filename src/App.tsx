@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
+import { BootIntro } from "@/features/boot/BootIntro";
 import { ProfileView } from "@/features/profile/ProfileView";
 
 const THEME_STORAGE_KEY = "theme";
@@ -75,10 +76,13 @@ const App = () => {
   };
 
   return (
-    <ProfileView
-      darkMode={darkMode}
-      onToggleDarkMode={toggleDarkMode}
-    />
+    <>
+      <BootIntro />
+      <ProfileView
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
+      />
+    </>
   );
 };
 

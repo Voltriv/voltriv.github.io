@@ -298,7 +298,7 @@ export const profileData: ProfileData = {
     actions: [
       {
         label: "Send Email",
-        href: "mailto:elca.vinluan.up@phinmaed.com",
+        href: "mailto:elijahvinluan.business@gmail.com",
         variant: "primary",
       },
     ],
@@ -311,15 +311,15 @@ export const profileData: ProfileData = {
     ctas: [
       {
         label: "Write me an email",
-        href: "mailto:elca.vinluan.up@phinmaed.com",
+        href: "mailto:elijahvinluan.business@gmail.com",
         variant: "primary",
       },
     ],
     details: [
       {
         label: "Email",
-        value: "elca.vinluan.up@phinmaed.com",
-        href: "mailto:elca.vinluan.up@phinmaed.com",
+        value: "elijahvinluan.business@gmail.com",
+        href: "mailto:elijahvinluan.business@gmail.com",
       },
       {
         label: "Phone",
@@ -335,7 +335,7 @@ export const profileData: ProfileData = {
   socialLinks: [
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/in/elijahvinluan",
+      href: "https://www.linkedin.com/in/elijah-vinluan-308486356/",
     },
   ],
   faqs: [

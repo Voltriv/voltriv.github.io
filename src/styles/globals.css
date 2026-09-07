@@ -297,6 +297,47 @@
       border-color 0.35s ease, background-color 0.35s ease;
   }
 
+  .profile-brand-mark {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-mark-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: linear-gradient(
+        to right,
+        var(--profile-grid) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, var(--profile-grid) 1px, transparent 1px);
+    background-size: 8px 8px;
+    pointer-events: none;
+  }
+
+  .profile-mark-corner {
+    position: absolute;
+    z-index: 1;
+    width: 0.4rem;
+    height: 0.4rem;
+    pointer-events: none;
+  }
+
+  .profile-mark-corner--tl {
+    left: 3px;
+    top: 3px;
+    border-left: 1.5px solid var(--profile-accent);
+    border-top: 1.5px solid var(--profile-accent);
+  }
+
+  .profile-mark-corner--br {
+    right: 3px;
+    bottom: 3px;
+    border-bottom: 1.5px solid var(--profile-accent);
+    border-right: 1.5px solid var(--profile-accent);
+  }
+
   .profile-status-dot {
     display: inline-block;
     width: 0.5rem;

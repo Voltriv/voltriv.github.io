@@ -1,0 +1,300 @@
+#boot {
+  --boot-bg: #090a0a;
+  --boot-surface: rgba(13, 14, 14, 0.88);
+  --boot-surface-strong: #111212;
+  --boot-ink: #f5f5f5;
+  --boot-muted: #a5a5a5;
+  --boot-dim: #7d8080;
+  --boot-border: rgba(255, 255, 255, 0.14);
+  --boot-border-strong: rgba(255, 255, 255, 0.28);
+  --boot-accent: #ff8a3d;
+  --boot-accent-glow: rgba(255, 138, 61, 0.45);
+  --boot-shadow: 0 20px 56px rgba(0, 0, 0, 0.32);
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  color: var(--boot-ink);
+  font-family:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+#boot.boot-gone {
+  pointer-events: none;
+}
+
+.boot-sheet {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    125% 95% at 50% 32%,
+    var(--boot-surface-strong) 0%,
+    var(--boot-bg) 74%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 6vw, 3rem);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--boot-border-strong);
+  box-shadow: var(--boot-shadow);
+  transition: transform 0.9s cubic-bezier(0.7, 0, 0.2, 1);
+}
+#boot.boot-gone .boot-sheet {
+  transform: translateY(-101%);
+}
+
+.boot-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.boot-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(245, 245, 245, 0.045) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.boot-drift {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 42vh;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateY(-46vh);
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 245, 245, 0) 0%,
+    rgba(245, 245, 245, 0.035) 72%,
+    rgba(245, 245, 245, 0.07) 100%
+  );
+  animation: bootDrift 4.2s linear infinite;
+}
+@keyframes bootDrift {
+  from {
+    transform: translateY(-46vh);
+  }
+  to {
+    transform: translateY(104vh);
+  }
+}
+
+.boot-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  z-index: 2;
+  background: var(--boot-accent);
+  box-shadow: 0 0 18px var(--boot-accent-glow);
+  will-change: transform;
+  transform: translateY(-2vh);
+  pointer-events: none;
+}
+.boot-scan.run {
+  animation: bootSweep 1s cubic-bezier(0.35, 0, 0.2, 1) forwards;
+}
+@keyframes bootSweep {
+  from {
+    transform: translateY(-2vh);
+  }
+  to {
+    transform: translateY(102vh);
+  }
+}
+
+.boot-sheet > *:not(.boot-grain):not(.boot-lines):not(.boot-drift):not(.boot-scan) {
+  position: relative;
+  z-index: 3;
+}
+
+.boot-greet {
+  margin: 0;
+  font-size: clamp(2rem, 9.5vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  min-height: 1em;
+  text-align: center;
+  white-space: nowrap;
+}
+.boot-greet .g-dim {
+  color: var(--boot-dim);
+}
+
+.boot-rule {
+  width: min(20rem, 54vw);
+  height: 1px;
+  margin: clamp(1.1rem, 3vw, 1.9rem) 0 clamp(0.9rem, 2.4vw, 1.3rem);
+  background: var(--boot-border);
+  position: relative;
+  flex: none;
+}
+.boot-rule i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--boot-accent);
+  box-shadow: 0 0 10px var(--boot-accent-glow);
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.boot-status {
+  margin: 0;
+  font-size: clamp(0.6875rem, 1.7vw, 0.8125rem);
+  color: var(--boot-muted);
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+  min-height: 4.9em;
+  text-align: center;
+  transition: opacity 0.18s ease;
+}
+.boot-status.blink {
+  opacity: 0;
+}
+.boot-status em {
+  display: block;
+  font-style: normal;
+  color: var(--boot-ink);
+  letter-spacing: 0.01em;
+  font-size: 1.15em;
+}
+.boot-status u {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  background: var(--boot-accent);
+  text-decoration: none;
+  vertical-align: -0.15em;
+  margin-left: 0.35em;
+  animation: bootCaret 1s steps(1) infinite;
+}
+@keyframes bootCaret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.boot-status q {
+  color: var(--boot-ink);
+  quotes: '"' '"';
+}
+.boot-status .fp {
+  display: block;
+  white-space: pre;
+  margin-top: 0.5em;
+  letter-spacing: 0.1em;
+  font-size: 0.95em;
+  color: var(--boot-dim);
+}
+.boot-status .fp.done {
+  color: var(--boot-ink);
+}
+
+.boot-dump {
+  margin: clamp(0.9rem, 2.4vw, 1.4rem) 0 0;
+  padding: clamp(0.6rem, 2vw, 0.9rem) clamp(0.8rem, 2.5vw, 1.2rem);
+  background: var(--boot-surface-strong);
+  border: 1px solid var(--boot-border);
+  border-radius: 0.75rem;
+  font-size: clamp(0.5625rem, 1.9vw, 0.75rem);
+  line-height: 1.75;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+.boot-dump.on {
+  opacity: 1;
+  transform: none;
+}
+.boot-dump .off {
+  color: var(--boot-dim);
+}
+.boot-dump .b-dim {
+  color: var(--boot-dim);
+}
+.boot-dump .b-on {
+  color: var(--boot-muted);
+}
+.boot-dump .a-on {
+  color: var(--boot-ink);
+}
+
+.boot-skip {
+  margin-top: clamp(1.5rem, 4.5vw, 2.4rem);
+  background: none;
+  border: 0;
+  color: var(--boot-dim);
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.4s ease,
+    color 0.2s ease;
+}
+.boot-skip.on {
+  opacity: 1;
+}
+.boot-skip:hover {
+  color: var(--boot-ink);
+}
+.boot-skip:focus-visible {
+  outline: 1px solid var(--boot-accent);
+  outline-offset: 3px;
+  opacity: 1;
+}
+
+.boot-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-scan,
+  .boot-drift {
+    display: none;
+  }
+  .boot-status u {
+    animation: none;
+  }
+  .boot-sheet {
+    transition: opacity 0.3s ease;
+  }
+  #boot.boot-gone .boot-sheet {
+    opacity: 0;
+    transform: none;
+  }
+  .boot-rule i,
+  .boot-status,
+  .boot-skip,
+  .boot-dump {
+    transition-duration: 0.01ms;
+  }
+}
