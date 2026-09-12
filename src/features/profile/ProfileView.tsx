@@ -6,32 +6,13 @@ import {
   useState,
   type CSSProperties,
   type MouseEvent as ReactMouseEvent,
-  type PointerEvent as ReactPointerEvent,
 } from "react";
-import {
-  ArrowUpRight,
-  ChevronDown,
-  ExternalLink,
-  Link,
-  Mail,
-  Menu,
-  Moon,
-  Pause,
-  Play,
-  ShieldCheck,
-  SunMedium,
-  X,
-} from "lucide-react";
+import { ChevronDown, ExternalLink, Link, Menu, Pause, Play, X } from "lucide-react";
 import { profileData } from "@/data/profile";
 import { useSectionObserver } from "@/hooks/useSectionObserver";
-import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
-import { Button } from "@/components/ui/button";
+import { useRiseReveal } from "@/hooks/useRiseReveal";
+import { HERO_CARDS, heroCardSvg } from "./HeroCards";
 import { cn } from "@/components/ui/utils";
-
-type ProfileViewProps = {
-  darkMode: boolean;
-  onToggleDarkMode: () => void;
-};
 
 const {
   hero,
@@ -39,7 +20,6 @@ const {
   pageLinks,
   services,
   experiences,
-  projects,
   focusAreas,
   securityMeasures,
   techStack,
@@ -107,41 +87,10 @@ const smoothScrollToHash = (hash: string) => {
   return true;
 };
 
-const sectionEyebrow =
-  "font-profile-mono text-[12px] uppercase tracking-[0.28em] text-[var(--profile-muted)]";
-const sectionTitle =
-  "font-profile-display text-3xl leading-[1.15] text-[var(--profile-ink)] sm:text-4xl lg:text-5xl";
-const sectionCopy = "text-base text-[var(--profile-muted)] sm:text-lg";
-const panelSurface =
-  "profile-card rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)]";
-const panelSurfaceStrong =
-  "profile-card rounded-[20px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)]";
-
 const revealStyle = (delay: number): CSSProperties =>
   ({
     "--reveal-delay": `${delay}ms`,
   }) as CSSProperties;
-
-const wordStyle = (index: number): CSSProperties =>
-  ({
-    "--word-index": Math.min(index, 6),
-  }) as CSSProperties;
-
-const splitWords = (text: string, offset: number) => {
-  const words = text.split(" ");
-
-  return words.map((word, index) => (
-    <Fragment key={`${offset}-${index}-${word}`}>
-      <span
-        className="profile-word"
-        style={wordStyle(offset + index)}
-      >
-        {word}
-      </span>
-      {index < words.length - 1 ? " " : null}
-    </Fragment>
-  ));
-};
 
 type TechLogoProps = {
   name: string;
@@ -159,15 +108,15 @@ const TechLogo = ({ name, logo }: TechLogoProps) => {
     .toUpperCase();
 
   return (
-    <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-semibold tracking-normal text-neutral-800">
+    <span className="flex size-6 items-center justify-center rounded-full bg-white text-[9px] font-semibold tracking-normal text-neutral-800">
       {showLogo ? (
         <img
           src={logo}
           alt=""
-          width={16}
-          height={16}
+          width={14}
+          height={14}
           loading="lazy"
-          className="profile-logo h-4 w-4"
+          className="h-3.5 w-3.5"
           onError={() => setFailedLogo(logo)}
         />
       ) : (
@@ -177,10 +126,7 @@ const TechLogo = ({ name, logo }: TechLogoProps) => {
   );
 };
 
-export function ProfileView({
-  darkMode,
-  onToggleDarkMode,
-}: ProfileViewProps) {
+export function ProfileView() {
   const sectionIds = useMemo(
     () => navLinks.map((link) => link.href.replace("#", "")),
     [],
@@ -190,18 +136,12 @@ export function ProfileView({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [marqueePaused, setMarqueePaused] = useState(false);
   const mobileNavButtonRef = useRef<HTMLButtonElement>(null);
-  const scrollProgressRef = useRef<HTMLDivElement>(null);
-  const profileRootRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
-  const portraitBoundsRef = useRef<DOMRect | null>(null);
-  const portraitFrameRef = useRef<number | null>(null);
-  const portraitMotionRef = useRef<{
-    element: HTMLDivElement;
-    rotateX: number;
-    rotateY: number;
-    shiftX: number;
-    shiftY: number;
-  } | null>(null);
+  const zoneRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useRiseReveal();
 
   const handleAnchorClick = (
     event: ReactMouseEvent<HTMLAnchorElement>,
@@ -223,203 +163,52 @@ export function ProfileView({
     }
   };
 
-  const handlePortraitPointerEnter = (
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) => {
-    if (
-      event.pointerType !== "mouse" ||
-      prefersReducedMotion() ||
-      !window.matchMedia("(pointer: fine)").matches
-    ) {
-      return;
-    }
-
-    portraitBoundsRef.current = event.currentTarget.getBoundingClientRect();
-  };
-
-  const handlePortraitPointerMove = (
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) => {
-    if (event.pointerType !== "mouse" || !portraitBoundsRef.current) return;
-
-    const bounds =
-      portraitBoundsRef.current ?? event.currentTarget.getBoundingClientRect();
-    portraitBoundsRef.current = bounds;
-    if (!bounds.width || !bounds.height) return;
-
-    const horizontal = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const vertical = (event.clientY - bounds.top) / bounds.height - 0.5;
-
-    portraitMotionRef.current = {
-      element: event.currentTarget,
-      rotateX: vertical * -5,
-      rotateY: horizontal * 7,
-      shiftX: horizontal * 8,
-      shiftY: vertical * 8,
-    };
-
-    if (portraitFrameRef.current === null) {
-      portraitFrameRef.current = window.requestAnimationFrame(() => {
-        portraitFrameRef.current = null;
-        const motion = portraitMotionRef.current;
-        if (!motion) return;
-
-        motion.element.style.setProperty(
-          "--portrait-rotate-x",
-          `${motion.rotateX}deg`,
-        );
-        motion.element.style.setProperty(
-          "--portrait-rotate-y",
-          `${motion.rotateY}deg`,
-        );
-        motion.element.style.setProperty(
-          "--portrait-shift-x",
-          `${motion.shiftX}px`,
-        );
-        motion.element.style.setProperty(
-          "--portrait-shift-y",
-          `${motion.shiftY}px`,
-        );
-      });
-    }
-  };
-
-  const resetPortraitPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (portraitFrameRef.current !== null) {
-      window.cancelAnimationFrame(portraitFrameRef.current);
-      portraitFrameRef.current = null;
-    }
-    portraitMotionRef.current = null;
-    portraitBoundsRef.current = null;
-    event.currentTarget.style.removeProperty("--portrait-rotate-x");
-    event.currentTarget.style.removeProperty("--portrait-rotate-y");
-    event.currentTarget.style.removeProperty("--portrait-shift-x");
-    event.currentTarget.style.removeProperty("--portrait-shift-y");
-  };
-
   useEffect(() => {
-    let frameId: number | null = null;
+    const zone = zoneRef.current;
+    const heroEl = heroRef.current;
+    if (!zone || !heroEl) return undefined;
+    if (prefersReducedMotion()) return undefined;
 
-    const updateScrollProgress = () => {
-      frameId = null;
+    let ticking = false;
 
-      const maxScrollTop =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const nextProgress =
-        maxScrollTop > 0
-          ? Math.min(Math.max(window.scrollY / maxScrollTop, 0), 1)
-          : 0;
-
-      scrollProgressRef.current?.style.setProperty(
-        "transform",
-        `scaleX(${nextProgress})`,
+    const apply = () => {
+      ticking = false;
+      const range = zone.offsetHeight - window.innerHeight;
+      if (range <= 0) return;
+      const p = Math.min(
+        Math.max(-zone.getBoundingClientRect().top / range, 0),
+        1,
       );
+
+      heroEl.style.transform = `scale(${(1 + p * 1.35).toFixed(4)})`;
+      heroEl.style.opacity = `${(1 - Math.max(0, (p - 0.55) / 0.45)).toFixed(3)}`;
+
+      HERO_CARDS.forEach((card, index) => {
+        const el = cardRefs.current[index];
+        if (!el) return;
+        el.style.transform = `translate3d(${(card.dx * p).toFixed(2)}vw, ${(card.dy * p).toFixed(2)}vh, 0) scale(${(1 + p * 0.35).toFixed(3)})`;
+        el.style.opacity = `${(0.8 - Math.max(0, (p - 0.35) / 0.5) * 0.8).toFixed(3)}`;
+      });
     };
 
-    const scheduleUpdate = () => {
-      portraitBoundsRef.current = null;
-      if (frameId !== null) return;
-      frameId = window.requestAnimationFrame(updateScrollProgress);
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(apply);
+      }
     };
 
-    updateScrollProgress();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-    const resizeObserver =
-      "ResizeObserver" in window
-        ? new ResizeObserver(scheduleUpdate)
-        : undefined;
-    resizeObserver?.observe(document.body);
+    const timeoutId = setTimeout(() => {
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      apply();
+    }, 1500);
 
     return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-      resizeObserver?.disconnect();
+      clearTimeout(timeoutId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
-  }, []);
-
-  useEffect(() => {
-    const root = profileRootRef.current;
-    if (!root) return undefined;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    );
-    const finePointer = window.matchMedia("(pointer: fine)");
-    if (reduceMotion.matches || !finePointer.matches) return undefined;
-
-    let frameId: number | null = null;
-    let nextX = window.innerWidth / 2;
-    let nextY = window.innerHeight / 3;
-
-    const updateSpotlight = () => {
-      frameId = null;
-      root.style.setProperty("--pointer-x", `${nextX}px`);
-      root.style.setProperty("--pointer-y", `${nextY}px`);
-    };
-
-    const scheduleSpotlight = (event: PointerEvent) => {
-      nextX = event.clientX;
-      nextY = event.clientY;
-      if (frameId === null) {
-        frameId = window.requestAnimationFrame(updateSpotlight);
-      }
-    };
-
-    updateSpotlight();
-    window.addEventListener("pointermove", scheduleSpotlight, {
-      passive: true,
-    });
-
-    return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
-      if (portraitFrameRef.current !== null) {
-        window.cancelAnimationFrame(portraitFrameRef.current);
-        portraitFrameRef.current = null;
-      }
-      window.removeEventListener("pointermove", scheduleSpotlight);
-    };
-  }, []);
-
-  useEffect(() => {
-    const elements = Array.from(
-      document.querySelectorAll<HTMLElement>(".profile-reveal"),
-    );
-    if (!elements.length) return undefined;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (reduceMotion) {
-      elements.forEach((element) => element.classList.add("is-visible"));
-      return undefined;
-    }
-
-    if (typeof IntersectionObserver === "undefined") {
-      elements.forEach((element) => element.classList.add("is-visible"));
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -12% 0px" },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -487,156 +276,45 @@ export function ProfileView({
     { label: "Tools in rotation", value: totalStackItems.toString() },
   ];
   const marqueeItems = [...collaborations, ...collaborations];
-  const heroLines = hero.headline.map((line, index) => ({
-    text: line,
-    className: index === 1 ? "text-[var(--profile-accent)]" : "",
-  }));
+  const emailDetail = contact.details.find((detail) => detail.label === "Email");
 
   return (
-    <div
-      ref={profileRootRef}
-      className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]"
-    >
+    <div className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]">
       <a
         href="#main-content"
         onClick={(event) => handleAnchorClick(event, "#main-content")}
-        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-full bg-[var(--profile-ink)] px-4 py-2 text-sm font-semibold text-[var(--profile-bg)] shadow-lg transition-transform focus-visible:translate-y-0"
+        className="fixed left-4 top-4 z-[70] -translate-y-24 bg-[var(--ink)] px-4 py-2 text-sm font-semibold text-[var(--paper)] transition-transform focus-visible:translate-y-0"
       >
         Skip to main content
       </a>
-      <div
-        ref={scrollProgressRef}
-        className="profile-scroll-progress"
-        aria-hidden="true"
-      />
-      <div className="relative">
-        <div
-          className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
-          aria-hidden="true"
-        />
-        <div className="profile-pointer-glow" aria-hidden="true" />
-        <div className="profile-corner-glow" aria-hidden="true" />
 
-        <header className="profile-header fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-5">
-          <div className="profile-header-shell mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-4">
-            <div className="flex items-center gap-3">
-              <div className="profile-brand-mark flex size-10 items-center justify-center rounded-lg border border-[var(--profile-border-strong)] bg-[var(--profile-surface)] font-profile-mono text-xs font-semibold tracking-[0.14em] text-[var(--profile-ink)]">
-                <span className="profile-mark-grid" aria-hidden="true" />
-                <span
-                  className="profile-mark-corner profile-mark-corner--tl"
-                  aria-hidden="true"
-                />
-                <span
-                  className="profile-mark-corner profile-mark-corner--br"
-                  aria-hidden="true"
-                />
-                <span className="relative z-[1]">EV</span>
-              </div>
-              <div className="hidden leading-tight sm:block">
-                <p className="flex items-center gap-2 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)]">
-                  <span className="profile-status-dot" aria-hidden="true" />
-                  {hero.availability}
-                </p>
-                <p className="mt-1 max-w-[250px] truncate text-xs font-semibold">
-                  Elijah / designer + engineer
-                </p>
-              </div>
-            </div>
-            <nav
-              className="hidden items-center gap-1 xl:flex"
-              aria-label="Primary"
-            >
-              {navLinks.map((link) => {
-                const isActive =
-                  activeSection === link.href.replace("#", "");
-                return (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={(event) => handleAnchorClick(event, link.href)}
-                    aria-current={isActive ? "location" : undefined}
-                    className={cn(
-                      "profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] transition-colors",
-                      isActive
-                        ? "is-active bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
-                        : "text-[var(--profile-muted)] hover:text-[var(--profile-ink)]",
-                    )}
-                  >
-                    {link.label}
-                  </a>
-                );
-              })}
-              {pageLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[var(--profile-muted)] transition-colors hover:text-[var(--profile-ink)]"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
-              <button
-                ref={mobileNavButtonRef}
-                type="button"
-                onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
-                aria-label={
-                  mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
-                }
-                aria-expanded={mobileNavOpen}
-                aria-controls="mobile-navigation"
-                className="profile-icon-button inline-flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] xl:hidden"
-              >
-                {mobileNavOpen ? (
-                  <X className="size-4" aria-hidden="true" />
-                ) : (
-                  <Menu className="size-4" aria-hidden="true" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={onToggleDarkMode}
-                aria-label={
-                  darkMode ? "Switch to light theme" : "Switch to dark theme"
-                }
-                className="profile-icon-button inline-flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] transition-colors"
-              >
-                {darkMode ? (
-                  <SunMedium className="size-4" aria-hidden="true" />
-                ) : (
-                  <Moon className="size-4" aria-hidden="true" />
-                )}
-              </button>
-            </div>
-          </div>
+      <header className="fixed left-0 right-0 top-0 z-50">
+        <div className="profile-header-shell mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+          <a
+            href="#overview"
+            onClick={(event) => handleAnchorClick(event, "#overview")}
+            className="profile-brand-mark flex size-9 items-center justify-center font-profile-mono text-[11px] font-semibold tracking-[0.1em] text-[var(--profile-ink)]"
+          >
+            EV
+          </a>
+
           <nav
-            id="mobile-navigation"
-            hidden={!mobileNavOpen}
-            className={cn(
-              "profile-mobile-nav mx-auto mt-2 max-w-6xl grid-cols-2 gap-2 rounded-2xl border border-[var(--profile-border)] p-3 xl:hidden",
-              mobileNavOpen ? "grid" : "hidden",
-            )}
-            aria-label="Mobile primary"
+            className="hidden items-center gap-5 xl:flex"
+            aria-label="Primary"
           >
             {navLinks.map((link) => {
-              const isActive =
-                activeSection === link.href.replace("#", "");
-
+              const isActive = activeSection === link.href.replace("#", "");
               return (
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={(event) => {
-                    handleAnchorClick(event, link.href);
-                    setMobileNavOpen(false);
-                  }}
+                  onClick={(event) => handleAnchorClick(event, link.href)}
                   aria-current={isActive ? "location" : undefined}
                   className={cn(
-                    "rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em]",
+                    "profile-navlink pb-1 font-profile-mono text-[10px] uppercase tracking-[0.18em]",
                     isActive
-                      ? "bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
-                      : "text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]",
+                      ? "is-active"
+                      : "text-[var(--profile-muted)] hover:text-[var(--profile-ink)]",
                   )}
                 >
                   {link.label}
@@ -647,407 +325,268 @@ export function ProfileView({
               <a
                 key={link.href}
                 href={link.href}
-                className="rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]"
+                className="profile-navlink pb-1 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)] hover:text-[var(--profile-ink)]"
               >
                 {link.label}
               </a>
             ))}
           </nav>
-        </header>
 
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="relative mx-auto max-w-6xl px-5 pb-28 pt-32 sm:px-6 sm:pt-36"
+          <button
+            ref={mobileNavButtonRef}
+            type="button"
+            onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
+            aria-label={
+              mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            aria-expanded={mobileNavOpen}
+            aria-controls="mobile-navigation"
+            className="profile-icon-button inline-flex size-9 items-center justify-center border border-[var(--profile-border)] text-[var(--profile-ink)] xl:hidden"
+          >
+            {mobileNavOpen ? (
+              <X className="size-4" aria-hidden="true" />
+            ) : (
+              <Menu className="size-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+
+        <nav
+          id="mobile-navigation"
+          hidden={!mobileNavOpen}
+          className={cn(
+            "mx-auto max-w-6xl grid-cols-2 gap-1 border-t border-[var(--profile-border)] bg-[var(--paper)] px-4 py-3 xl:hidden",
+            mobileNavOpen ? "grid" : "hidden",
+          )}
+          aria-label="Mobile primary"
         >
-          <section
-            id="overview"
-            tabIndex={-1}
-            className="scroll-mt-28 space-y-10"
-          >
-            <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-              <div className="space-y-8 lg:col-span-7">
-                <div
-                  className="profile-reveal flex flex-wrap items-center gap-3"
-                  style={revealStyle(0)}
-                >
-                  <span className="profile-index-mark font-profile-mono text-xs font-semibold text-[var(--profile-ink)]">
-                    01
-                  </span>
-                  <span
-                    className="h-px w-10 bg-[var(--profile-border-strong)]"
-                    aria-hidden="true"
-                  />
-                  <span className={sectionEyebrow}>{hero.marker}</span>
-                </div>
-                <div className="space-y-6">
-                  <p
-                    className="profile-reveal font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
-                    style={revealStyle(60)}
-                  >
-                    {profileCard.name} / {hero.role}
-                  </p>
-                  <h1
-                    className="profile-heading profile-reveal font-profile-display text-[clamp(3.25rem,7.2vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em]"
-                    style={revealStyle(100)}
-                  >
-                    {heroLines.map((line, lineIndex) => (
-                      <span
-                        key={line.text}
-                        className={cn("block", line.className)}
-                      >
-                        {splitWords(line.text, lineIndex * 8)}
-                        {lineIndex < heroLines.length - 1 ? " " : null}
-                      </span>
-                    ))}
-                  </h1>
-                  <p
-                    className={cn(
-                      sectionCopy,
-                      "profile-reveal max-w-2xl text-lg leading-relaxed",
-                    )}
-                    style={revealStyle(180)}
-                  >
-                    {hero.intro}
-                  </p>
-                </div>
-                <div
-                  className="profile-reveal flex flex-wrap items-center gap-3"
-                  style={revealStyle(240)}
-                >
-                  {profileCard.actions.map((cta) => {
-                    const isPrimary = cta.variant === "primary";
-                    const shouldOpenNewTab = isExternalHref(cta.href);
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.href.replace("#", "");
 
-                    return (
-                      <Button
-                        key={cta.label}
-                        asChild
-                        size="lg"
-                        variant={isPrimary ? "default" : "outline"}
-                        className={cn(
-                          "profile-button rounded-full px-6 text-sm font-semibold",
-                          isPrimary
-                            ? "bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
-                            : "border-[var(--profile-accent)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-accent-soft)]",
-                        )}
-                      >
-                        <a
-                          href={cta.href}
-                          target={shouldOpenNewTab ? "_blank" : undefined}
-                          rel={shouldOpenNewTab ? "noreferrer noopener" : undefined}
-                          className="inline-flex items-center gap-2"
-                        >
-                          <Mail className="size-4" />
-                          {cta.label}
-                          <ArrowUpRight className="profile-cta-arrow size-4" />
-                        </a>
-                      </Button>
-                    );
-                  })}
-                  <Button
-                    asChild
-                    size="lg"
-                    variant="outline"
-                    className="profile-button rounded-full border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-surface-strong)]"
-                  >
-                    <a
-                      href={pageLinks[0].href}
-                      className="inline-flex items-center gap-2"
-                    >
-                      View credentials
-                      <ArrowUpRight className="profile-cta-arrow size-4" />
-                    </a>
-                  </Button>
-                </div>
-                <div
-                  className="profile-reveal flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)]"
-                  style={revealStyle(240)}
-                >
-                  <span className="profile-status-dot" aria-hidden="true" />
-                  <span>{hero.availability}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{profileCard.location}</span>
-                </div>
-              </div>
-              <div
-                className="profile-reveal profile-reveal--right lg:col-span-5"
-                style={revealStyle(140)}
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(event) => {
+                  handleAnchorClick(event, link.href);
+                  setMobileNavOpen(false);
+                }}
+                aria-current={isActive ? "location" : undefined}
+                className={cn(
+                  "px-2 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em]",
+                  isActive
+                    ? "text-[var(--profile-ink)]"
+                    : "text-[var(--profile-muted)]",
+                )}
               >
-                <div
-                  className="profile-portrait-stage relative mx-auto max-w-sm"
-                  onPointerEnter={handlePortraitPointerEnter}
-                  onPointerMove={handlePortraitPointerMove}
-                  onPointerLeave={resetPortraitPosition}
-                  onPointerCancel={resetPortraitPosition}
-                >
-                  <div
-                    className="profile-portrait-orbit absolute -inset-6"
-                    aria-hidden="true"
-                  >
-                    <span />
-                  </div>
-                  <p
-                    className="absolute -top-7 left-0 font-profile-mono text-[9px] uppercase tracking-[0.24em] text-[var(--profile-muted)]"
-                    aria-hidden="true"
-                  >
-                    VISUAL / IMG.01 / 16.0433° N
-                  </p>
-                  <div
-                    className={cn(
-                      "profile-portrait-frame relative z-10 overflow-hidden rounded-[20px] border border-[var(--profile-border-strong)] bg-[var(--profile-surface)] p-2",
-                    )}
-                  >
-                    <span
-                      className="profile-frame-corner profile-frame-corner--tl"
-                      aria-hidden="true"
-                    />
-                    <span
-                      className="profile-frame-corner profile-frame-corner--br"
-                      aria-hidden="true"
-                    />
-                    <div className="relative overflow-hidden rounded-[13px] bg-black">
-                      <ImageWithFallback
-                        src={profileCard.avatar}
-                        alt={`${profileCard.name} portrait`}
-                        width={864}
-                        height={1184}
-                        loading="eager"
-                        decoding="async"
-                        className="profile-image block aspect-[4/5] w-full object-cover object-top"
-                      />
-                      <div
-                        className="profile-portrait-scan"
-                        aria-hidden="true"
-                      />
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 pt-16">
-                        <div className="flex items-center gap-2 text-white">
-                          <span className="text-sm font-semibold">
-                            {profileCard.name}
-                          </span>
-                        </div>
-                        <p className="font-profile-mono text-[10px] uppercase tracking-[0.18em] text-white/65">
-                          Designer / engineer / Philippines
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between px-1 pb-1 pt-3 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)]">
-                      <span>Signal stable</span>
-                      <span>EV / 2026</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              className="profile-status-rail profile-reveal grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] md:grid-cols-3"
-              style={revealStyle(220)}
+                {link.label}
+              </a>
+            );
+          })}
+          {pageLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="px-2 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
             >
-              {metrics.map((metric, index) => (
-                <div
-                  key={metric.label}
-                  className="profile-status-cell flex items-end justify-between gap-4 p-5 sm:p-6"
-                >
-                  <div>
-                    <p className={sectionEyebrow}>{metric.label}</p>
-                    <p className="mt-2 text-xl font-semibold text-[var(--profile-ink)]">
-                      {metric.value}
-                    </p>
-                  </div>
-                  <span className="font-profile-mono text-[10px] text-[var(--profile-muted)]">
-                    0{index + 1}
-                  </span>
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      </header>
+
+      <div id="overview" className="scrollzone" ref={zoneRef}>
+        <div className="stage">
+          {HERO_CARDS.map((card, index) => (
+            <div
+              key={card.id}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
+              className={`card ${card.id}`}
+              aria-hidden="true"
+            >
+              {heroCardSvg(card.id)}
+            </div>
+          ))}
+          <div className="hero" ref={heroRef}>
+            <p className="kicker">{hero.kicker}</p>
+            <h1 className="name">{profileCard.name}</h1>
+            <p className="disciplines">{hero.disciplines}</p>
+          </div>
+        </div>
+      </div>
+
+      <main id="main-content" tabIndex={-1} className="relative">
+        <div className="panels bg-[var(--paper)]">
+          <section className="panel">
+            <p className="label rise">00 — Profile</p>
+            <h2 className="statement wide rise" style={revealStyle(60)}>
+              {hero.headline[0]} {hero.headline[1]}
+            </h2>
+            <p className="lede rise" style={revealStyle(120)}>
+              {hero.intro}
+            </p>
+            <div
+              className="rise mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
+              style={revealStyle(160)}
+            >
+              <span className="inline-flex items-center gap-2">
+                <span className="profile-status-dot" aria-hidden="true" />
+                {hero.availability}
+              </span>
+              <span aria-hidden="true">·</span>
+              <span>{profileCard.location}</span>
+            </div>
+            <div
+              className="rise mt-8 flex flex-wrap gap-x-8 gap-y-3"
+              style={revealStyle(200)}
+            >
+              {profileCard.actions.map((cta) => {
+                const shouldOpenNewTab = isExternalHref(cta.href);
+                return (
+                  <a
+                    key={cta.label}
+                    href={cta.href}
+                    target={shouldOpenNewTab ? "_blank" : undefined}
+                    rel={shouldOpenNewTab ? "noreferrer noopener" : undefined}
+                    className="link-underline font-profile-mono text-xs uppercase tracking-[0.14em]"
+                  >
+                    {cta.label}
+                  </a>
+                );
+              })}
+              <a
+                href={pageLinks[0].href}
+                className="link-underline font-profile-mono text-xs uppercase tracking-[0.14em]"
+              >
+                View credentials
+              </a>
+            </div>
+            <div
+              className="rise mt-16 grid gap-6 border-t border-[var(--profile-border)] pt-8 sm:grid-cols-3"
+              style={revealStyle(240)}
+            >
+              {metrics.map((metric) => (
+                <div key={metric.label}>
+                  <p className="font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(23,21,15,.4)]">
+                    {metric.label}
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-[var(--profile-ink)]">
+                    {metric.value}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section
-            id="services"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
-          >
-            <div
-              className="profile-reveal space-y-4"
-              style={revealStyle(0)}
-            >
-              <p className={sectionEyebrow}>// 02 / process</p>
-              <h2 className={sectionTitle}>From discovery to launch</h2>
-              <p className={sectionCopy}>
-                Structured engagements that keep scope clear, quality high, and
-                collaboration smooth.
-              </p>
-            </div>
-            <div className="profile-process-grid grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] lg:grid-cols-3">
+          <section id="services" className="panel">
+            <p className="label rise">01 — Process</p>
+            <h2 className="statement rise">From discovery to launch.</h2>
+            <ul className="index">
               {services.map((service, index) => (
-                <article
+                <li
                   key={service.title}
-                  className={cn(
-                    "profile-process-step profile-reveal flex min-h-full flex-col p-6 sm:p-8",
-                    index % 2 === 0
-                      ? "profile-reveal--left"
-                      : "profile-reveal--right",
-                  )}
-                  style={revealStyle(100 + index * 70)}
+                  className="rise"
+                  style={revealStyle(index * 70)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <span
-                      className="profile-process-signal size-2 rounded-full border border-[var(--profile-accent)]"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="mt-16 space-y-3">
-                    <h3 className="text-2xl font-semibold text-[var(--profile-ink)]">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm text-[var(--profile-muted)]">
-                      {service.summary}
-                    </p>
-                  </div>
-                  <div className="mt-8 space-y-3 border-t border-[var(--profile-border)] pt-5">
-                    <p className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
-                      Includes
-                    </p>
-                    <ul className="space-y-2">
-                      {service.includes.map((item) => (
-                        <li
-                          key={item}
-                          className="flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
-                        >
-                          <span
-                            className="h-px w-4 bg-[var(--profile-accent)]"
-                            aria-hidden="true"
-                          />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
+                  <i className="n">{String(index + 1).padStart(3, "0")}</i>
+                  <b>{service.title}</b>
+                  <span>
+                    {service.summary} {service.includes.join(" · ")}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
 
-          <section className="mt-20">
+          <section className="border-y border-[var(--profile-border)] px-[clamp(1.5rem,8vw,8rem)] py-8">
             <div
-              className="profile-signal-strip profile-reveal overflow-hidden border-y border-[var(--profile-border)] py-6"
+              className="rise flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
               style={revealStyle(0)}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-2">
-                  <h2 className={sectionEyebrow}>// signal / collaborations</h2>
-                  <p className="text-sm text-[var(--profile-muted)]">
-                    Teams and communities I have supported.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMarqueePaused((isPaused) => !isPaused)}
-                  className="profile-motion-control inline-flex w-fit items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-4 py-2 text-xs font-semibold text-[var(--profile-ink)]"
-                >
-                  {marqueePaused ? (
-                    <Play className="size-3.5" aria-hidden="true" />
-                  ) : (
-                    <Pause className="size-3.5" aria-hidden="true" />
-                  )}
-                  {marqueePaused ? "Resume movement" : "Pause movement"}
-                </button>
-              </div>
-              <div className="mt-6 overflow-hidden">
-                <div
-                  ref={marqueeRef}
-                  className={cn(
-                    "profile-marquee flex w-max gap-4",
-                    marqueePaused && "is-paused",
-                  )}
-                >
-                  {marqueeItems.map((item, index) => (
-                    <div
-                      key={`${item.name}-${index}`}
-                      className="flex max-w-full flex-wrap items-center gap-3 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-4 py-2 text-xs font-profile-mono uppercase tracking-[0.2em] text-[var(--profile-muted)]"
-                      aria-hidden={index >= collaborations.length}
-                    >
-                      <span className="text-[var(--profile-ink)]">
-                        {item.name}
-                      </span>
-                      <span>{item.location}</span>
-                    </div>
-                  ))}
-                </div>
+              <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
+                // signal — collaborations
+              </p>
+              <button
+                type="button"
+                onClick={() => setMarqueePaused((isPaused) => !isPaused)}
+                className="profile-motion-control link-underline inline-flex w-fit items-center gap-2 font-profile-mono text-[11px] uppercase tracking-[0.16em]"
+              >
+                {marqueePaused ? (
+                  <Play className="size-3" aria-hidden="true" />
+                ) : (
+                  <Pause className="size-3" aria-hidden="true" />
+                )}
+                {marqueePaused ? "Resume movement" : "Pause movement"}
+              </button>
+            </div>
+            <div className="mt-6 overflow-hidden">
+              <div
+                ref={marqueeRef}
+                className={cn(
+                  "profile-marquee flex w-max gap-4",
+                  marqueePaused && "is-paused",
+                )}
+              >
+                {marqueeItems.map((item, index) => (
+                  <div
+                    key={`${item.name}-${index}`}
+                    className="flex max-w-full flex-wrap items-center gap-3 border border-[var(--profile-border)] px-4 py-2 font-profile-mono text-xs uppercase tracking-[0.16em] text-[var(--profile-muted)]"
+                    aria-hidden={index >= collaborations.length}
+                  >
+                    <span className="text-[var(--profile-ink)]">
+                      {item.name}
+                    </span>
+                    <span>{item.location}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
 
-          <section
-            id="capabilities"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
-          >
-            <div className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr]">
-              <div
-                className="profile-reveal profile-reveal--blur profile-reveal--left space-y-6"
-                style={revealStyle(0)}
-              >
-                <p className={sectionEyebrow}>// 03 / capability.stack</p>
-                <h2 className={sectionTitle}>The toolkit behind the work</h2>
-                <p className={sectionCopy}>
-                  A blend of UI craft, dependable services, and security-aware
-                  practices that keep products steady.
-                </p>
-                <div className="space-y-4">
-                  {focusAreas.map((area, index) => (
-                    <div
-                      key={area.title}
-                      className={cn(
-                        panelSurface,
-                        "profile-reveal profile-reveal--scale p-5",
-                        index % 2 === 0
-                          ? "profile-reveal--left"
-                          : "profile-reveal--right",
-                      )}
-                      style={revealStyle(100 + index * 60)}
-                    >
-                      <p className="text-lg font-semibold text-[var(--profile-ink)]">
-                        {area.title}
-                      </p>
-                      <p className="mt-2 text-sm text-[var(--profile-muted)]">
-                        {area.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="grid gap-6 lg:grid-cols-2">
+          <section id="capabilities" className="panel">
+            <p className="label rise">02 — Stack</p>
+            <h2 className="statement wide rise">
+              The toolkit behind the work.
+            </h2>
+            <div className="mt-12 grid gap-12 lg:grid-cols-[0.42fr_0.58fr] lg:gap-10">
+              <ul className="index mt-0">
+                {focusAreas.map((area, index) => (
+                  <li
+                    key={area.title}
+                    className="rise"
+                    style={revealStyle(index * 70)}
+                  >
+                    <i className="n">{String(index + 1).padStart(3, "0")}</i>
+                    <b>{area.title}</b>
+                    <span>{area.description}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="grid gap-5 sm:grid-cols-2">
                 {techStack.map((group, index) => (
                   <article
                     key={group.title}
                     className={cn(
-                      panelSurface,
-                      "profile-tech-card profile-reveal flex h-full flex-col p-6",
+                      "tech-card rise flex h-full flex-col",
                       (group.title === "Frontend" ||
                         group.title.startsWith("Cybersecurity")) &&
-                        "lg:col-span-2",
-                      index % 2 === 0
-                        ? "profile-reveal--right"
-                        : "profile-reveal--left",
+                        "sm:col-span-2",
                     )}
-                    style={revealStyle(100 + index * 45)}
+                    style={revealStyle(index * 60)}
                   >
-                    <div>
-                      <h3 className={sectionEyebrow}>{group.title}</h3>
-                      <p className="mt-3 text-sm text-[var(--profile-muted)]">
-                        {group.description}
-                      </p>
-                    </div>
-                    <div className="mt-5 flex flex-wrap gap-3">
+                    <p className="font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A8A]">
+                      {group.title}
+                    </p>
+                    <p className="mt-2 text-sm text-[#bdbdbd]">
+                      {group.description}
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-2">
                       {group.items.map((item) => (
                         <span
                           key={item.name}
-                          className="inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-3 py-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-ink)]"
+                          className="inline-flex items-center gap-2 border border-[#2A2A2A] px-3 py-1.5 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[var(--bone)]"
                         >
                           <TechLogo name={item.name} logo={item.logo} />
                           {item.name}
@@ -1060,207 +599,101 @@ export function ProfileView({
             </div>
           </section>
 
-          <section
-            id="security"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28"
-          >
-            <div
-              className="profile-security-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
-              style={revealStyle(0)}
-            >
-              <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
-                <div className="space-y-4">
-                  <p className={sectionEyebrow}>// 04 / secure.delivery</p>
-                  <h2 className={sectionTitle}>
-                    Security measures baked in
-                  </h2>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--profile-border)] text-[var(--profile-accent)]">
-                    <ShieldCheck className="size-4" aria-hidden="true" />
-                  </div>
-                  <p className={sectionCopy}>
-                    Practical steps that reduce risk, protect users, and keep
-                    delivery accountable from discovery through launch.
-                  </p>
-                </div>
-              </div>
-              <div className="profile-security-grid mt-10 grid border-t border-[var(--profile-border)] md:grid-cols-2">
-                {securityMeasures.map((measure, index) => (
+          <section id="security" className="panel">
+            <p className="label rise">03 — Security</p>
+            <h2 className="statement wide rise">
+              Security measures baked into delivery.
+            </h2>
+            <p className="lede rise">
+              Practical steps that reduce risk, protect users, and keep
+              delivery accountable from discovery through launch.
+            </p>
+            <ul className="index">
+              {securityMeasures.map((measure, index) => (
+                <li
+                  key={measure.title}
+                  className="rise"
+                  style={revealStyle(index * 70)}
+                >
+                  <i className="n">{String(index + 1).padStart(3, "0")}</i>
+                  <b>{measure.title}</b>
+                  <span>
+                    {measure.description} — {measure.items.join(" · ")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section id="proof" className="panel">
+            <p className="label rise">04 — Work</p>
+            <h2 className="statement wide rise">
+              Selected delivery highlights.
+            </h2>
+            <div className="mt-12 grid gap-10 lg:grid-cols-[0.66fr_0.34fr]">
+              <div className="grid gap-5 sm:grid-cols-2">
+                {experiences.map((experience, index) => (
                   <article
-                    key={measure.title}
-                    className={cn(
-                      "profile-security-step profile-reveal space-y-5 py-7 md:p-7",
-                      index % 2 === 0
-                        ? "profile-reveal--right"
-                        : "profile-reveal--left",
-                    )}
-                    style={revealStyle(80 + index * 45)}
+                    key={experience.company}
+                    className="project-card rise flex flex-col"
+                    style={revealStyle(index * 70)}
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-lg font-semibold text-[var(--profile-ink)]">
-                        {measure.title}
-                      </h3>
-                      <span className="font-profile-mono text-[10px] tracking-[0.18em] text-[var(--profile-muted)]">
-                        SEC.{String(index + 1).padStart(2, "0")}
-                      </span>
+                    <div className="flex items-center justify-between font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[#8A8A8A]">
+                      <span>0{index + 1}</span>
+                      <span>{experience.period}</span>
                     </div>
-                    <p className="text-sm text-[var(--profile-muted)]">
-                      {measure.description}
+                    <h3 className="mt-6 text-xl font-semibold text-[var(--bone)]">
+                      {experience.company}
+                    </h3>
+                    <p className="mt-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[#8A8A8A]">
+                      {experience.role}
                     </p>
-                    <ul className="space-y-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-muted)]">
-                      {measure.items.map((item) => (
-                        <li key={item} className="flex items-center gap-2">
-                          <span className="size-1.5 rounded-full bg-[var(--profile-accent)]" />
-                          <span>{item}</span>
+                    <p className="mt-4 text-sm leading-relaxed text-[#bdbdbd]">
+                      {experience.summary}
+                    </p>
+                    <ul className="mt-5 space-y-2 text-xs text-[#9a9a9a]">
+                      {experience.bullets.map((bullet) => (
+                        <li key={bullet} className="flex items-start gap-2">
+                          <span className="mt-1.5 size-1 shrink-0 bg-[#565656]" />
+                          <span>{bullet}</span>
                         </li>
                       ))}
                     </ul>
                   </article>
                 ))}
               </div>
-            </div>
-          </section>
-
-          <section
-            id="proof"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
-          >
-            <div
-              className="profile-reveal space-y-4"
-              style={revealStyle(0)}
-            >
-              <p className={sectionEyebrow}>// 05 / selected.work</p>
-              <h2 className={sectionTitle}>Selected delivery highlights</h2>
-            </div>
-            <div className="grid gap-10 lg:grid-cols-[0.66fr_0.34fr]">
-              <div className="profile-timeline border-t border-[var(--profile-border)]">
-                {experiences.map((experience, index) => (
-                  <article
-                    key={experience.company}
-                    className={cn(
-                      "profile-experience-entry profile-reveal border-b border-[var(--profile-border)] py-7 sm:grid sm:grid-cols-[5rem_1fr] sm:gap-6 sm:py-8",
-                      index % 2 === 0
-                        ? "profile-reveal--left"
-                        : "profile-reveal--right",
-                    )}
-                    style={revealStyle(80 + index * 60)}
-                  >
-                    <div className="mb-5 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)] sm:mb-0">
-                      <span className="block text-[var(--profile-accent)]">
-                        0{index + 1}
-                      </span>
-                      <span className="mt-2 block">Archive</span>
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]">
-                        <span>{experience.period}</span>
-                        <span
-                          className="inline-block h-px w-8 bg-[var(--profile-border)]"
-                          aria-hidden="true"
-                        />
-                        <span>{experience.role}</span>
-                      </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-[var(--profile-ink)]">
-                        {experience.company}
-                      </h3>
-                      <p className="mt-3 text-base text-[var(--profile-muted)]">
-                        {experience.summary}
-                      </p>
-                      <ul className="mt-6 space-y-3 text-sm text-[var(--profile-muted)]">
-                        {experience.bullets.map((bullet) => (
-                          <li key={bullet} className="flex items-start gap-3">
-                            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[var(--profile-accent)]" />
-                            <span>{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </article>
-                ))}
-              </div>
               <aside className="lg:sticky lg:top-28 lg:self-start">
                 <div
-                  className={cn(
-                    panelSurfaceStrong,
-                    "profile-availability-card profile-reveal space-y-4 p-6",
-                    "profile-reveal--right",
-                  )}
+                  className="rise border border-[var(--profile-border)] p-6"
                   style={revealStyle(120)}
                 >
-                  <p className={sectionEyebrow}>// availability</p>
-                  <p className="text-2xl font-semibold text-[var(--profile-ink)]">
+                  <p className="font-profile-mono text-[11px] uppercase tracking-[0.22em] text-[var(--profile-muted)]">
+                    // availability
+                  </p>
+                  <p className="mt-3 text-xl font-semibold text-[var(--profile-ink)]">
                     Open for new collaborations
                   </p>
-                  <p className="text-sm text-[var(--profile-muted)]">
-                    I work with teams that value clarity, ethics, and measurable
-                    outcomes. Reach out to align on scope and timing.
+                  <p className="mt-3 text-sm text-[var(--profile-muted)]">
+                    I work with teams that value clarity, ethics, and
+                    measurable outcomes. Reach out to align on scope and
+                    timing.
                   </p>
-                  <Button
-                    asChild
-                    size="lg"
-                    className="profile-button rounded-full bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
+                  <a
+                    href="#contact"
+                    onClick={(event) => handleAnchorClick(event, "#contact")}
+                    className="link-underline mt-6 inline-block font-profile-mono text-xs uppercase tracking-[0.14em]"
                   >
-                    <a
-                      href="#contact"
-                      onClick={(event) => handleAnchorClick(event, "#contact")}
-                      className="inline-flex items-center gap-2"
-                    >
-                      Start a project
-                      <ArrowUpRight className="profile-cta-arrow size-4" />
-                    </a>
-                  </Button>
-                  <div className="border-t border-[var(--profile-border)] pt-5">
-                    <p className={sectionEyebrow}>Case studies</p>
-                    {projects.length ? (
-                      <div className="mt-4 space-y-4">
-                        {projects.map((project) => (
-                          <div key={project.title} className="space-y-2">
-                            <p className="font-semibold text-[var(--profile-ink)]">
-                              {project.title}
-                            </p>
-                            <p className="text-sm text-[var(--profile-muted)]">
-                              {project.description}
-                            </p>
-                            <a
-                              href={project.link}
-                              target="_blank"
-                              rel="noreferrer noopener"
-                              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)]"
-                            >
-                              View case study
-                              <ExternalLink className="size-4" />
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="mt-3 text-sm text-[var(--profile-muted)]">
-                        Detailed case studies are being prepared. The delivery
-                        summary remains available above.
-                      </p>
-                    )}
-                  </div>
+                    Start a project
+                  </a>
                 </div>
               </aside>
             </div>
           </section>
 
-          <section
-            id="faq"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-10"
-          >
-            <div
-              className="profile-reveal space-y-4"
-              style={revealStyle(0)}
-            >
-              <p className={sectionEyebrow}>// 06 / common.queries</p>
-              <h2 className={sectionTitle}>Questions, answered</h2>
-            </div>
-            <div className="border-t border-[var(--profile-border)]">
+          <section id="faq" className="panel">
+            <p className="label rise">05 — FAQ</p>
+            <h2 className="statement rise">Questions, answered.</h2>
+            <div className="mt-10 border-t border-[var(--profile-border)]">
               {faqs.map((faq, index) => {
                 const isOpen = openFaq === index;
                 const triggerId = `faq-trigger-${index}`;
@@ -1268,13 +701,8 @@ export function ProfileView({
                 return (
                   <div
                     key={faq.question}
-                    className={cn(
-                      "profile-faq-row profile-reveal overflow-hidden border-b border-[var(--profile-border)]",
-                      index % 2 === 0
-                        ? "profile-reveal--left"
-                        : "profile-reveal--right",
-                    )}
-                    style={revealStyle(70 + index * 35)}
+                    className="profile-faq-row rise border-b border-[var(--profile-border)]"
+                    style={revealStyle(index * 40)}
                   >
                     <h3>
                       <button
@@ -1283,17 +711,17 @@ export function ProfileView({
                         onClick={() => setOpenFaq(isOpen ? null : index)}
                         aria-expanded={isOpen}
                         aria-controls={panelId}
-                        className="profile-faq-trigger grid w-full grid-cols-[2rem_1fr_auto] items-center gap-4 py-6 text-left sm:grid-cols-[4rem_1fr_auto]"
+                        className="profile-faq-trigger grid w-full grid-cols-[2.75rem_1fr_auto] items-baseline gap-4 py-6 text-left sm:grid-cols-[3.5rem_1fr_auto]"
                       >
-                        <span className="font-profile-mono text-[10px] tracking-[0.18em] text-[var(--profile-accent)]">
-                          0{index + 1}
-                        </span>
-                        <span className="text-base font-semibold text-[var(--profile-ink)]">
+                        <i className="font-profile-mono text-[10px] tracking-[0.14em] text-[rgba(23,21,15,.3)]">
+                          {String(index + 1).padStart(3, "0")}
+                        </i>
+                        <b className="text-[1.05rem] font-medium tracking-[-0.015em] text-[var(--profile-ink)]">
                           {faq.question}
-                        </span>
+                        </b>
                         <ChevronDown
                           className={cn(
-                            "size-5 text-[var(--profile-muted)] transition",
+                            "size-4 text-[var(--profile-muted)] transition",
                             isOpen && "rotate-180",
                           )}
                           aria-hidden="true"
@@ -1305,9 +733,9 @@ export function ProfileView({
                       role="region"
                       aria-labelledby={triggerId}
                       hidden={!isOpen}
-                      className="pb-6 pl-12 pr-10 sm:pl-20"
+                      className="pb-6 pl-11 pr-8 sm:pl-14"
                     >
-                      <p className="text-sm text-[var(--profile-muted)]">
+                      <p className="font-profile-mono text-[13px] leading-relaxed text-[rgba(23,21,15,.45)]">
                         {faq.answer}
                       </p>
                     </div>
@@ -1317,127 +745,121 @@ export function ProfileView({
             </div>
           </section>
 
-          <section
-            id="contact"
-            tabIndex={-1}
-            className="mt-28 scroll-mt-28"
-          >
+          <section id="contact" className="panel">
+            <p className="label rise">06 — Contact</p>
+            <h2 className="statement wide rise">{contact.title}</h2>
+            <p className="lede rise">{contact.description}</p>
             <div
-              className="profile-contact-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
-              style={revealStyle(0)}
+              className="rise mt-8 flex flex-wrap gap-6"
+              style={revealStyle(120)}
             >
-              <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
-                <div>
-                  <p className={sectionEyebrow}>// 07 / open.channel</p>
-                  <h2 className="mt-5 max-w-3xl font-profile-display text-4xl font-semibold leading-[1] tracking-[-0.04em] text-[var(--profile-ink)] sm:text-5xl lg:text-6xl">
-                    {contact.title}
-                  </h2>
-                </div>
-                <div>
-                  <p className="text-base leading-relaxed text-[var(--profile-muted)]">
-                    {contact.description}
-                  </p>
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    {contact.ctas.map((cta) => {
-                      const shouldOpenNewTab = isExternalHref(cta.href);
-
-                      return (
-                        <Button
-                          key={cta.label}
-                          className="profile-button rounded-full bg-[var(--profile-ink)] px-6 text-sm font-semibold text-[var(--profile-bg)] hover:bg-black"
-                          size="lg"
-                          asChild
-                        >
-                          <a
-                            href={cta.href}
-                            target={shouldOpenNewTab ? "_blank" : undefined}
-                            rel={
-                              shouldOpenNewTab
-                                ? "noreferrer noopener"
-                                : undefined
-                            }
-                            className="inline-flex items-center gap-2"
-                          >
-                            {cta.label}
-                            <Mail className="size-4" />
-                            <ArrowUpRight className="profile-cta-arrow size-4" />
-                          </a>
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-              <div className="profile-contact-grid mt-10 grid border-t border-[var(--profile-border)] sm:grid-cols-2 lg:grid-cols-5">
-                {contact.details.map((detail) => {
-                  const detailIsExternal = detail.href
-                    ? isExternalHref(detail.href)
-                    : false;
-
-                  return (
-                    <div
-                      key={detail.label}
-                      className="profile-contact-cell min-w-0 py-5 sm:px-4 sm:first:pl-0 lg:py-6"
-                    >
-                      <p className={sectionEyebrow}>{detail.label}</p>
-                      {detail.href ? (
-                        <a
-                          href={detail.href}
-                          className="mt-2 block break-words text-sm font-semibold text-[var(--profile-ink)] hover:underline"
-                          target={detailIsExternal ? "_blank" : undefined}
-                          rel={
-                            detailIsExternal
-                              ? "noreferrer noopener"
-                              : undefined
-                          }
-                        >
-                          {detail.value}
-                        </a>
-                      ) : (
-                        <p className="mt-2 text-sm font-semibold text-[var(--profile-ink)]">
-                          {detail.value}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-                {socialLinks.map((link) => (
-                  <div
-                    key={link.label}
-                    className="profile-contact-cell py-5 sm:px-4 lg:py-6"
-                  >
-                    <p className={sectionEyebrow}>Social</p>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)] hover:underline"
-                    >
-                      {getSocialIcon(link.label)}
-                      {link.label}
-                      <ExternalLink className="size-3.5" />
-                    </a>
-                  </div>
-                ))}
-                <div className="profile-contact-cell py-5 sm:px-4 lg:py-6">
-                  <p className={sectionEyebrow}>Credentials</p>
+              {contact.ctas.map((cta) => {
+                const shouldOpenNewTab = isExternalHref(cta.href);
+                return (
                   <a
-                    href={pageLinks[0].href}
-                    className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[var(--profile-ink)] hover:underline"
+                    key={cta.label}
+                    href={cta.href}
+                    target={shouldOpenNewTab ? "_blank" : undefined}
+                    rel={shouldOpenNewTab ? "noreferrer noopener" : undefined}
+                    className="link-underline font-profile-mono text-xs uppercase tracking-[0.14em]"
                   >
-                    Certification index
-                    <ArrowUpRight className="size-3.5" />
+                    {cta.label}
+                  </a>
+                );
+              })}
+            </div>
+            <div
+              className="rise mt-16 grid gap-8 border-t border-[var(--profile-border)] pt-8 sm:grid-cols-2 lg:grid-cols-5"
+              style={revealStyle(160)}
+            >
+              {contact.details.map((detail) => {
+                const detailIsExternal = detail.href
+                  ? isExternalHref(detail.href)
+                  : false;
+
+                return (
+                  <div
+                    key={detail.label}
+                    className="profile-contact-cell min-w-0 py-1 sm:px-6 sm:first:pl-0"
+                  >
+                    <p className="font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(23,21,15,.4)]">
+                      {detail.label}
+                    </p>
+                    {detail.href ? (
+                      <a
+                        href={detail.href}
+                        className="link-underline mt-2 inline-block break-words text-sm font-medium text-[var(--profile-ink)]"
+                        target={detailIsExternal ? "_blank" : undefined}
+                        rel={
+                          detailIsExternal ? "noreferrer noopener" : undefined
+                        }
+                      >
+                        {detail.value}
+                      </a>
+                    ) : (
+                      <p className="mt-2 text-sm font-medium text-[var(--profile-ink)]">
+                        {detail.value}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+              {socialLinks.map((link) => (
+                <div
+                  key={link.label}
+                  className="profile-contact-cell py-1 sm:px-6"
+                >
+                  <p className="font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(23,21,15,.4)]">
+                    Social
+                  </p>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="link-underline mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--profile-ink)]"
+                  >
+                    {getSocialIcon(link.label)}
+                    {link.label}
+                    <ExternalLink className="size-3.5" />
                   </a>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2 border-t border-[var(--profile-border)] pt-5 font-profile-mono text-[9px] uppercase tracking-[0.18em] text-[var(--profile-muted)] sm:flex-row sm:items-center sm:justify-between">
-                <span>{profileCard.name}</span>
-                <span>Clear systems / thoughtful delivery / open channel</span>
+              ))}
+              <div className="profile-contact-cell py-1 sm:px-6">
+                <p className="font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(23,21,15,.4)]">
+                  Credentials
+                </p>
+                <a
+                  href={pageLinks[0].href}
+                  className="link-underline mt-2 inline-block text-sm font-medium text-[var(--profile-ink)]"
+                >
+                  Certification index
+                </a>
               </div>
             </div>
           </section>
-        </main>
-      </div>
+
+          <footer className="foot">
+            <span>{profileCard.location}</span>
+            <span>
+              {emailDetail?.href ? (
+                <a href={emailDetail.href}>email</a>
+              ) : null}
+              {socialLinks.map((link) => (
+                <Fragment key={link.label}>
+                  {" "}
+                  ·{" "}
+                  <a href={link.href} target="_blank" rel="noreferrer noopener">
+                    {link.label.toLowerCase()}
+                  </a>
+                </Fragment>
+              ))}
+              {" "}
+              ·{" "}
+              <a href={pageLinks[0].href}>credentials</a>
+            </span>
+          </footer>
+        </div>
+      </main>
     </div>
   );
 }

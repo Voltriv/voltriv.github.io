@@ -1,11 +1,9 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import App from "@/App";
 import { profileData } from "@/data/profile";
 import { ProfileView } from "@/features/profile/ProfileView";
 
-const renderProfile = () =>
-  render(<ProfileView darkMode={false} onToggleDarkMode={vi.fn()} />);
+const renderProfile = () => render(<ProfileView />);
 
 const getRequiredElement = <ElementType extends Element>(selector: string) => {
   const element = document.querySelector<ElementType>(selector);
@@ -103,9 +101,7 @@ describe("ProfileView interactions", () => {
     );
     renderProfile();
 
-    expect(
-      document.querySelectorAll(".profile-reveal:not(.is-visible)"),
-    ).toHaveLength(0);
+    expect(document.querySelectorAll(".rise:not(.in)")).toHaveLength(0);
 
     fireEvent.click(
       getRequiredElement<HTMLAnchorElement>('a[href="#main-content"]'),
@@ -117,19 +113,6 @@ describe("ProfileView interactions", () => {
     expect(document.getElementById("main-content")).toHaveFocus();
   });
 
-  it("persists theme changes and exposes the next theme action", () => {
-    render(<App />);
-    const themeButton = getRequiredElement<HTMLButtonElement>(
-      'button[aria-label="Switch to dark theme"]',
-    );
-
-    fireEvent.click(themeButton);
-
-    expect(document.documentElement).toHaveClass("dark");
-    expect(window.localStorage.getItem("theme")).toBe("dark");
-    expect(themeButton).toHaveAccessibleName("Switch to light theme");
-  });
-
   it("reveals content when IntersectionObserver is unavailable", () => {
     const originalObserver = globalThis.IntersectionObserver;
     vi.stubGlobal("IntersectionObserver", undefined);
@@ -137,9 +120,7 @@ describe("ProfileView interactions", () => {
     try {
       renderProfile();
 
-      expect(
-        document.querySelectorAll(".profile-reveal:not(.is-visible)"),
-      ).toHaveLength(0);
+      expect(document.querySelectorAll(".rise:not(.in)")).toHaveLength(0);
     } finally {
       vi.stubGlobal("IntersectionObserver", originalObserver);
     }
@@ -202,109 +183,5 @@ describe("ProfileView interactions", () => {
     } finally {
       vi.stubGlobal("IntersectionObserver", originalObserver);
     }
-  });
-
-  it("tracks fine-pointer motion and clears portrait tilt on cancel", () => {
-    vi.mocked(window.matchMedia).mockImplementation((query) =>
-      createMediaQueryList(query, query === "(pointer: fine)"),
-    );
-    const requestFrame = vi
-      .spyOn(window, "requestAnimationFrame")
-      .mockImplementation((callback) => {
-        callback(0);
-        return 1;
-      });
-    const cancelFrame = vi
-      .spyOn(window, "cancelAnimationFrame")
-      .mockImplementation(() => undefined);
-
-    try {
-      renderProfile();
-      const root = getRequiredElement<HTMLElement>(".profile-theme");
-      const portrait = getRequiredElement<HTMLDivElement>(
-        ".profile-portrait-stage",
-      );
-      vi.spyOn(portrait, "getBoundingClientRect").mockReturnValue({
-        left: 0,
-        top: 0,
-        right: 200,
-        bottom: 400,
-        width: 200,
-        height: 400,
-        x: 0,
-        y: 0,
-        toJSON: () => ({}),
-      });
-
-      fireEvent.pointerMove(window, { clientX: 120, clientY: 80 });
-      expect(root.style.getPropertyValue("--pointer-x")).toBe("120px");
-      expect(root.style.getPropertyValue("--pointer-y")).toBe("80px");
-
-      fireEvent.pointerEnter(portrait, { pointerType: "mouse" });
-      fireEvent.pointerMove(portrait, {
-        pointerType: "mouse",
-        clientX: 180,
-        clientY: 100,
-      });
-      expect(
-        portrait.style.getPropertyValue("--portrait-rotate-y"),
-      ).not.toBe("");
-
-      fireEvent.pointerCancel(portrait, { pointerType: "mouse" });
-      expect(portrait.style.getPropertyValue("--portrait-rotate-y")).toBe("");
-      expect(portrait.style.getPropertyValue("--portrait-shift-x")).toBe("");
-    } finally {
-      requestFrame.mockRestore();
-      cancelFrame.mockRestore();
-    }
-  });
-
-  it("follows the system theme until the user chooses explicitly", () => {
-    let systemThemeListener:
-      | ((event: MediaQueryListEvent) => void)
-      | undefined;
-
-    vi.mocked(window.matchMedia).mockImplementation((query) => {
-      const mediaQuery = createMediaQueryList(
-        query,
-        query === "(prefers-color-scheme: dark)",
-      );
-
-      if (query !== "(prefers-color-scheme: dark)") {
-        return mediaQuery;
-      }
-
-      return {
-        ...mediaQuery,
-        addEventListener: vi.fn((eventName, listener) => {
-          if (eventName === "change" && typeof listener === "function") {
-            systemThemeListener = listener as (
-              event: MediaQueryListEvent,
-            ) => void;
-          }
-        }),
-      };
-    });
-
-    render(<App />);
-    const themeButton = getRequiredElement<HTMLButtonElement>(
-      'button[aria-label="Switch to light theme"]',
-    );
-
-    expect(document.documentElement).toHaveClass("dark");
-    expect(window.localStorage.getItem("theme")).toBeNull();
-
-    act(() => {
-      systemThemeListener?.({ matches: false } as MediaQueryListEvent);
-    });
-
-    expect(document.documentElement).not.toHaveClass("dark");
-    expect(themeButton).toHaveAccessibleName("Switch to dark theme");
-    expect(window.localStorage.getItem("theme")).toBeNull();
-
-    fireEvent.click(themeButton);
-
-    expect(document.documentElement).toHaveClass("dark");
-    expect(window.localStorage.getItem("theme")).toBe("dark");
   });
 });
