@@ -1,18 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="18" fill="#f8f4ee" />
-  <path
-    d="M32 12v12M32 40v12M12 32h12M40 32h12"
-    fill="none"
-    stroke="#c05a12"
-    stroke-linecap="round"
-    stroke-width="5"
-  />
-  <path
-    d="m21 21 6 6M37 37l6 6M43 21l-6 6M27 37l-6 6"
-    fill="none"
-    stroke="#c05a12"
-    stroke-linecap="round"
-    stroke-width="4"
-  />
-  <circle cx="32" cy="32" r="5" fill="#1a1a1a" />
+  <rect width="64" height="64" rx="18" fill="#151515" />
+  <text
+    x="32"
+    y="41"
+    text-anchor="middle"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    font-size="25"
+    font-weight="600"
+    letter-spacing="0.5"
+    fill="#f5f1ea"
+  >EV</text>
 </svg>
