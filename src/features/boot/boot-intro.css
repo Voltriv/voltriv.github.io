@@ -1,10 +1,24 @@
 #boot {
+  --boot-bg: #090a0a;
+  --boot-surface: rgba(13, 14, 14, 0.88);
+  --boot-surface-strong: #111212;
+  --boot-ink: #f5f5f5;
+  --boot-muted: #a5a5a5;
+  --boot-dim: #7d8080;
+  --boot-border: rgba(255, 255, 255, 0.14);
+  --boot-border-strong: rgba(255, 255, 255, 0.28);
+  --boot-accent: #ff8a3d;
+  --boot-accent-glow: rgba(255, 138, 61, 0.45);
+  --boot-shadow: 0 20px 56px rgba(0, 0, 0, 0.32);
+
   position: fixed;
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-  color: var(--bone);
-  font-family: var(--mono);
+  color: var(--boot-ink);
+  font-family:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 #boot.boot-gone {
   pointer-events: none;
@@ -13,7 +27,19 @@
 .boot-sheet {
   position: absolute;
   inset: 0;
-  background: radial-gradient(125% 95% at 50% 32%, #151515 0%, #0a0a0a 74%);
+  background: radial-gradient(
+    125% 95% at 50% 32%,
+    var(--boot-surface-strong) 0%,
+    var(--boot-bg) 74%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 6vw, 3rem);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--boot-border-strong);
+  box-shadow: var(--boot-shadow);
   transition: transform 0.9s cubic-bezier(0.7, 0, 0.2, 1);
 }
 #boot.boot-gone .boot-sheet {
@@ -37,7 +63,7 @@
   opacity: 0.5;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.045) 0 1px,
+    rgba(245, 245, 245, 0.045) 0 1px,
     transparent 1px 3px
   );
 }
@@ -54,9 +80,9 @@
   transform: translateY(-46vh);
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.035) 72%,
-    rgba(255, 255, 255, 0.07) 100%
+    rgba(245, 245, 245, 0) 0%,
+    rgba(245, 245, 245, 0.035) 72%,
+    rgba(245, 245, 245, 0.07) 100%
   );
   animation: bootDrift 4.2s linear infinite;
 }
@@ -76,8 +102,8 @@
   top: 0;
   height: 1px;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.3);
+  background: var(--boot-accent);
+  box-shadow: 0 0 18px var(--boot-accent-glow);
   will-change: transform;
   transform: translateY(-2vh);
   pointer-events: none;
@@ -94,57 +120,30 @@
   }
 }
 
-.boot-head {
-  position: absolute;
-  inset: 0;
+.boot-sheet > *:not(.boot-grain):not(.boot-lines):not(.boot-drift):not(.boot-scan) {
+  position: relative;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1.25rem;
-  text-align: center;
-}
-
-.boot-kicker {
-  margin: 0 0 clamp(0.9rem, 2.5vw, 1.4rem);
-  font-size: clamp(0.5625rem, 1.5vw, 0.6875rem);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #6e6e6e;
 }
 
 .boot-greet {
   margin: 0;
-  max-width: 100%;
-  font-size: clamp(1.75rem, 7vw, 4.75rem);
+  font-size: clamp(2rem, 9.5vw, 5.5rem);
   font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1;
   min-height: 1em;
+  text-align: center;
   white-space: nowrap;
 }
 .boot-greet .g-dim {
-  color: #565656;
-}
-
-.boot-foot {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  bottom: clamp(1.25rem, 4vw, 2.5rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 1.25rem;
+  color: var(--boot-dim);
 }
 
 .boot-rule {
   width: min(20rem, 54vw);
   height: 1px;
-  background: #2a2a2a;
-  margin: 0 0 clamp(0.9rem, 2.4vw, 1.3rem);
+  margin: clamp(1.1rem, 3vw, 1.9rem) 0 clamp(0.9rem, 2.4vw, 1.3rem);
+  background: var(--boot-border);
   position: relative;
   flex: none;
 }
@@ -152,15 +151,15 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 0;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  background: var(--boot-accent);
+  box-shadow: 0 0 10px var(--boot-accent-glow);
   transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .boot-status {
   margin: 0;
   font-size: clamp(0.6875rem, 1.7vw, 0.8125rem);
-  color: var(--ash);
+  color: var(--boot-muted);
   letter-spacing: 0.04em;
   line-height: 1.55;
   min-height: 4.9em;
@@ -173,7 +172,7 @@
 .boot-status em {
   display: block;
   font-style: normal;
-  color: #fff;
+  color: var(--boot-ink);
   letter-spacing: 0.01em;
   font-size: 1.15em;
 }
@@ -181,7 +180,7 @@
   display: inline-block;
   width: 0.5em;
   height: 1em;
-  background: #fff;
+  background: var(--boot-accent);
   text-decoration: none;
   vertical-align: -0.15em;
   margin-left: 0.35em;
@@ -194,7 +193,7 @@
 }
 
 .boot-status q {
-  color: #f2f2f2;
+  color: var(--boot-ink);
   quotes: '"' '"';
 }
 .boot-status .fp {
@@ -203,18 +202,18 @@
   margin-top: 0.5em;
   letter-spacing: 0.1em;
   font-size: 0.95em;
-  color: #6a6a6a;
+  color: var(--boot-dim);
 }
 .boot-status .fp.done {
-  color: #fff;
+  color: var(--boot-ink);
 }
 
 .boot-dump {
-  margin: clamp(0.8rem, 2.2vw, 1.2rem) 0 0;
-  padding: clamp(0.55rem, 1.8vw, 0.85rem) clamp(0.75rem, 2.2vw, 1.1rem);
-  background: #141414;
-  border: 1px solid #2a2a2a;
-  border-radius: 2px;
+  margin: clamp(0.9rem, 2.4vw, 1.4rem) 0 0;
+  padding: clamp(0.6rem, 2vw, 0.9rem) clamp(0.8rem, 2.5vw, 1.2rem);
+  background: var(--boot-surface-strong);
+  border: 1px solid var(--boot-border);
+  border-radius: 0.75rem;
   font-size: clamp(0.5625rem, 1.9vw, 0.75rem);
   line-height: 1.75;
   white-space: pre;
@@ -229,25 +228,24 @@
   transform: none;
 }
 .boot-dump .off {
-  color: #4a4a4a;
+  color: var(--boot-dim);
 }
 .boot-dump .b-dim {
-  color: #4a4a4a;
+  color: var(--boot-dim);
 }
 .boot-dump .b-on {
-  color: #8a8a8a;
+  color: var(--boot-muted);
 }
 .boot-dump .a-on {
-  color: #fff;
+  color: var(--boot-ink);
 }
 
 .boot-skip {
-  margin-top: clamp(1rem, 3vw, 1.6rem);
+  margin-top: clamp(1.5rem, 4.5vw, 2.4rem);
   background: none;
   border: 0;
-  color: #6a6a6a;
+  color: var(--boot-dim);
   font: inherit;
-  font-family: var(--mono);
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
   padding: 0.4rem 0.7rem;
@@ -261,10 +259,10 @@
   opacity: 1;
 }
 .boot-skip:hover {
-  color: #fff;
+  color: var(--boot-ink);
 }
 .boot-skip:focus-visible {
-  outline: 1px solid #fff;
+  outline: 1px solid var(--boot-accent);
   outline-offset: 3px;
   opacity: 1;
 }

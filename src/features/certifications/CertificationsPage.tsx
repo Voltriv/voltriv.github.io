@@ -13,7 +13,6 @@ import {
   type Certification,
   type CertificationCategory,
 } from "@/data/certifications";
-import { useRiseReveal } from "@/hooks/useRiseReveal";
 import "./certifications.css";
 
 type CertificationFilter = "All" | CertificationCategory;
@@ -53,8 +52,6 @@ export function CertificationsPage({
     useState<CertificationFilter>("All");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const normalizedQuery = query.trim().toLocaleLowerCase();
-
-  useRiseReveal(undefined, { stagger: true }, [normalizedQuery, activeCategory, items]);
 
   const categoryCounts = useMemo(
     () =>
@@ -135,7 +132,7 @@ export function CertificationsPage({
             </a>
           </div>
 
-          <div className="credentials-heading rise">
+          <div className="credentials-heading">
             <h1>Certifications &amp; credentials</h1>
             <p>
               A searchable index for confirmed training across design,
@@ -152,7 +149,7 @@ export function CertificationsPage({
             Browse credentials
           </h2>
 
-          <div className="credentials-query-row rise">
+          <div className="credentials-query-row">
             <div className="credentials-search">
               <label
                 className="credentials-sr-only"
@@ -198,7 +195,7 @@ export function CertificationsPage({
             </p>
           </div>
 
-          <fieldset className="credentials-filters rise">
+          <fieldset className="credentials-filters">
             <legend>// category</legend>
             <div className="credentials-filter-list">
               {filters.map((filter) => {
@@ -228,7 +225,7 @@ export function CertificationsPage({
 
           {items.length === 0 ? (
             <section
-              className="credentials-empty rise"
+              className="credentials-empty"
               data-empty-state
               aria-labelledby="credentials-empty-title"
             >
@@ -260,7 +257,7 @@ export function CertificationsPage({
                 return (
                   <li key={credential.id}>
                     <article
-                      className="credential-card rise"
+                      className="credential-card"
                       data-credential-card={credential.id}
                     >
                       <div className="credential-card-header">
@@ -335,7 +332,7 @@ export function CertificationsPage({
             </ol>
           ) : (
             <section
-              className="credentials-empty credentials-empty--compact rise"
+              className="credentials-empty credentials-empty--compact"
               data-no-results
               aria-labelledby="credentials-no-results-title"
             >

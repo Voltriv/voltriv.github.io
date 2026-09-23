@@ -8,7 +8,6 @@ type BootIntroProps = {
   churnMs?: number;
   name?: string;
   role?: string;
-  onComplete?: () => void;
 };
 
 const GLYPHS = "01#$%&*<>/\\|{}[]≡+=~";
@@ -22,7 +21,6 @@ export function BootIntro({
   churnMs = 50,
   name = profileData.profileCard.name,
   role = profileData.hero.role,
-  onComplete,
 }: BootIntroProps) {
   const [mounted, setMounted] = useState(() => {
     if (!oncePerSession) return true;
@@ -40,16 +38,6 @@ export function BootIntro({
   const scanRef = useRef<HTMLElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
   const srRef = useRef<HTMLParagraphElement>(null);
-  const onCompleteRef = useRef(onComplete);
-
-  useEffect(() => {
-    onCompleteRef.current = onComplete;
-  }, [onComplete]);
-
-  useEffect(() => {
-    if (!mounted) onCompleteRef.current?.();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -80,7 +68,6 @@ export function BootIntro({
       if (raf) cancelAnimationFrame(raf);
       root.classList.add("boot-gone");
       document.documentElement.style.overflow = "";
-      onCompleteRef.current?.();
       unmountTimer = setTimeout(() => setMounted(false), 1000);
     };
 
@@ -370,25 +357,20 @@ export function BootIntro({
         <i className="boot-drift" />
         <i className="boot-scan" ref={scanRef} />
 
-        <div className="boot-head">
-          <p className="boot-kicker">TLS 1.3 · secure session</p>
-          <h1 className="boot-greet" aria-hidden="true">
-            <span ref={textRef} />
-          </h1>
+        <h1 className="boot-greet" aria-hidden="true">
+          <span ref={textRef} />
+        </h1>
+
+        <div className="boot-rule">
+          <i ref={barRef} />
         </div>
 
-        <div className="boot-foot">
-          <div className="boot-rule">
-            <i ref={barRef} />
-          </div>
+        <p className="boot-status" ref={statusRef} aria-hidden="true" />
+        <pre className="boot-dump" ref={dumpRef} aria-hidden="true" />
 
-          <p className="boot-status" ref={statusRef} aria-hidden="true" />
-          <pre className="boot-dump" ref={dumpRef} aria-hidden="true" />
-
-          <button className="boot-skip" ref={skipRef} type="button">
-            skip
-          </button>
-        </div>
+        <button className="boot-skip" ref={skipRef} type="button">
+          skip
+        </button>
       </div>
 
       <p className="boot-sr" ref={srRef} />

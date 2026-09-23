@@ -13,6 +13,12 @@ export type Experience = {
   bullets: string[];
 };
 
+export type Project = {
+  title: string;
+  description: string;
+  link: string;
+};
+
 export type FocusArea = {
   title: string;
   description: string;
@@ -80,9 +86,7 @@ export type ContactInfo = {
 
 export type HeroProfile = {
   marker: string;
-  kicker: string;
   role: string;
-  disciplines: string;
   headline: [string, string];
   intro: string;
   availability: string;
@@ -99,6 +103,7 @@ export type ProfileData = {
   pageLinks: NavLink[];
   services: ServiceItem[];
   experiences: Experience[];
+  projects: Project[];
   focusAreas: FocusArea[];
   securityMeasures: SecurityMeasure[];
   techStack: TechStackCategory[];
@@ -112,10 +117,7 @@ export type ProfileData = {
 export const profileData: ProfileData = {
   hero: {
     marker: "// profile.index",
-    kicker: "UI/UX · Front-end · Security-aware",
     role: "UI/UX designer · front-end developer · security-minded builder",
-    disciplines:
-      "UI/UX designer · front-end developer · security-minded builder",
     headline: ["I design, build", "& secure digital products."],
     intro:
       "I turn complex ideas into clear, accessible interfaces—then help teams ship them with thoughtful front-end engineering and practical security checks.",
@@ -203,6 +205,9 @@ export const profileData: ProfileData = {
         "Worked with eng to test SMS + push notification flows for early warnings.",
       ],
     },
+  ],
+  projects: [
+    // Intentionally left empty so the UI shows a placeholder card.
   ],
   techStack: [
     {
