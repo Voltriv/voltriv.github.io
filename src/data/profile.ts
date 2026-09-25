@@ -213,29 +213,32 @@ export const profileData: ProfileData = {
     {
       title: "Frontend",
       description: "Interfaces and systems for delightful product experiences.",
+      // Logos are requested in black rather than brand colour: the site is
+      // monochrome, and desaturating a brand colour in CSS would leave washed
+      // mid-greys on the white chip instead of a crisp mark.
       items: [
-        { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/F7DF1E" },
-        { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6" },
-        { name: "React", logo: "https://cdn.simpleicons.org/react/149ECA" },
+        { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/000000" },
+        { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/000000" },
+        { name: "React", logo: "https://cdn.simpleicons.org/react/000000" },
         { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000" },
-        { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4" },
+        { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/000000" },
       ],
     },
     {
       title: "Backend",
       description: "APIs and services powering civic-grade platforms.",
       items: [
-        { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/339933" },
-        { name: "Python", logo: "https://cdn.simpleicons.org/python/3776AB" },
-        { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4" },
-        { name: "MongoDB", logo: "https://cdn.simpleicons.org/mongodb/47A248" },
+        { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/000000" },
+        { name: "Python", logo: "https://cdn.simpleicons.org/python/000000" },
+        { name: "PHP", logo: "https://cdn.simpleicons.org/php/000000" },
+        { name: "MongoDB", logo: "https://cdn.simpleicons.org/mongodb/000000" },
       ],
     },
     {
       title: "DevOps & Cloud",
       description: "Pipelines and infrastructure that keep deployments safe and observable.",
       items: [
-        { name: "GitHub Actions", logo: "https://cdn.simpleicons.org/githubactions/2088FF" },
+        { name: "GitHub Actions", logo: "https://cdn.simpleicons.org/githubactions/000000" },
       ],
     },
     {
@@ -336,6 +339,10 @@ export const profileData: ProfileData = {
     {
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/elijah-vinluan-308486356/",
+    },
+    {
+      label: "GitHub",
+      href: "https://github.com/Voltriv",
     },
   ],
   faqs: [

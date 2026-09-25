@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   ChevronDown,
   ExternalLink,
-  Link,
   Mail,
   Menu,
   Moon,
@@ -20,13 +19,20 @@ import {
   Play,
   ShieldCheck,
   SunMedium,
-  X,
 } from "lucide-react";
 import { profileData } from "@/data/profile";
 import { useSectionObserver } from "@/hooks/useSectionObserver";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
+import { whenBootClears } from "./bootGate";
+import { useFullpagePager } from "./useFullpagePager";
+import { CountUp } from "./components/CountUp";
+import { DetailDisclosure } from "./components/DetailDisclosure";
+import { OffcanvasMenu } from "./components/OffcanvasMenu";
+import { SectionDotNav } from "./components/SectionDotNav";
+import { SocialRail } from "./components/SocialRail";
+import { getSocialIcon } from "./components/socialIcons";
 
 type ProfileViewProps = {
   darkMode: boolean;
@@ -38,10 +44,10 @@ const {
   navLinks,
   pageLinks,
   services,
+  securityMeasures,
   experiences,
   projects,
   focusAreas,
-  securityMeasures,
   techStack,
   profileCard,
   contact,
@@ -50,27 +56,19 @@ const {
   collaborations,
 } = profileData;
 
-const LinkedInIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="size-4"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M5.34 7.43a2.06 2.06 0 1 0 0-4.12 2.06 2.06 0 0 0 0 4.12ZM3.86 20.45h2.95V9H3.86v11.45ZM9.35 9v11.45h3.55v-5.67c0-1.49.28-2.94 2.14-2.94 1.82 0 1.85 1.71 1.85 3.04v5.57h3.56v-6.28c0-3.09-.67-5.46-4.27-5.46-1.73 0-2.9.95-3.37 1.85h-.05V9H9.35Z" />
-  </svg>
-);
-
-const getSocialIcon = (label: string) =>
-  label.toLowerCase() === "linkedin" ? (
-    <LinkedInIcon />
-  ) : (
-    <Link className="size-4" aria-hidden="true" />
-  );
-
 const isExternalHref = (href: string) => /^https?:/i.test(href);
 
-const HEADER_SCROLL_OFFSET_PX = 96;
+/** Accent period after a section heading — the reference site's signature. */
+const AccentDot = () => (
+  <span className="profile-accent-dot" aria-hidden="true">
+    .
+  </span>
+);
+
+// Zero: full-height sections carry enough top padding to clear the fixed
+// header on their own, and the pager scrolls to exact section tops. Any other
+// value here would leave anchor jumps and paged jumps landing differently.
+const HEADER_SCROLL_OFFSET_PX = 0;
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -109,11 +107,13 @@ const smoothScrollToHash = (hash: string) => {
 
 const sectionEyebrow =
   "font-profile-mono text-[12px] uppercase tracking-[0.28em] text-[var(--profile-muted)]";
+// Display-scale section headings. The reference site's sections are carried
+// almost entirely by one very large heading per screen; at the previous
+// text-3xl/5xl the headings read as document subheads instead.
 const sectionTitle =
-  "font-profile-display text-3xl leading-[1.15] text-[var(--profile-ink)] sm:text-4xl lg:text-5xl";
-const sectionCopy = "text-base text-[var(--profile-muted)] sm:text-lg";
-const panelSurface =
-  "profile-card rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)]";
+  "font-profile-display text-[clamp(2.75rem,6.2vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] text-[var(--profile-ink)]";
+const sectionCopy =
+  "text-lg text-[var(--profile-muted)] sm:text-xl sm:leading-relaxed";
 const panelSurfaceStrong =
   "profile-card rounded-[20px] border border-[var(--profile-border)] bg-[var(--profile-surface-strong)]";
 
@@ -121,6 +121,21 @@ const revealStyle = (delay: number): CSSProperties =>
   ({
     "--reveal-delay": `${delay}ms`,
   }) as CSSProperties;
+
+/** Small step, hard ceiling. */
+const STAGGER_STEP_MS = 55;
+const STAGGER_MAX_STEPS = 4;
+
+/**
+ * Staggered delay for a list item.
+ *
+ * Capped on purpose: an uncapped `index * step` keeps climbing, so the sixth
+ * or seventh row in a list sits still long after the first has finished and
+ * the whole group reads as lag. Past the cap the remaining items simply move
+ * together.
+ */
+const staggerStyle = (index: number, base = 0): CSSProperties =>
+  revealStyle(base + Math.min(index, STAGGER_MAX_STEPS) * STAGGER_STEP_MS);
 
 const wordStyle = (index: number): CSSProperties =>
   ({
@@ -143,39 +158,8 @@ const splitWords = (text: string, offset: number) => {
   ));
 };
 
-type TechLogoProps = {
-  name: string;
-  logo?: string;
-};
-
-const TechLogo = ({ name, logo }: TechLogoProps) => {
-  const [failedLogo, setFailedLogo] = useState<string>();
-  const showLogo = Boolean(logo && failedLogo !== logo);
-  const monogram = name
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
-  return (
-    <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-semibold tracking-normal text-neutral-800">
-      {showLogo ? (
-        <img
-          src={logo}
-          alt=""
-          width={16}
-          height={16}
-          loading="lazy"
-          className="profile-logo h-4 w-4"
-          onError={() => setFailedLogo(logo)}
-        />
-      ) : (
-        <span aria-hidden="true">{monogram}</span>
-      )}
-    </span>
-  );
-};
+// TechLogo lived here to render the stack chips. Those went with the card
+// grids; profileData.techStack is untouched and still feeds the hero count.
 
 export function ProfileView({
   darkMode,
@@ -186,10 +170,27 @@ export function ProfileView({
     [],
   );
   const activeSection = useSectionObserver(sectionIds);
+  // Its own list, not navLinks: the collaborations strip is a stop for the
+  // pager but deliberately not a nav entry.
+  const pagerIds = useMemo(
+    () => [
+      "overview",
+      "services",
+      "signal",
+      "capabilities",
+      "security",
+      "proof",
+      "faq",
+      "contact",
+    ],
+    [],
+  );
+  useFullpagePager(pagerIds);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [marqueePaused, setMarqueePaused] = useState(false);
-  const mobileNavButtonRef = useRef<HTMLButtonElement>(null);
+  const navButtonRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const scrollProgressRef = useRef<HTMLDivElement>(null);
   const profileRootRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
@@ -314,6 +315,13 @@ export function ProfileView({
         "transform",
         `scaleX(${nextProgress})`,
       );
+
+      // Transparent over the hero, solid once past it. Reuses this listener
+      // rather than registering a second scroll handler.
+      headerRef.current?.classList.toggle(
+        "is-scrolled",
+        window.scrollY > window.innerHeight * 0.8,
+      );
     };
 
     const scheduleUpdate = () => {
@@ -341,50 +349,18 @@ export function ProfileView({
     };
   }, []);
 
-  useEffect(() => {
-    const root = profileRootRef.current;
-    if (!root) return undefined;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    );
-    const finePointer = window.matchMedia("(pointer: fine)");
-    if (reduceMotion.matches || !finePointer.matches) return undefined;
-
-    let frameId: number | null = null;
-    let nextX = window.innerWidth / 2;
-    let nextY = window.innerHeight / 3;
-
-    const updateSpotlight = () => {
-      frameId = null;
-      root.style.setProperty("--pointer-x", `${nextX}px`);
-      root.style.setProperty("--pointer-y", `${nextY}px`);
-    };
-
-    const scheduleSpotlight = (event: PointerEvent) => {
-      nextX = event.clientX;
-      nextY = event.clientY;
-      if (frameId === null) {
-        frameId = window.requestAnimationFrame(updateSpotlight);
-      }
-    };
-
-    updateSpotlight();
-    window.addEventListener("pointermove", scheduleSpotlight, {
-      passive: true,
-    });
-
-    return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
+  // The cursor-spotlight effect and its global pointermove listener are gone
+  // along with the glow element. This keeps the portrait-tilt frame teardown
+  // that used to ride along in that effect's cleanup.
+  useEffect(
+    () => () => {
       if (portraitFrameRef.current !== null) {
         window.cancelAnimationFrame(portraitFrameRef.current);
         portraitFrameRef.current = null;
       }
-      window.removeEventListener("pointermove", scheduleSpotlight);
-    };
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     const elements = Array.from(
@@ -406,20 +382,37 @@ export function ProfileView({
       return undefined;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -12% 0px" },
-    );
+    let observer: IntersectionObserver | undefined;
 
-    elements.forEach((element) => observer.observe(element));
+    const arm = () => {
+      // Reveals replay on every entry rather than firing once, so scrolling
+      // back up re-animates a section instead of showing a static page.
+      //
+      // The add/remove thresholds are deliberately asymmetric: elements reveal
+      // at 15% visible but only reset once fully out of view. A symmetric test
+      // makes items sitting on a section boundary flicker as they cross it.
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+            } else if (entry.intersectionRatio === 0) {
+              entry.target.classList.remove("is-visible");
+            }
+          });
+        },
+        { threshold: [0, 0.15], rootMargin: "0px 0px -12% 0px" },
+      );
 
-    return () => observer.disconnect();
+      elements.forEach((element) => observer?.observe(element));
+    };
+
+    const disposeGate = whenBootClears(arm);
+
+    return () => {
+      disposeGate();
+      observer?.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -450,41 +443,45 @@ export function ProfileView({
     };
   }, []);
 
-  useEffect(() => {
-    if (!mobileNavOpen) return undefined;
-
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMobileNavOpen(false);
-        mobileNavButtonRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [mobileNavOpen]);
-
-  useEffect(() => {
-    const desktopBreakpoint = window.matchMedia("(min-width: 1280px)");
-    const closeAtDesktop = (event: MediaQueryListEvent) => {
-      if (event.matches) {
-        setMobileNavOpen(false);
-      }
-    };
-
-    desktopBreakpoint.addEventListener("change", closeAtDesktop);
-    return () =>
-      desktopBreakpoint.removeEventListener("change", closeAtDesktop);
-  }, []);
+  // Esc handling, focus trapping and focus restoration all live in
+  // OffcanvasMenu now, so the menu owns its own keyboard contract.
 
   const totalStackItems = techStack.reduce(
     (sum: number, group) => sum + group.items.length,
     0,
   );
-  const metrics = [
+  // `count`/`ratio` are paired and optional: a metric without a number gets
+  // no meter, because a full bar under a non-quantity like "PH / Remote"
+  // implies a measurement that does not exist.
+  const metrics: Array<{
+    label: string;
+    value: string;
+    count?: number;
+    /** 0-1, drives the meter fill width. Only set alongside `count`. */
+    ratio?: number;
+  }> = [
     { label: "Base", value: "PH / Remote" },
-    { label: "Delivery highlights", value: experiences.length.toString() },
-    { label: "Tools in rotation", value: totalStackItems.toString() },
+    {
+      label: "Delivery highlights",
+      value: experiences.length.toString(),
+      count: experiences.length,
+      ratio: Math.min(experiences.length / 5, 1),
+    },
+    {
+      label: "Tools in rotation",
+      value: totalStackItems.toString(),
+      count: totalStackItems,
+      ratio: Math.min(totalStackItems / 20, 1),
+    },
+  ];
+  // Looked up by scheme rather than by index so reordering contact.details
+  // cannot silently point the rail at a phone number.
+  const mailtoHref = contact.details.find((detail) =>
+    detail.href?.startsWith("mailto:"),
+  )?.href;
+  const railLinks = [
+    ...socialLinks,
+    ...(mailtoHref ? [{ label: "Email", href: mailtoHref }] : []),
   ];
   const marqueeItems = [...collaborations, ...collaborations];
   const heroLines = hero.headline.map((line, index) => ({
@@ -495,7 +492,10 @@ export function ProfileView({
   return (
     <div
       ref={profileRootRef}
-      className="profile-theme min-h-screen overflow-x-hidden bg-[var(--profile-bg)] text-[var(--profile-ink)]"
+      /* `profile-clip-x` (overflow-x: clip) rather than overflow-x-hidden:
+         `hidden` would make this element a scroll container, which would steal
+         scroll-snap away from the document and break the sticky aside. */
+      className="profile-theme profile-clip-x min-h-screen bg-[var(--profile-bg)] text-[var(--profile-ink)]"
     >
       <a
         href="#main-content"
@@ -510,14 +510,38 @@ export function ProfileView({
         aria-hidden="true"
       />
       <div className="relative">
+        <div className="profile-atmosphere" aria-hidden="true" />
         <div
           className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
           aria-hidden="true"
         />
-        <div className="profile-pointer-glow" aria-hidden="true" />
         <div className="profile-corner-glow" aria-hidden="true" />
+        <div className="profile-vignette" aria-hidden="true" />
 
-        <header className="profile-header fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-5">
+        <SectionDotNav
+          links={navLinks}
+          activeSection={activeSection}
+          onNavigate={handleAnchorClick}
+        />
+        <SocialRail links={railLinks} />
+        <OffcanvasMenu
+          open={navOpen}
+          navLinks={navLinks}
+          pageLinks={pageLinks}
+          activeSection={activeSection}
+          onClose={(options) => {
+            setNavOpen(false);
+            if (options?.restoreFocus !== false) {
+              navButtonRef.current?.focus();
+            }
+          }}
+          onNavigate={handleAnchorClick}
+        />
+
+        <header
+          ref={headerRef}
+          className="profile-header fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-5"
+        >
           <div className="profile-header-shell mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-4">
             <div className="flex items-center gap-3">
               <div className="profile-brand-mark flex size-10 items-center justify-center rounded-lg border border-[var(--profile-border-strong)] bg-[var(--profile-surface)] font-profile-mono text-xs font-semibold tracking-[0.14em] text-[var(--profile-ink)]">
@@ -537,18 +561,23 @@ export function ProfileView({
                   <span className="profile-status-dot" aria-hidden="true" />
                   {hero.availability}
                 </p>
-                <p className="mt-1 max-w-[250px] truncate text-xs font-semibold">
-                  Elijah / designer + engineer
+                {/* From profileData, not a hardcoded string: this used to read
+                    "Elijah / designer + engineer", which was neither the real
+                    name nor derived from anywhere. */}
+                <p className="mt-1 max-w-[260px] truncate text-xs font-semibold">
+                  {profileCard.name}
                 </p>
               </div>
             </div>
+            {/* Inline on desktop, offcanvas below xl. The header previously
+                had no visible navigation at any width. */}
             <nav
               className="hidden items-center gap-1 xl:flex"
               aria-label="Primary"
             >
               {navLinks.map((link) => {
-                const isActive =
-                  activeSection === link.href.replace("#", "");
+                const isActive = activeSection === link.href.replace("#", "");
+
                 return (
                   <a
                     key={link.href}
@@ -556,9 +585,9 @@ export function ProfileView({
                     onClick={(event) => handleAnchorClick(event, link.href)}
                     aria-current={isActive ? "location" : undefined}
                     className={cn(
-                      "profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] transition-colors",
+                      "profile-navlink px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em]",
                       isActive
-                        ? "is-active bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
+                        ? "is-active text-[var(--profile-ink)]"
                         : "text-[var(--profile-muted)] hover:text-[var(--profile-ink)]",
                     )}
                   >
@@ -570,7 +599,7 @@ export function ProfileView({
                 <a
                   key={link.href}
                   href={link.href}
-                  className="profile-navlink rounded-lg px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[var(--profile-muted)] transition-colors hover:text-[var(--profile-ink)]"
+                  className="profile-navlink px-2.5 py-2 font-profile-mono text-[10px] uppercase tracking-[0.16em] text-[var(--profile-muted)] hover:text-[var(--profile-ink)]"
                 >
                   {link.label}
                 </a>
@@ -578,21 +607,15 @@ export function ProfileView({
             </nav>
             <div className="flex items-center gap-2">
               <button
-                ref={mobileNavButtonRef}
+                ref={navButtonRef}
                 type="button"
-                onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
-                aria-label={
-                  mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
-                }
-                aria-expanded={mobileNavOpen}
-                aria-controls="mobile-navigation"
+                onClick={() => setNavOpen(true)}
+                aria-label="Open navigation menu"
+                aria-expanded={navOpen}
+                aria-controls="primary-navigation"
                 className="profile-icon-button inline-flex size-10 items-center justify-center rounded-xl border border-[var(--profile-border)] bg-[var(--profile-surface)] text-[var(--profile-ink)] xl:hidden"
               >
-                {mobileNavOpen ? (
-                  <X className="size-4" aria-hidden="true" />
-                ) : (
-                  <Menu className="size-4" aria-hidden="true" />
-                )}
+                <Menu className="size-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -610,63 +633,24 @@ export function ProfileView({
               </button>
             </div>
           </div>
-          <nav
-            id="mobile-navigation"
-            hidden={!mobileNavOpen}
-            className={cn(
-              "profile-mobile-nav mx-auto mt-2 max-w-6xl grid-cols-2 gap-2 rounded-2xl border border-[var(--profile-border)] p-3 xl:hidden",
-              mobileNavOpen ? "grid" : "hidden",
-            )}
-            aria-label="Mobile primary"
-          >
-            {navLinks.map((link) => {
-              const isActive =
-                activeSection === link.href.replace("#", "");
-
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(event) => {
-                    handleAnchorClick(event, link.href);
-                    setMobileNavOpen(false);
-                  }}
-                  aria-current={isActive ? "location" : undefined}
-                  className={cn(
-                    "rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em]",
-                    isActive
-                      ? "bg-[var(--profile-accent-soft)] text-[var(--profile-ink)]"
-                      : "text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]",
-                  )}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
-            {pageLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="rounded-xl px-3 py-2 font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)] hover:bg-[var(--profile-surface)] hover:text-[var(--profile-ink)]"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
         </header>
 
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative mx-auto max-w-6xl px-5 pb-28 pt-32 sm:px-6 sm:pt-36"
+          className="relative mx-auto max-w-6xl px-5 sm:px-6"
         >
           <section
             id="overview"
             tabIndex={-1}
-            className="scroll-mt-28 space-y-10"
+            className="profile-section relative isolate space-y-10"
           >
-            <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-              <div className="space-y-8 lg:col-span-7">
+            <div className="profile-hero-stage" aria-hidden="true" />
+            {/* Two columns from md, not lg: snapping is mandatory from 768px
+                and a stacked hero would overflow the viewport there, which is
+                exactly the state that traps a mandatory-snap scroller. */}
+            <div className="grid items-center gap-10 md:grid-cols-12 md:gap-8">
+              <div className="space-y-7 md:col-span-7">
                 <div
                   className="profile-reveal flex flex-wrap items-center gap-3"
                   style={revealStyle(0)}
@@ -683,13 +667,13 @@ export function ProfileView({
                 <div className="space-y-6">
                   <p
                     className="profile-reveal font-profile-mono text-[11px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
-                    style={revealStyle(60)}
+                    style={staggerStyle(1)}
                   >
                     {profileCard.name} / {hero.role}
                   </p>
                   <h1
                     className="profile-heading profile-reveal font-profile-display text-[clamp(3.25rem,7.2vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em]"
-                    style={revealStyle(100)}
+                    style={staggerStyle(2)}
                   >
                     {heroLines.map((line, lineIndex) => (
                       <span
@@ -706,14 +690,14 @@ export function ProfileView({
                       sectionCopy,
                       "profile-reveal max-w-2xl text-lg leading-relaxed",
                     )}
-                    style={revealStyle(180)}
+                    style={staggerStyle(3)}
                   >
                     {hero.intro}
                   </p>
                 </div>
                 <div
                   className="profile-reveal flex flex-wrap items-center gap-3"
-                  style={revealStyle(240)}
+                  style={staggerStyle(4)}
                 >
                   {profileCard.actions.map((cta) => {
                     const isPrimary = cta.variant === "primary";
@@ -728,7 +712,7 @@ export function ProfileView({
                         className={cn(
                           "profile-button rounded-full px-6 text-sm font-semibold",
                           isPrimary
-                            ? "bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
+                            ? "bg-[var(--profile-accent-strong)] text-[var(--profile-on-accent)] hover:bg-[var(--profile-accent-strong)]"
                             : "border-[var(--profile-accent)] bg-[var(--profile-surface)] text-[var(--profile-ink)] hover:bg-[var(--profile-accent-soft)]",
                         )}
                       >
@@ -762,7 +746,7 @@ export function ProfileView({
                 </div>
                 <div
                   className="profile-reveal flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)]"
-                  style={revealStyle(240)}
+                  style={staggerStyle(4)}
                 >
                   <span className="profile-status-dot" aria-hidden="true" />
                   <span>{hero.availability}</span>
@@ -771,8 +755,8 @@ export function ProfileView({
                 </div>
               </div>
               <div
-                className="profile-reveal profile-reveal--right lg:col-span-5"
-                style={revealStyle(140)}
+                className="profile-reveal md:col-span-5"
+                style={staggerStyle(2)}
               >
                 <div
                   className="profile-portrait-stage relative mx-auto max-w-sm"
@@ -814,7 +798,12 @@ export function ProfileView({
                         height={1184}
                         loading="eager"
                         decoding="async"
-                        className="profile-image block aspect-[4/5] w-full object-cover object-top"
+                        fetchPriority="high"
+                        sizes="(min-width: 768px) 24rem, 100vw"
+                        /* 3/4 is within a hair of the file's native 864x1184,
+                           so almost nothing is cropped away; 4/5 was cutting
+                           into the frame. */
+                        className="profile-image block aspect-[3/4] w-full object-cover object-top"
                       />
                       <div
                         className="profile-portrait-scan"
@@ -842,22 +831,45 @@ export function ProfileView({
 
             <div
               className="profile-status-rail profile-reveal grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] md:grid-cols-3"
-              style={revealStyle(220)}
+              style={staggerStyle(3)}
             >
               {metrics.map((metric, index) => (
                 <div
                   key={metric.label}
-                  className="profile-status-cell flex items-end justify-between gap-4 p-5 sm:p-6"
+                  className="profile-status-cell flex flex-col gap-4 p-5 sm:p-6"
                 >
-                  <div>
-                    <p className={sectionEyebrow}>{metric.label}</p>
-                    <p className="mt-2 text-xl font-semibold text-[var(--profile-ink)]">
-                      {metric.value}
-                    </p>
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className={sectionEyebrow}>{metric.label}</p>
+                      <p className="mt-2 text-xl font-semibold text-[var(--profile-ink)]">
+                        {typeof metric.count === "number" ? (
+                          <CountUp
+                            value={metric.count}
+                            className="profile-countup"
+                          />
+                        ) : (
+                          metric.value
+                        )}
+                      </p>
+                    </div>
+                    <span className="font-profile-mono text-[10px] text-[var(--profile-muted)]">
+                      0{index + 1}
+                    </span>
                   </div>
-                  <span className="font-profile-mono text-[10px] text-[var(--profile-muted)]">
-                    0{index + 1}
-                  </span>
+                  {typeof metric.ratio === "number" ? (
+                    <div
+                      className="profile-meter"
+                      style={
+                        {
+                          "--meter-value": metric.ratio,
+                          "--reveal-delay": `${240 + index * 110}ms`,
+                        } as CSSProperties
+                      }
+                      aria-hidden="true"
+                    >
+                      <i />
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -866,73 +878,69 @@ export function ProfileView({
           <section
             id="services"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
+            className="profile-section space-y-12"
           >
             <div
               className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
               <p className={sectionEyebrow}>// 02 / process</p>
-              <h2 className={sectionTitle}>From discovery to launch</h2>
+              <h2 className={sectionTitle}>
+                From discovery to launch
+                <AccentDot />
+              </h2>
               <p className={sectionCopy}>
                 Structured engagements that keep scope clear, quality high, and
                 collaboration smooth.
               </p>
             </div>
-            <div className="profile-process-grid grid overflow-hidden rounded-[18px] border border-[var(--profile-border)] bg-[var(--profile-surface)] lg:grid-cols-3">
+            {/* Rule-separated rows, not cards: each step is a line, and its
+                "Includes" list stays folded until asked for. */}
+            <ul className="border-t border-[var(--profile-border)]">
               {services.map((service, index) => (
-                <article
+                <li
                   key={service.title}
-                  className={cn(
-                    "profile-process-step profile-reveal flex min-h-full flex-col p-6 sm:p-8",
-                    index % 2 === 0
-                      ? "profile-reveal--left"
-                      : "profile-reveal--right",
-                  )}
-                  style={revealStyle(100 + index * 70)}
+                  className="profile-reveal border-b border-[var(--profile-border)] py-5"
+                  style={staggerStyle(index, 55)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                    <span className="font-profile-mono text-[10px] text-[var(--profile-accent)]">
                       {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <span
-                      className="profile-process-signal size-2 rounded-full border border-[var(--profile-accent)]"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="mt-16 space-y-3">
-                    <h3 className="text-2xl font-semibold text-[var(--profile-ink)]">
+                    </span>
+                    <span className="shrink-0 text-lg font-semibold text-[var(--profile-ink)] sm:w-36">
                       {service.title}
-                    </h3>
-                    <p className="text-sm text-[var(--profile-muted)]">
+                    </span>
+                    <span className="min-w-0 flex-1 text-sm text-[var(--profile-muted)]">
                       {service.summary}
-                    </p>
+                    </span>
                   </div>
-                  <div className="mt-8 space-y-3 border-t border-[var(--profile-border)] pt-5">
-                    <p className="font-profile-mono text-xs uppercase tracking-[0.22em] text-[var(--profile-muted)]">
-                      Includes
-                    </p>
-                    <ul className="space-y-2">
-                      {service.includes.map((item) => (
-                        <li
-                          key={item}
-                          className="flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
-                        >
-                          <span
-                            className="h-px w-4 bg-[var(--profile-accent)]"
-                            aria-hidden="true"
-                          />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="mt-2 pl-8">
+                    <DetailDisclosure label="Includes">
+                      <ul className="space-y-2">
+                        {service.includes.map((item) => (
+                          <li
+                            key={item}
+                            className="flex items-center gap-3 font-profile-mono text-[10px] uppercase tracking-[0.18em] text-[var(--profile-muted)]"
+                          >
+                            <span
+                              className="h-px w-4 bg-[var(--profile-accent)]"
+                              aria-hidden="true"
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </DetailDisclosure>
                   </div>
-                </article>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
 
-          <section className="mt-20">
+          {/* Needs an id so the pager can stop here. Without one it sits
+              between two paged sections and a gesture would jump clean over
+              it, making the strip unreachable. It stays out of navLinks. */}
+          <section id="signal" className="profile-section">
             <div
               className="profile-signal-strip profile-reveal overflow-hidden border-y border-[var(--profile-border)] py-6"
               style={revealStyle(0)}
@@ -985,95 +993,81 @@ export function ProfileView({
           <section
             id="capabilities"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
+            className="profile-section space-y-12"
           >
-            <div className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr]">
+            {/* Single column now that the stack carousel is gone. */}
+            <div>
               <div
-                className="profile-reveal profile-reveal--blur profile-reveal--left space-y-6"
+                className="profile-reveal space-y-6"
                 style={revealStyle(0)}
               >
                 <p className={sectionEyebrow}>// 03 / capability.stack</p>
-                <h2 className={sectionTitle}>The toolkit behind the work</h2>
-                <p className={sectionCopy}>
+                <h2 className={sectionTitle}>
+                  The toolkit behind the work
+                  <AccentDot />
+                </h2>
+                <p className={cn(sectionCopy, "max-w-3xl")}>
                   A blend of UI craft, dependable services, and security-aware
                   practices that keep products steady.
                 </p>
-                <div className="space-y-4">
+                {/* A rule-separated list rather than cards — the one place
+                    these three still appear. */}
+                <ul className="border-t border-[var(--profile-border)]">
                   {focusAreas.map((area, index) => (
-                    <div
+                    <li
                       key={area.title}
-                      className={cn(
-                        panelSurface,
-                        "profile-reveal profile-reveal--scale p-5",
-                        index % 2 === 0
-                          ? "profile-reveal--left"
-                          : "profile-reveal--right",
-                      )}
-                      style={revealStyle(100 + index * 60)}
+                      className="profile-reveal flex items-baseline gap-4 border-b border-[var(--profile-border)] py-3"
+                      style={staggerStyle(index, 55)}
                     >
-                      <p className="text-lg font-semibold text-[var(--profile-ink)]">
+                      <span className="font-profile-mono text-[10px] text-[var(--profile-accent)]">
+                        0{index + 1}
+                      </span>
+                      <span className="shrink-0 text-base font-semibold text-[var(--profile-ink)] sm:w-40">
                         {area.title}
-                      </p>
-                      <p className="mt-2 text-sm text-[var(--profile-muted)]">
+                      </span>
+                      <span className="text-sm text-[var(--profile-muted)]">
                         {area.description}
-                      </p>
-                    </div>
+                      </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-              <div className="grid gap-6 lg:grid-cols-2">
+              {/* The toolkit itself, as plain rows — the heading promises it,
+                  so it has to be on the page. Names only: no chips, no
+                  logos, no boxes. */}
+              <ul className="mt-10 border-t border-[var(--profile-border)]">
                 {techStack.map((group, index) => (
-                  <article
+                  <li
                     key={group.title}
-                    className={cn(
-                      panelSurface,
-                      "profile-tech-card profile-reveal flex h-full flex-col p-6",
-                      (group.title === "Frontend" ||
-                        group.title.startsWith("Cybersecurity")) &&
-                        "lg:col-span-2",
-                      index % 2 === 0
-                        ? "profile-reveal--right"
-                        : "profile-reveal--left",
-                    )}
-                    style={revealStyle(100 + index * 45)}
+                    className="profile-reveal flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-[var(--profile-border)] py-3"
+                    style={staggerStyle(index, 110)}
                   >
-                    <div>
-                      <h3 className={sectionEyebrow}>{group.title}</h3>
-                      <p className="mt-3 text-sm text-[var(--profile-muted)]">
-                        {group.description}
-                      </p>
-                    </div>
-                    <div className="mt-5 flex flex-wrap gap-3">
-                      {group.items.map((item) => (
-                        <span
-                          key={item.name}
-                          className="inline-flex items-center gap-2 rounded-full border border-[var(--profile-border)] bg-[var(--profile-surface-strong)] px-3 py-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-ink)]"
-                        >
-                          <TechLogo name={item.name} logo={item.logo} />
-                          {item.name}
-                        </span>
-                      ))}
-                    </div>
-                  </article>
+                    <span className="shrink-0 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)] sm:w-44">
+                      {group.title}
+                    </span>
+                    <span className="min-w-0 flex-1 text-sm text-[var(--profile-ink)]">
+                      {group.items.map((item) => item.name).join(" · ")}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </section>
 
           <section
             id="security"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28"
+            className="profile-section"
           >
-            <div
-              className="profile-security-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
-              style={revealStyle(0)}
-            >
+            {/* No panel wrapper: the surrounding card is gone, the content
+                is not. Only the reveal hook remains on this element. */}
+            <div className="profile-reveal" style={revealStyle(0)}>
               <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
                 <div className="space-y-4">
                   <p className={sectionEyebrow}>// 04 / secure.delivery</p>
                   <h2 className={sectionTitle}>
                     Security measures baked in
+                    <AccentDot />
                   </h2>
                 </div>
                 <div className="flex items-start gap-4">
@@ -1086,67 +1080,69 @@ export function ProfileView({
                   </p>
                 </div>
               </div>
-              <div className="profile-security-grid mt-10 grid border-t border-[var(--profile-border)] md:grid-cols-2">
+              {/* Back as rows rather than the SEC.0x card grid: title and
+                  description on a line, controls folded away. */}
+              <ul className="mt-10 border-t border-[var(--profile-border)]">
                 {securityMeasures.map((measure, index) => (
-                  <article
+                  <li
                     key={measure.title}
-                    className={cn(
-                      "profile-security-step profile-reveal space-y-5 py-7 md:p-7",
-                      index % 2 === 0
-                        ? "profile-reveal--right"
-                        : "profile-reveal--left",
-                    )}
-                    style={revealStyle(80 + index * 45)}
+                    className="profile-reveal border-b border-[var(--profile-border)] py-4"
+                    style={staggerStyle(index, 55)}
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-lg font-semibold text-[var(--profile-ink)]">
+                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                      <span className="font-profile-mono text-[10px] text-[var(--profile-accent)]">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="shrink-0 text-base font-semibold text-[var(--profile-ink)] sm:w-44">
                         {measure.title}
-                      </h3>
-                      <span className="font-profile-mono text-[10px] tracking-[0.18em] text-[var(--profile-muted)]">
-                        SEC.{String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="min-w-0 flex-1 text-sm text-[var(--profile-muted)]">
+                        {measure.description}
                       </span>
                     </div>
-                    <p className="text-sm text-[var(--profile-muted)]">
-                      {measure.description}
-                    </p>
-                    <ul className="space-y-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-muted)]">
-                      {measure.items.map((item) => (
-                        <li key={item} className="flex items-center gap-2">
-                          <span className="size-1.5 rounded-full bg-[var(--profile-accent)]" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
+                    <div className="mt-2 pl-8">
+                      <DetailDisclosure label="Controls">
+                        <ul className="space-y-2 text-[11px] font-profile-mono uppercase tracking-[0.24em] text-[var(--profile-muted)]">
+                          {measure.items.map((item) => (
+                            <li key={item} className="flex items-center gap-2">
+                              <span className="size-1.5 rounded-full bg-[var(--profile-accent)]" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </DetailDisclosure>
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </section>
 
+          {/* Free-scrolling: the timeline plus its sticky aside will not fit a
+              single viewport, and nesting a scroller inside a snap point is
+              worse than opting out of snap. */}
           <section
             id="proof"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-12"
+            className="profile-section profile-section--free space-y-12"
           >
             <div
               className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
               <p className={sectionEyebrow}>// 05 / selected.work</p>
-              <h2 className={sectionTitle}>Selected delivery highlights</h2>
+              <h2 className={sectionTitle}>
+                Selected delivery highlights
+                <AccentDot />
+              </h2>
             </div>
             <div className="grid gap-10 lg:grid-cols-[0.66fr_0.34fr]">
               <div className="profile-timeline border-t border-[var(--profile-border)]">
                 {experiences.map((experience, index) => (
                   <article
                     key={experience.company}
-                    className={cn(
-                      "profile-experience-entry profile-reveal border-b border-[var(--profile-border)] py-7 sm:grid sm:grid-cols-[5rem_1fr] sm:gap-6 sm:py-8",
-                      index % 2 === 0
-                        ? "profile-reveal--left"
-                        : "profile-reveal--right",
-                    )}
-                    style={revealStyle(80 + index * 60)}
+                    className="profile-experience-entry profile-reveal border-b border-[var(--profile-border)] py-7 sm:grid sm:grid-cols-[5rem_1fr] sm:gap-6 sm:py-8"
+                    style={staggerStyle(index, 55)}
                   >
                     <div className="mb-5 font-profile-mono text-[10px] uppercase tracking-[0.2em] text-[var(--profile-muted)] sm:mb-0">
                       <span className="block text-[var(--profile-accent)]">
@@ -1186,9 +1182,8 @@ export function ProfileView({
                   className={cn(
                     panelSurfaceStrong,
                     "profile-availability-card profile-reveal space-y-4 p-6",
-                    "profile-reveal--right",
                   )}
-                  style={revealStyle(120)}
+                  style={staggerStyle(2)}
                 >
                   <p className={sectionEyebrow}>// availability</p>
                   <p className="text-2xl font-semibold text-[var(--profile-ink)]">
@@ -1201,7 +1196,7 @@ export function ProfileView({
                   <Button
                     asChild
                     size="lg"
-                    className="profile-button rounded-full bg-[var(--profile-accent-strong)] text-black hover:bg-[var(--profile-accent-strong)]"
+                    className="profile-button rounded-full bg-[var(--profile-accent-strong)] text-[var(--profile-on-accent)] hover:bg-[var(--profile-accent-strong)]"
                   >
                     <a
                       href="#contact"
@@ -1248,17 +1243,21 @@ export function ProfileView({
             </div>
           </section>
 
+          {/* Free-scrolling: an expanded accordion can exceed the viewport. */}
           <section
             id="faq"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28 space-y-10"
+            className="profile-section profile-section--free space-y-10"
           >
             <div
               className="profile-reveal space-y-4"
               style={revealStyle(0)}
             >
               <p className={sectionEyebrow}>// 06 / common.queries</p>
-              <h2 className={sectionTitle}>Questions, answered</h2>
+              <h2 className={sectionTitle}>
+                Questions, answered
+                <AccentDot />
+              </h2>
             </div>
             <div className="border-t border-[var(--profile-border)]">
               {faqs.map((faq, index) => {
@@ -1268,13 +1267,8 @@ export function ProfileView({
                 return (
                   <div
                     key={faq.question}
-                    className={cn(
-                      "profile-faq-row profile-reveal overflow-hidden border-b border-[var(--profile-border)]",
-                      index % 2 === 0
-                        ? "profile-reveal--left"
-                        : "profile-reveal--right",
-                    )}
-                    style={revealStyle(70 + index * 35)}
+                    className="profile-faq-row profile-reveal overflow-hidden border-b border-[var(--profile-border)]"
+                    style={staggerStyle(index, 55)}
                   >
                     <h3>
                       <button
@@ -1320,17 +1314,17 @@ export function ProfileView({
           <section
             id="contact"
             tabIndex={-1}
-            className="mt-28 scroll-mt-28"
+            className="profile-section"
           >
-            <div
-              className="profile-contact-panel profile-reveal overflow-hidden rounded-[20px] border border-[var(--profile-border)] p-6 sm:p-10"
-              style={revealStyle(0)}
-            >
+            {/* Card wrapper removed to match the other sections; only the
+                reveal hook remains on this element. */}
+            <div className="profile-reveal" style={revealStyle(0)}>
               <div className="grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
                 <div>
                   <p className={sectionEyebrow}>// 07 / open.channel</p>
-                  <h2 className="mt-5 max-w-3xl font-profile-display text-4xl font-semibold leading-[1] tracking-[-0.04em] text-[var(--profile-ink)] sm:text-5xl lg:text-6xl">
+                  <h2 className={cn(sectionTitle, "mt-5 max-w-3xl")}>
                     {contact.title}
+                    <AccentDot />
                   </h2>
                 </div>
                 <div>
@@ -1368,7 +1362,7 @@ export function ProfileView({
                   </div>
                 </div>
               </div>
-              <div className="profile-contact-grid mt-10 grid border-t border-[var(--profile-border)] sm:grid-cols-2 lg:grid-cols-5">
+              <div className="profile-contact-grid mt-10 grid border-t border-[var(--profile-border)] sm:grid-cols-2 lg:grid-cols-3">
                 {contact.details.map((detail) => {
                   const detailIsExternal = detail.href
                     ? isExternalHref(detail.href)

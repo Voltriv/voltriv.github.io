@@ -1,14 +1,16 @@
 #boot {
-  --boot-bg: #090a0a;
+  --boot-bg: #000000;
   --boot-surface: rgba(13, 14, 14, 0.88);
   --boot-surface-strong: #111212;
   --boot-ink: #f5f5f5;
   --boot-muted: #a5a5a5;
-  --boot-dim: #7d8080;
+  --boot-dim: #7e7e7e;
   --boot-border: rgba(255, 255, 255, 0.14);
   --boot-border-strong: rgba(255, 255, 255, 0.28);
-  --boot-accent: #ff8a3d;
-  --boot-accent-glow: rgba(255, 138, 61, 0.45);
+  /* Monochrome, to match the site. Colour values only — the boot sequence's
+     structure and timing are untouched. */
+  --boot-accent: #ffffff;
+  --boot-accent-glow: rgba(255, 255, 255, 0.4);
   --boot-shadow: 0 20px 56px rgba(0, 0, 0, 0.32);
 
   position: fixed;

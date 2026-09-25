@@ -1,18 +1,23 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { BootIntro } from "@/features/boot/BootIntro";
 import { ProfileView } from "@/features/profile/ProfileView";
 
 const THEME_STORAGE_KEY = "theme";
-const DARK_THEME_QUERY = "(prefers-color-scheme: dark)";
 
 type ThemeState = {
   darkMode: boolean;
   explicit: boolean;
 };
 
+/**
+ * The landing page is designed dark first — the sectioned, high-contrast
+ * layout is built around a near-black ground — so dark is the default rather
+ * than whatever the OS happens to prefer. A stored choice always wins, and
+ * the toggle still offers light.
+ */
 const getInitialTheme = (): ThemeState => {
   if (typeof window === "undefined") {
-    return { darkMode: false, explicit: false };
+    return { darkMode: true, explicit: false };
   }
 
   try {
@@ -23,10 +28,7 @@ const getInitialTheme = (): ThemeState => {
     // Storage can be unavailable in privacy-restricted browsing contexts.
   }
 
-  return {
-    darkMode: window.matchMedia(DARK_THEME_QUERY).matches,
-    explicit: false,
-  };
+  return { darkMode: true, explicit: false };
 };
 
 const App = () => {
@@ -42,25 +44,13 @@ const App = () => {
       'meta[name="theme-color"]',
     );
     if (themeColor) {
-      themeColor.content = darkMode ? "#090a0a" : "#f5f1ea";
+      themeColor.content = darkMode ? "#000000" : "#ffffff";
     }
   }, [darkMode]);
 
-  useEffect(() => {
-    if (theme.explicit) return undefined;
-
-    const systemTheme = window.matchMedia(DARK_THEME_QUERY);
-    const followSystemTheme = (event: MediaQueryListEvent) => {
-      setTheme((current) =>
-        current.explicit
-          ? current
-          : { darkMode: event.matches, explicit: false },
-      );
-    };
-
-    systemTheme.addEventListener("change", followSystemTheme);
-    return () => systemTheme.removeEventListener("change", followSystemTheme);
-  }, [theme.explicit]);
+  // No system-preference listener: the page intentionally opens dark for
+  // everyone, so following the OS would pull first-time visitors into the
+  // light theme the design is not built around.
 
   const toggleDarkMode = () => {
     const nextDarkMode = !darkMode;
@@ -77,7 +67,13 @@ const App = () => {
 
   return (
     <>
-      <BootIntro />
+      {/*
+        oncePerSession={false} replays the intro on every load.
+        ⚠️ FLIP THIS BACK TO TRUE (or drop the prop) BEFORE DEPLOYING —
+        otherwise every visitor sits through the ~6s sequence on every
+        single page view. It is false purely so the intro can be worked on.
+      */}
+      <BootIntro oncePerSession={false} />
       <ProfileView
         darkMode={darkMode}
         onToggleDarkMode={toggleDarkMode}

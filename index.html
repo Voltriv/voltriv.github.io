@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--
+  class="dark" / colorScheme dark are set statically because the page now
+  opens dark for everyone. The CSP blocks inline scripts, so there is no
+  theme-bootstrap script available; without this the document paints light
+  before React mounts and flashes on repeat visits, where the boot overlay
+  is skipped. Visitors with a stored light preference get a brief dark frame
+  instead, which is the cheaper of the two.
+-->
+<html lang="en" class="dark" style="color-scheme: dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,7 +20,7 @@
       name="description"
       content="Elijah Meir Vinluan's portfolio for UI/UX design, front-end engineering, and security-aware delivery."
     />
-    <meta name="theme-color" content="#f5f1ea" />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

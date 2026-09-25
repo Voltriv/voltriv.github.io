@@ -9,102 +9,115 @@
     --text-lg: clamp(1.25rem, 3vw, 2rem);
     --text-base: 1rem;
 
-    --background: 0.98 0.01 330;
-    --foreground: 0.1 0 0;
-    --card: 1 0 0;
-    --card-foreground: 0.1 0 0;
-    --popover: 1 0 0;
-    --popover-foreground: 0.1 0 0;
-    --primary: 0.55 0.2 330;
+    /* Shadcn/Tailwind base tokens, aligned to the profile palette.
+       These feed `body { @apply bg-background text-foreground }`, the
+       `* { @apply border-border outline-ring/50 }` base rule, and the
+       Button variants — so they must stay defined, not deleted. */
+    /* Every value is chroma 0 — neutral by construction, so nothing here can
+       reintroduce a hue. `destructive` keeps a token slot but is unused on
+       these pages. */
+    --background: 1 0 0;
+    --foreground: 0.12 0 0;
+    --card: 0.98 0 0;
+    --card-foreground: 0.12 0 0;
+    --popover: 0.98 0 0;
+    --popover-foreground: 0.12 0 0;
+    --primary: 0.12 0 0;
     --primary-foreground: 1 0 0;
-    --secondary: 0.95 0.05 330;
-    --secondary-foreground: 0.1 0 0;
-    --muted: 0.94 0.02 330;
-    --muted-foreground: 0.45 0.02 330;
-    --accent: 0.9 0.08 330;
-    --accent-foreground: 0.1 0 0;
-    --destructive: 0.5 0.22 15;
+    --secondary: 0.95 0 0;
+    --secondary-foreground: 0.12 0 0;
+    --muted: 0.95 0 0;
+    --muted-foreground: 0.5 0 0;
+    --accent: 0.93 0 0;
+    --accent-foreground: 0.12 0 0;
+    --destructive: 0.45 0 0;
     --destructive-foreground: 1 0 0;
-    --border: 0.85 0.05 330;
-    --input: 0.9 0.03 330;
-    --input-background: 0.96 0.02 330;
-    --switch-background: 0.8 0.05 330;
-    --ring: 0.55 0.2 330;
-    --chart-1: 0.6 0.25 330;
-    --chart-2: 0.65 0.2 345;
-    --chart-3: 0.55 0.15 315;
-    --chart-4: 0.7 0.18 300;
-    --chart-5: 0.5 0.22 360;
-    --sidebar: 0.98 0.01 330;
-    --sidebar-foreground: 0.1 0 0;
-    --sidebar-primary: 0.55 0.2 330;
+    --border: 0.88 0 0;
+    --input: 0.9 0 0;
+    --input-background: 0.97 0 0;
+    --switch-background: 0.85 0 0;
+    --ring: 0.12 0 0;
+    --chart-1: 0.2 0 0;
+    --chart-2: 0.36 0 0;
+    --chart-3: 0.52 0 0;
+    --chart-4: 0.68 0 0;
+    --chart-5: 0.82 0 0;
+    --sidebar: 1 0 0;
+    --sidebar-foreground: 0.12 0 0;
+    --sidebar-primary: 0.12 0 0;
     --sidebar-primary-foreground: 1 0 0;
-    --sidebar-accent: 0.95 0.05 330;
-    --sidebar-accent-foreground: 0.1 0 0;
-    --sidebar-border: 0.9 0.05 330;
-    --sidebar-ring: 0.55 0.2 330;
+    --sidebar-accent: 0.95 0 0;
+    --sidebar-accent-foreground: 0.12 0 0;
+    --sidebar-border: 0.88 0 0;
+    --sidebar-ring: 0.12 0 0;
   }
 
   .dark {
-    --background: 0.08 0 0;
-    --foreground: 0.95 0.03 330;
-    --card: 0.12 0 0;
-    --card-foreground: 0.95 0.03 330;
-    --popover: 0.12 0 0;
-    --popover-foreground: 0.95 0.03 330;
-    --primary: 0.7 0.25 330;
-    --primary-foreground: 0.08 0 0;
-    --secondary: 0.2 0.05 330;
-    --secondary-foreground: 0.9 0.05 330;
-    --muted: 0.18 0.02 330;
-    --muted-foreground: 0.65 0.08 330;
-    --accent: 0.25 0.1 330;
-    --accent-foreground: 0.9 0.05 330;
-    --destructive: 0.55 0.25 15;
-    --destructive-foreground: 0.95 0.05 330;
-    --border: 0.25 0.05 330;
-    --input: 0.2 0.02 330;
-    --input-background: 0.22 0.03 330;
-    --switch-background: 0.25 0.05 330;
-    --ring: 0.7 0.25 330;
-    --chart-1: 0.65 0.3 330;
-    --chart-2: 0.7 0.25 345;
-    --chart-3: 0.6 0.2 315;
-    --chart-4: 0.75 0.22 300;
-    --chart-5: 0.55 0.28 360;
-    --sidebar: 0.1 0 0;
-    --sidebar-foreground: 0.9 0.05 330;
-    --sidebar-primary: 0.7 0.25 330;
-    --sidebar-primary-foreground: 0.08 0 0;
-    --sidebar-accent: 0.2 0.05 330;
-    --sidebar-accent-foreground: 0.9 0.05 330;
-    --sidebar-border: 0.25 0.05 330;
-    --sidebar-ring: 0.7 0.25 330;
+    --background: 0 0 0;
+    --foreground: 0.93 0 0;
+    --card: 0.14 0 0;
+    --card-foreground: 0.93 0 0;
+    --popover: 0.14 0 0;
+    --popover-foreground: 0.93 0 0;
+    --primary: 1 0 0;
+    --primary-foreground: 0 0 0;
+    --secondary: 0.2 0 0;
+    --secondary-foreground: 0.93 0 0;
+    --muted: 0.18 0 0;
+    --muted-foreground: 0.68 0 0;
+    --accent: 0.24 0 0;
+    --accent-foreground: 0.93 0 0;
+    --destructive: 0.6 0 0;
+    --destructive-foreground: 0 0 0;
+    --border: 0.26 0 0;
+    --input: 0.22 0 0;
+    --input-background: 0.18 0 0;
+    --switch-background: 0.28 0 0;
+    --ring: 1 0 0;
+    --chart-1: 0.95 0 0;
+    --chart-2: 0.8 0 0;
+    --chart-3: 0.64 0 0;
+    --chart-4: 0.48 0 0;
+    --chart-5: 0.32 0 0;
+    --sidebar: 0 0 0;
+    --sidebar-foreground: 0.93 0 0;
+    --sidebar-primary: 1 0 0;
+    --sidebar-primary-foreground: 0 0 0;
+    --sidebar-accent: 0.2 0 0;
+    --sidebar-accent-foreground: 0.93 0 0;
+    --sidebar-border: 0.26 0 0;
+    --sidebar-ring: 1 0 0;
   }
 
   .profile-theme {
     --profile-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
     --profile-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-    --profile-bg: #f5f1ea;
-    --profile-ink: #151515;
-    --profile-muted: #6f685f;
-    --profile-accent: #b34f0d;
-    --profile-accent-strong: #e8793a;
-    --profile-accent-soft: rgba(179, 79, 13, 0.16);
-    --profile-highlight: rgba(179, 79, 13, 0.1);
-    --profile-surface: rgba(255, 253, 249, 0.88);
-    --profile-surface-strong: #fff7ee;
-    --profile-border: rgba(20, 18, 16, 0.11);
-    --profile-border-strong: rgba(20, 18, 16, 0.22);
-    --profile-header: rgba(250, 247, 241, 0.82);
-    --profile-grid: rgba(20, 18, 16, 0.04);
-    --profile-image-filter: brightness(1.08) saturate(1.05);
-    --profile-logo-filter: brightness(1.08) saturate(1.05);
-    --profile-shadow: 0 18px 48px rgba(40, 29, 20, 0.09);
-
-    --pointer-x: 50vw;
-    --pointer-y: 32vh;
+    /* Monochrome. There is no hue anywhere in this palette — "accent" now
+       means maximum contrast against the ground rather than a colour, so
+       every component that reaches for it still reads as emphasis. */
+    --profile-bg: #ffffff;
+    --profile-ink: #0a0a0a;
+    --profile-muted: #6b6b6b;
+    --profile-accent: #0a0a0a;
+    --profile-accent-strong: #000000;
+    /* Text that sits on top of an accent-filled surface. */
+    --profile-on-accent: #ffffff;
+    --profile-accent-soft: rgba(10, 10, 10, 0.1);
+    --profile-highlight: rgba(10, 10, 10, 0.06);
+    --profile-surface: rgba(250, 250, 250, 0.88);
+    --profile-surface-strong: #f6f6f6;
+    --profile-border: rgba(0, 0, 0, 0.12);
+    --profile-border-strong: rgba(0, 0, 0, 0.26);
+    --profile-header: rgba(255, 255, 255, 0.82);
+    --profile-grid: rgba(0, 0, 0, 0.045);
+    /* The photograph keeps its colour and is lifted slightly. The UI around
+       it is monochrome so the portrait is the one live thing on the page —
+       desaturating it made the whole hero look inert. */
+    --profile-image-filter: saturate(1.06) contrast(1.03);
+    /* Logos are already fetched black, so no filter is needed. */
+    --profile-logo-filter: none;
+    --profile-shadow: 0 18px 48px rgba(0, 0, 0, 0.1);
 
     font-family: var(--profile-font-display);
     color: var(--profile-ink);
@@ -113,22 +126,28 @@
   }
 
   .dark .profile-theme {
-    --profile-bg: #090a0a;
-    --profile-ink: #f5f5f5;
-    --profile-muted: #a8a8a8;
-    --profile-accent: #ff8a3d;
-    --profile-accent-strong: #f27a2f;
-    --profile-accent-soft: rgba(255, 138, 61, 0.17);
-    --profile-highlight: rgba(255, 138, 61, 0.16);
-    --profile-surface: rgba(17, 18, 18, 0.88);
-    --profile-surface-strong: #111212;
+    --profile-bg: #000000;
+    /* Ink sits just below pure white so the accent still reads as a lift
+       against it — in a monochrome scheme that gap is the only emphasis
+       available where hue used to do the work. */
+    --profile-ink: #ededed;
+    --profile-muted: #949494;
+    --profile-accent: #ffffff;
+    --profile-accent-strong: #ffffff;
+    --profile-on-accent: #000000;
+    --profile-accent-soft: rgba(255, 255, 255, 0.14);
+    --profile-highlight: rgba(255, 255, 255, 0.1);
+    --profile-surface: rgba(15, 15, 15, 0.88);
+    --profile-surface-strong: #0f0f0f;
     --profile-border: rgba(255, 255, 255, 0.14);
-    --profile-border-strong: rgba(255, 255, 255, 0.28);
-    --profile-header: rgba(9, 10, 10, 0.8);
-    --profile-grid: rgba(255, 255, 255, 0.045);
-    --profile-image-filter: brightness(0.84) saturate(0.9) contrast(1.08);
-    --profile-logo-filter: brightness(0.82) saturate(0.9);
-    --profile-shadow: 0 20px 56px rgba(0, 0, 0, 0.32);
+    --profile-border-strong: rgba(255, 255, 255, 0.3);
+    --profile-header: rgba(0, 0, 0, 0.8);
+    --profile-grid: rgba(255, 255, 255, 0.05);
+    /* Not dimmed on the dark ground — brightening it slightly is what keeps
+       the portrait reading as a live photograph rather than a grey panel. */
+    --profile-image-filter: brightness(1.04) saturate(1.06) contrast(1.04);
+    --profile-logo-filter: none;
+    --profile-shadow: 0 20px 56px rgba(0, 0, 0, 0.55);
   }
 
   * {
@@ -143,6 +162,35 @@
 
   html {
     font-size: var(--font-size);
+    /* Keeps snap landings and #anchor jumps agreeing on the same offset,
+       replacing the per-section scroll-mt-28 utilities. */
+    /* Zero, because sections carry their own top padding that clears the
+       fixed header. Anchors and the pager then agree on one landing point:
+       the exact top of a section. */
+    scroll-padding-top: 0;
+    /* The fallback for touch, reduced-motion and no-JS. When the pager is
+       active it sets `.is-paged` and takes over from here. */
+    scroll-snap-type: y mandatory;
+  }
+
+  /* Paging drives scrolling with programmatic smooth scrolls; leaving CSS
+     snapping on would have the two fight over where a gesture lands. */
+  html.is-paged {
+    scroll-snap-type: none;
+  }
+
+  /* Phones only. Mandatory snap fights iOS Safari's collapsing URL bar, and
+     it is an accessibility hazard for anyone who asked for less motion. */
+  @media (max-width: 767px) {
+    html {
+      scroll-snap-type: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-snap-type: none;
+    }
   }
 
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
@@ -225,24 +273,6 @@
     transition: filter 0.45s ease;
   }
 
-  .profile-pointer-glow {
-    display: none;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 0;
-    width: min(34rem, 90vw);
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: radial-gradient(
-      circle,
-      var(--profile-highlight) 0%,
-      transparent 68%
-    );
-    translate: calc(var(--pointer-x) - 50%) calc(var(--pointer-y) - 50%);
-    pointer-events: none;
-  }
-
   .profile-corner-glow {
     position: absolute;
     right: -10rem;
@@ -278,16 +308,12 @@
     will-change: transform;
   }
 
-  .profile-header-shell,
-  .profile-mobile-nav {
+  .profile-header-shell {
     border: 1px solid var(--profile-border);
     background: var(--profile-header);
-    box-shadow: 0 14px 44px rgba(20, 15, 10, 0.1);
+    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(18px) saturate(1.2);
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  }
-
-  .profile-header-shell {
     border-radius: 18px;
   }
 
@@ -358,7 +384,32 @@
 
   .profile-navlink {
     position: relative;
-    transition: color 0.25s ease, background-color 0.25s ease;
+    transition: color 0.25s ease;
+  }
+
+  /* Underline marks the current section. With no hue left in the palette,
+     a rule is what distinguishes the active link from its neighbours. */
+  .profile-navlink::after {
+    content: "";
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: 0.3rem;
+    height: 1px;
+    background: var(--profile-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-navlink.is-active::after {
+    transform: scaleX(1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .profile-navlink:hover::after {
+      transform: scaleX(1);
+    }
   }
 
   .profile-button {
@@ -423,10 +474,6 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .profile-pointer-glow {
-      display: block;
-    }
-
     .profile-brand-mark:hover {
       transform: rotate(-4deg) scale(1.04);
     }
@@ -465,39 +512,24 @@
     }
   }
 
+  /* fadeInUpSm — the reference site's only animation.
+     One vertical fade, 700ms, differing solely by delay. It has no
+     directional, scale or blur variants, so neither does this: earlier
+     versions of this file added them and that is precisely what stopped the
+     page moving like the reference. */
   .profile-reveal {
-    --reveal-x: 0px;
-    --reveal-y: 18px;
-    --reveal-scale: 1;
     opacity: 0;
-    translate: var(--reveal-x) var(--reveal-y);
-    scale: var(--reveal-scale);
-    transition: opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-      translate 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-      scale 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(0, 22px, 0);
+    /* 520ms, down from 700ms. Combined with a delay the old pairing meant the
+       last item in a group did not finish for over a second, which reads as
+       lag rather than as stagger. */
+    transition: opacity 0.52s ease-out, transform 0.52s ease-out;
     transition-delay: var(--reveal-delay, 0ms);
   }
 
   .profile-reveal.is-visible {
     opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  .profile-reveal--left {
-    --reveal-x: -12px;
-  }
-
-  .profile-reveal--right {
-    --reveal-x: 12px;
-  }
-
-  .profile-reveal--blur {
-    --reveal-y: 22px;
-  }
-
-  .profile-reveal--scale {
-    --reveal-scale: 0.985;
+    transform: translate3d(0, 0, 0);
   }
 
   .profile-marquee {
@@ -514,27 +546,12 @@
     animation-play-state: paused;
   }
 
-  .profile-heading {
-    --reveal-y: 0px;
-  }
-
+  /* No per-word stagger: the reference site animates a heading as one block
+     via the same fadeInUpSm. `.profile-word` stays a plain inline-block so
+     the markup is unchanged and the effect can be reinstated by restoring
+     this rule alone. */
   .profile-word {
     display: inline-block;
-    opacity: 0;
-    transform: translate3d(0, 0.72em, 0);
-    clip-path: inset(0 0 100% 0);
-    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-      clip-path 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: calc(
-      (var(--word-index, 0) * 0.04s) + var(--reveal-delay, 0ms)
-    );
-  }
-
-  .profile-heading.is-visible .profile-word {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-    clip-path: inset(0 0 0 0);
   }
 
   .profile-index-mark {
@@ -599,9 +616,9 @@
       to bottom,
       transparent 0%,
       transparent 46%,
-      rgba(255, 138, 61, 0.2) 49%,
+      rgba(255, 255, 255, 0.22) 49%,
       rgba(255, 255, 255, 0.62) 50%,
-      rgba(255, 138, 61, 0.2) 51%,
+      rgba(255, 255, 255, 0.22) 51%,
       transparent 54%,
       transparent 100%
     );
@@ -656,28 +673,15 @@
     border-top: 1px solid var(--profile-border);
   }
 
-  .profile-process-step::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background: var(--profile-accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+  /* The old ::after bottom sweep is gone: these cards now carry the
+     four-edge border-draw, and two bottom lines animating from opposite
+     origins read as a glitch rather than an effect. */
 
   .profile-process-signal {
     transition: background-color 0.35s ease, box-shadow 0.35s ease;
   }
 
-  .profile-security-panel {
-    background: var(--profile-surface-strong);
-    color: var(--profile-ink);
-    box-shadow: var(--profile-shadow);
-  }
+  /* .profile-security-panel removed with the section's card wrapper. */
 
   .profile-security-step {
     position: relative;
@@ -699,21 +703,13 @@
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .profile-contact-panel {
-    background: var(--profile-surface-strong);
-    color: var(--profile-ink);
-    box-shadow: var(--profile-shadow);
-  }
+  /* .profile-contact-panel removed with the section's card wrapper. */
 
   .profile-contact-cell + .profile-contact-cell {
     border-top: 1px solid var(--profile-border);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .profile-process-step:hover::after {
-      transform: scaleX(1);
-    }
-
     .profile-process-step:hover .profile-process-signal {
       background: var(--profile-accent);
       box-shadow: 0 0 0 6px var(--profile-accent-soft);
@@ -750,14 +746,6 @@
       border-left: 1px solid var(--profile-border);
     }
 
-    .profile-reveal--left {
-      --reveal-x: -18px;
-    }
-
-    .profile-reveal--right {
-      --reveal-x: 18px;
-    }
-
     .profile-security-step + .profile-security-step {
       border-top: 0;
     }
@@ -778,6 +766,7 @@
     }
   }
 
+  /* Contact grid is 3-up at lg, so rows start at every 3rd cell. */
   @media (min-width: 1024px) {
     .profile-contact-cell + .profile-contact-cell,
     .profile-contact-cell:nth-child(odd),
@@ -786,17 +775,645 @@
       border-left: 1px solid var(--profile-border);
     }
 
-    .profile-contact-cell:first-child {
+    .profile-contact-cell:nth-child(3n + 1) {
       border-left: 0;
     }
+
+    .profile-contact-cell:nth-child(n + 4) {
+      border-top: 1px solid var(--profile-border);
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Sectioned scroll model
+     `overflow-x: clip` instead of `hidden`: clip does not create a scroll
+     container, so the sections' nearest scroller stays the document and
+     `scroll-snap-align` resolves against `html`.
+     --------------------------------------------------------------------- */
+  .profile-clip-x {
+    overflow-x: clip;
+  }
+
+  .profile-section {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    /* Top padding clears the fixed header; both values stay tight because
+       every pixel here comes out of the budget a snapped section has to fit
+       inside one viewport. */
+    padding-block: clamp(5.5rem, 10vh, 7rem) clamp(2.5rem, 6vh, 4rem);
+    scroll-snap-align: start;
+    /* `normal`, never `always`: a section that does outgrow the viewport on
+       some screen stays scrollable instead of trapping the reader. */
+    scroll-snap-stop: normal;
+  }
+
+  /* Laptops with short viewports are where a snapped section is most likely
+     to overflow, so give the content more of the screen. */
+  @media (max-height: 860px) {
+    .profile-section {
+      padding-block: 5rem 2rem;
+    }
+  }
+
+  .profile-section--free {
+    min-height: 0;
+    /* Top padding matches the paged sections so the fixed header never
+       covers a heading when this section is the landing point. */
+    padding-block: clamp(5.5rem, 9vh, 7rem) clamp(2.5rem, 6vh, 4rem);
+    scroll-snap-align: none;
+  }
+
+  /* ---------------------------------------------------------------------
+     Atmospheric backgrounds — reconstructs the slow "breathing" of a Ken
+     Burns pan without any photography.
+     --------------------------------------------------------------------- */
+  .profile-atmosphere {
+    position: fixed;
+    inset: -20% -10%;
+    z-index: 0;
+    background:
+      radial-gradient(
+        42rem 32rem at 18% 22%,
+        var(--profile-accent-soft) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        38rem 30rem at 82% 68%,
+        var(--profile-highlight) 0%,
+        transparent 64%
+      ),
+      radial-gradient(
+        30rem 26rem at 58% 8%,
+        var(--profile-accent-soft) 0%,
+        transparent 70%
+      );
+    /* Deliberately no blur filter: a full-viewport animated blur is an
+       expensive composite, and soft-stopped radial gradients are already
+       diffuse enough to read the same. */
+    opacity: 1;
+    animation: profile-drift 52s ease-in-out infinite alternate;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* Vignette. Standing in for the darkened edges of the reference site's
+     full-bleed photography — it is most of what gives a flat colour field
+     the weight of a photograph. */
+  .profile-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(
+      125% 95% at 50% 38%,
+      transparent 42%,
+      rgba(0, 0, 0, 0.16) 78%,
+      rgba(0, 0, 0, 0.34) 100%
+    );
+    pointer-events: none;
+  }
+
+  .dark .profile-vignette {
+    background: radial-gradient(
+      125% 95% at 50% 38%,
+      transparent 38%,
+      rgba(0, 0, 0, 0.45) 76%,
+      rgba(0, 0, 0, 0.72) 100%
+    );
+  }
+
+  @keyframes profile-drift {
+    0% {
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+    50% {
+      transform: scale(1.08) translate3d(2.5%, -2%, 0);
+    }
+    100% {
+      transform: scale(1.14) translate3d(-2%, 2.5%, 0);
+    }
+  }
+
+  /* Slow scale on the hero's own backdrop — the Ken Burns "breathing" the
+     reference site gets from a zooming photograph. */
+  .profile-hero-stage {
+    position: absolute;
+    inset: -10%;
+    z-index: 0;
+    background: radial-gradient(
+      60% 50% at 30% 45%,
+      var(--profile-accent-soft) 0%,
+      transparent 68%
+    );
+    opacity: 0.9;
+    animation: profile-kenburns 38s ease-in-out infinite alternate;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  @keyframes profile-kenburns {
+    from {
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.18) translate3d(-3%, 2%, 0);
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Accent dot — the reference site's signature typographic tic.
+     --------------------------------------------------------------------- */
+  .profile-accent-dot {
+    color: var(--profile-accent);
+  }
+
+  /* ---------------------------------------------------------------------
+     Border-draw hover: four spans tracing the card edge.
+     --------------------------------------------------------------------- */
+  .profile-draw {
+    position: relative;
+  }
+
+  .profile-draw > .profile-draw-border {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    /* The cards are rounded but not clipped, so straight edge lines would
+       spur out past each corner arc. Inheriting the radius and clipping here
+       traces the actual card shape; it resolves to 0 on square parents. */
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  .profile-draw-border span {
+    position: absolute;
+    background: var(--profile-accent);
+    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .profile-draw-border span:nth-child(1),
+  .profile-draw-border span:nth-child(3) {
+    left: 0;
+    right: 0;
+    height: 1.5px;
+  }
+
+  .profile-draw-border span:nth-child(1) {
+    top: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .profile-draw-border span:nth-child(3) {
+    bottom: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+
+  .profile-draw-border span:nth-child(2),
+  .profile-draw-border span:nth-child(4) {
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+  }
+
+  .profile-draw-border span:nth-child(2) {
+    right: 0;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  .profile-draw-border span:nth-child(4) {
+    left: 0;
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .profile-draw:hover .profile-draw-border span:nth-child(1),
+    .profile-draw:hover .profile-draw-border span:nth-child(3) {
+      transform: scaleX(1);
+    }
+
+    .profile-draw:hover .profile-draw-border span:nth-child(2),
+    .profile-draw:hover .profile-draw-border span:nth-child(4) {
+      transform: scaleY(1);
+    }
+
+    .profile-draw-border span:nth-child(2) {
+      transition-delay: 0.12s;
+    }
+
+    .profile-draw-border span:nth-child(3) {
+      transition-delay: 0.24s;
+    }
+
+    .profile-draw-border span:nth-child(4) {
+      transition-delay: 0.36s;
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Section dot navigation
+     --------------------------------------------------------------------- */
+  .profile-dotnav {
+    position: fixed;
+    right: clamp(0.75rem, 2vw, 1.75rem);
+    top: 50%;
+    z-index: 45;
+    display: none;
+    translate: 0 -50%;
+  }
+
+  .profile-dotnav a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-block: 0.4rem;
+    color: var(--profile-muted);
+    font-family: var(--profile-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* Out of flow and non-interactive on purpose. Left in the layout, these
+     hidden labels would widen every link to ~100px of invisible but still
+     clickable area sitting on top of the page content. */
+  .profile-dotnav a > span:first-child {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.6rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .profile-dotnav a > i {
+    display: block;
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--profile-border-strong);
+    border-radius: 999px;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .profile-dotnav a[aria-current="location"] > i {
+    background: var(--profile-accent);
+    border-color: var(--profile-accent);
+    transform: scale(1.35);
+  }
+
+  .profile-dotnav a[aria-current="location"] {
+    color: var(--profile-ink);
+  }
+
+  .profile-dotnav a:hover > span:first-child,
+  .profile-dotnav a:focus-visible > span:first-child,
+  .profile-dotnav a[aria-current="location"] > span:first-child {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ---------------------------------------------------------------------
+     Fixed social rail
+     --------------------------------------------------------------------- */
+  /* Bare glyphs between two vertical rules, spanning the viewport. */
+  .profile-social-rail {
+    position: fixed;
+    left: clamp(0.75rem, 1.6vw, 1.75rem);
+    top: 0;
+    bottom: 0;
+    z-index: 45;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.75rem;
+    padding-block: 7rem 3.5rem;
+    /* The strip is mostly empty but full-height, so it would otherwise sit
+       over the content column swallowing clicks. Only the icons take input. */
+    pointer-events: none;
+  }
+
+  .profile-rail-line {
+    flex: 1 1 auto;
+    width: 1px;
+    min-height: 2rem;
+    background: var(--profile-border-strong);
+  }
+
+  .profile-social-rail__links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+    pointer-events: auto;
+  }
+
+  .profile-social-rail a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--profile-muted);
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .profile-social-rail a:hover,
+  .profile-social-rail a:focus-visible {
+    color: var(--profile-ink);
+    transform: translateY(-2px);
+  }
+
+  @media (min-width: 1280px) {
+    .profile-dotnav,
+    .profile-social-rail {
+      display: flex;
+    }
+
+    .profile-dotnav {
+      flex-direction: column;
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Full-screen offcanvas menu
+     --------------------------------------------------------------------- */
+  .profile-offcanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    display: grid;
+    align-content: center;
+    padding: clamp(4rem, 10vh, 7rem) clamp(1.5rem, 6vw, 6rem);
+    background: var(--profile-bg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0.45s;
+  }
+
+  .profile-offcanvas.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .profile-offcanvas-item {
+    opacity: 0;
+    translate: 0 22px;
+    transition: opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+      translate 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--item-index, 0) * 55ms + 120ms);
+  }
+
+  .profile-offcanvas.is-open .profile-offcanvas-item {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .profile-offcanvas-link {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
+    padding-block: clamp(0.3rem, 1.2vh, 0.75rem);
+    font-family: var(--profile-font-display);
+    font-size: clamp(2rem, 6.5vw, 4.5rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    color: var(--profile-muted);
+    transition: color 0.3s ease, translate 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .profile-offcanvas-link .profile-offcanvas-index {
+    font-family: var(--profile-font-mono);
+    font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--profile-accent);
+  }
+
+  .profile-offcanvas-link:hover,
+  .profile-offcanvas-link:focus-visible,
+  .profile-offcanvas-link[aria-current="location"] {
+    color: var(--profile-ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .profile-offcanvas-link:hover {
+      translate: 12px 0;
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Transparent → solid header
+     --------------------------------------------------------------------- */
+  .profile-header .profile-header-shell {
+    transition: background-color 0.4s ease, border-color 0.4s ease,
+      box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+  }
+
+  .profile-header:not(.is-scrolled) .profile-header-shell {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* ---------------------------------------------------------------------
+     Meters + count-up
+     --------------------------------------------------------------------- */
+  .profile-meter {
+    position: relative;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--profile-border);
+  }
+
+  .profile-meter > i {
+    position: absolute;
+    inset: 0;
+    display: block;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      var(--profile-accent),
+      var(--profile-accent-strong)
+    );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .profile-reveal.is-visible .profile-meter > i,
+  .is-visible > .profile-meter > i {
+    transform: scaleX(var(--meter-value, 1));
+  }
+
+  .profile-countup {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------------------------------------------------------------
+     Detail disclosure — keeps snapped sections to a headline and a lede
+     --------------------------------------------------------------------- */
+  .profile-disclosure > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--profile-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--profile-muted);
+    transition: color 0.3s ease;
+  }
+
+  .profile-disclosure > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .profile-disclosure > summary:hover,
+  .profile-disclosure > summary:focus-visible {
+    color: var(--profile-ink);
+  }
+
+  /* Plus sign that loses its vertical stroke when open. */
+  .profile-disclosure > summary > i {
+    position: relative;
+    display: block;
+    width: 0.65rem;
+    height: 0.65rem;
+    flex: 0 0 auto;
+  }
+
+  .profile-disclosure > summary > i::before,
+  .profile-disclosure > summary > i::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: var(--profile-accent);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .profile-disclosure > summary > i::before {
+    width: 100%;
+    height: 1px;
+    transform: translate(-50%, -50%);
+  }
+
+  .profile-disclosure > summary > i::after {
+    width: 1px;
+    height: 100%;
+    transform: translate(-50%, -50%);
+  }
+
+  .profile-disclosure[open] > summary > i::after {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .profile-disclosure-body {
+    padding-top: 0.75rem;
+  }
+
+  /* ---------------------------------------------------------------------
+     Hand-rolled snap carousel (no Swiper)
+     --------------------------------------------------------------------- */
+  .profile-carousel-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(min(21rem, 82vw), 1fr);
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* `overflow-x: auto` makes overflow-y compute to `auto` too, which would
+       clip the cards' hover lift and their 48px-blur shadow. This padding is
+       the clearance for both; without it the effect is invisible in here. */
+    padding-block: 1rem 1.75rem;
+    padding-inline: 0.25rem;
+  }
+
+  .profile-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-carousel-track > * {
+    scroll-snap-align: start;
+  }
+
+  .profile-carousel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--profile-border);
+    border-radius: 999px;
+    background: var(--profile-surface);
+    color: var(--profile-ink);
+    transition: border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .profile-carousel-button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .profile-carousel-button:not(:disabled):hover {
+    border-color: var(--profile-accent);
+    transform: translateY(-2px);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .profile-reveal {
       transition: none;
       opacity: 1;
+      transform: none;
+    }
+
+    .profile-atmosphere,
+    .profile-hero-stage {
+      animation: none;
+    }
+
+    .profile-offcanvas,
+    .profile-offcanvas-item {
+      transition: none;
+    }
+
+    .profile-offcanvas-item {
+      opacity: 1;
       translate: 0 0;
-      scale: 1;
+    }
+
+    .profile-meter > i {
+      transition: none;
+      transform: scaleX(var(--meter-value, 1));
+    }
+
+    .profile-carousel-track {
+      scroll-behavior: auto;
+    }
+
+    .profile-draw-border span {
+      transition: none;
     }
 
     .profile-marquee {
@@ -814,14 +1431,6 @@
       display: none;
     }
 
-    .profile-word {
-      transition: none;
-      opacity: 1;
-      transform: none;
-      clip-path: none;
-    }
-
-    .profile-pointer-glow,
     .profile-portrait-scan {
       display: none;
     }
@@ -837,10 +1446,10 @@
     .profile-brand-mark,
     .profile-icon-button,
     .profile-navlink,
+    .profile-navlink::after,
     .profile-image,
     .profile-logo,
     .profile-portrait-frame,
-    .profile-process-step::after,
     .profile-process-signal,
     .profile-experience-entry,
     .profile-faq-row,

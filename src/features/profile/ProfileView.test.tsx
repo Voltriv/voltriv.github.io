@@ -32,7 +32,7 @@ describe("ProfileView interactions", () => {
     window.localStorage.clear();
   });
 
-  it("opens the mobile navigation and closes it with Escape", () => {
+  it("opens the offcanvas navigation and closes it with Escape", () => {
     renderProfile();
     const menuButton = getRequiredElement<HTMLButtonElement>(
       'button[aria-label="Open navigation menu"]',
@@ -41,23 +41,110 @@ describe("ProfileView interactions", () => {
     fireEvent.click(menuButton);
 
     expect(menuButton).toHaveAttribute("aria-expanded", "true");
-    const mobileNavigation = getRequiredElement<HTMLElement>(
-      'nav[aria-label="Mobile primary"]',
-    );
-    expect(mobileNavigation.querySelectorAll("a")).toHaveLength(
+    const offcanvas = getRequiredElement<HTMLElement>("#primary-navigation");
+    expect(offcanvas).toHaveClass("is-open");
+    expect(offcanvas).toHaveAttribute("aria-hidden", "false");
+    expect(offcanvas.querySelectorAll("a")).toHaveLength(
       profileData.navLinks.length + profileData.pageLinks.length,
     );
     expect(
-      mobileNavigation.querySelector('a[href="/certifications/"]'),
+      offcanvas.querySelector('a[href="/certifications/"]'),
     ).toHaveTextContent("Credentials");
+    // The menu owns page scrolling while it is open.
+    expect(document.body.style.overflow).toBe("hidden");
 
-    fireEvent.keyDown(window, { key: "Escape" });
+    fireEvent.keyDown(document, { key: "Escape" });
 
     expect(menuButton).toHaveAttribute("aria-expanded", "false");
     expect(menuButton).toHaveFocus();
-    expect(document.getElementById("mobile-navigation")).toHaveAttribute(
-      "hidden",
+    expect(offcanvas).not.toHaveClass("is-open");
+    expect(document.body.style.overflow).toBe("");
+  });
+
+  it("traps Tab focus inside the open offcanvas menu", () => {
+    renderProfile();
+    const menuButton = getRequiredElement<HTMLButtonElement>(
+      'button[aria-label="Open navigation menu"]',
     );
+
+    fireEvent.click(menuButton);
+
+    const offcanvas = getRequiredElement<HTMLElement>("#primary-navigation");
+    const focusable = Array.from(
+      offcanvas.querySelectorAll<HTMLElement>("a[href], button"),
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    last.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(first).toHaveFocus();
+
+    first.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(last).toHaveFocus();
+  });
+
+  it("marks the section dot navigation with the active section", () => {
+    renderProfile();
+    const dotNav = getRequiredElement<HTMLElement>(".profile-dotnav");
+
+    expect(dotNav.querySelectorAll("a")).toHaveLength(
+      profileData.navLinks.length,
+    );
+
+    // Exactly one dot is current, and it names a real section. The *which*
+    // is deliberately not asserted: jsdom reports scrollHeight as 0, so
+    // useSectionObserver's bottom-of-page clamp always wins here — pinning a
+    // specific section would test the layout stub rather than the component.
+    const current = dotNav.querySelectorAll('a[aria-current="location"]');
+    expect(current).toHaveLength(1);
+    expect(profileData.navLinks.map((link) => link.href)).toContain(
+      current[0].getAttribute("href"),
+    );
+  });
+
+  it("renders social rail links including GitHub and email", () => {
+    renderProfile();
+    const rail = getRequiredElement<HTMLElement>(".profile-social-rail");
+    const hrefs = Array.from(rail.querySelectorAll("a")).map((anchor) =>
+      anchor.getAttribute("href"),
+    );
+
+    expect(hrefs).toContain("https://github.com/Voltriv");
+    expect(
+      hrefs.some((href) => href?.startsWith("mailto:")),
+    ).toBe(true);
+    expect(rail.querySelectorAll("a")).toHaveLength(
+      profileData.socialLinks.length + 1,
+    );
+  });
+
+  it("renders count-up metrics at their final value", () => {
+    renderProfile();
+    const countUps = document.querySelectorAll(".profile-countup");
+
+    expect(countUps.length).toBeGreaterThan(0);
+    // The resting DOM value is always the final number, so assistive tech
+    // and tests never observe a partially-counted figure.
+    expect(countUps[0]).toHaveTextContent(
+      profileData.experiences.length.toString(),
+    );
+  });
+
+  it("opts tall sections out of scroll snapping", () => {
+    renderProfile();
+
+    expect(document.getElementById("proof")).toHaveClass(
+      "profile-section--free",
+    );
+    expect(document.getElementById("faq")).toHaveClass(
+      "profile-section--free",
+    );
+    expect(document.getElementById("overview")).not.toHaveClass(
+      "profile-section--free",
+    );
+    expect(document.getElementById("contact")).toHaveClass("profile-section");
   });
 
   it("toggles FAQ panels with accurate expanded state", () => {
@@ -119,15 +206,17 @@ describe("ProfileView interactions", () => {
 
   it("persists theme changes and exposes the next theme action", () => {
     render(<App />);
+    // The landing page opens dark by design, so the offered action is light.
+    expect(document.documentElement).toHaveClass("dark");
     const themeButton = getRequiredElement<HTMLButtonElement>(
-      'button[aria-label="Switch to dark theme"]',
+      'button[aria-label="Switch to light theme"]',
     );
 
     fireEvent.click(themeButton);
 
-    expect(document.documentElement).toHaveClass("dark");
-    expect(window.localStorage.getItem("theme")).toBe("dark");
-    expect(themeButton).toHaveAccessibleName("Switch to light theme");
+    expect(document.documentElement).not.toHaveClass("dark");
+    expect(window.localStorage.getItem("theme")).toBe("light");
+    expect(themeButton).toHaveAccessibleName("Switch to dark theme");
   });
 
   it("reveals content when IntersectionObserver is unavailable", () => {
@@ -204,7 +293,7 @@ describe("ProfileView interactions", () => {
     }
   });
 
-  it("tracks fine-pointer motion and clears portrait tilt on cancel", () => {
+  it("tilts the portrait on fine-pointer motion and clears it on cancel", () => {
     vi.mocked(window.matchMedia).mockImplementation((query) =>
       createMediaQueryList(query, query === "(pointer: fine)"),
     );
@@ -220,7 +309,6 @@ describe("ProfileView interactions", () => {
 
     try {
       renderProfile();
-      const root = getRequiredElement<HTMLElement>(".profile-theme");
       const portrait = getRequiredElement<HTMLDivElement>(
         ".profile-portrait-stage",
       );
@@ -236,10 +324,8 @@ describe("ProfileView interactions", () => {
         toJSON: () => ({}),
       });
 
-      fireEvent.pointerMove(window, { clientX: 120, clientY: 80 });
-      expect(root.style.getPropertyValue("--pointer-x")).toBe("120px");
-      expect(root.style.getPropertyValue("--pointer-y")).toBe("80px");
-
+      // The cursor-spotlight effect was removed for the minimal UI, so there
+      // is deliberately no window-level pointermove behaviour left to assert.
       fireEvent.pointerEnter(portrait, { pointerType: "mouse" });
       fireEvent.pointerMove(portrait, {
         pointerType: "mouse",
@@ -259,52 +345,30 @@ describe("ProfileView interactions", () => {
     }
   });
 
-  it("follows the system theme until the user chooses explicitly", () => {
-    let systemThemeListener:
-      | ((event: MediaQueryListEvent) => void)
-      | undefined;
-
-    vi.mocked(window.matchMedia).mockImplementation((query) => {
-      const mediaQuery = createMediaQueryList(
-        query,
-        query === "(prefers-color-scheme: dark)",
-      );
-
-      if (query !== "(prefers-color-scheme: dark)") {
-        return mediaQuery;
-      }
-
-      return {
-        ...mediaQuery,
-        addEventListener: vi.fn((eventName, listener) => {
-          if (eventName === "change" && typeof listener === "function") {
-            systemThemeListener = listener as (
-              event: MediaQueryListEvent,
-            ) => void;
-          }
-        }),
-      };
-    });
-
-    render(<App />);
-    const themeButton = getRequiredElement<HTMLButtonElement>(
-      'button[aria-label="Switch to light theme"]',
+  it("opens dark even when the system prefers light, and honours a stored choice", () => {
+    // System explicitly prefers light; the page should ignore it on first visit.
+    vi.mocked(window.matchMedia).mockImplementation((query) =>
+      createMediaQueryList(query, false),
     );
 
+    const first = render(<App />);
+
     expect(document.documentElement).toHaveClass("dark");
+    // Nothing is written until the visitor actually chooses.
     expect(window.localStorage.getItem("theme")).toBeNull();
 
-    act(() => {
-      systemThemeListener?.({ matches: false } as MediaQueryListEvent);
-    });
+    first.unmount();
+    document.documentElement.classList.remove("dark");
+
+    // A stored preference still wins over the dark default.
+    window.localStorage.setItem("theme", "light");
+    render(<App />);
 
     expect(document.documentElement).not.toHaveClass("dark");
-    expect(themeButton).toHaveAccessibleName("Switch to dark theme");
-    expect(window.localStorage.getItem("theme")).toBeNull();
-
-    fireEvent.click(themeButton);
-
-    expect(document.documentElement).toHaveClass("dark");
-    expect(window.localStorage.getItem("theme")).toBe("dark");
+    expect(
+      getRequiredElement<HTMLButtonElement>(
+        'button[aria-label="Switch to dark theme"]',
+      ),
+    ).toBeInTheDocument();
   });
 });
