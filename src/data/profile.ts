@@ -1,23 +1,23 @@
 import { mediaAsset } from "@/lib/constants";
+import {
+  experiences,
+  projects,
+  type Experience,
+  type Project,
+} from "@/content";
 
 export type NavLink = {
   href: string;
   label: string;
 };
 
-export type Experience = {
-  company: string;
-  role: string;
-  period: string;
-  summary: string;
-  bullets: string[];
-};
-
-export type Project = {
-  title: string;
-  description: string;
-  link: string;
-};
+/**
+ * `experiences` and `projects` are no longer declared here: they are editable
+ * content, loaded from `src/content/entries/` and validated at module load.
+ * Their types come with them, and are re-exported so existing importers of
+ * `@/data/profile` keep working unchanged.
+ */
+export type { Experience, Project } from "@/content";
 
 export type FocusArea = {
   title: string;
@@ -102,8 +102,9 @@ export type ProfileData = {
   navLinks: NavLink[];
   pageLinks: NavLink[];
   services: ServiceItem[];
-  experiences: Experience[];
-  projects: Project[];
+  // Readonly because they come from the content loader, not this file.
+  experiences: readonly Experience[];
+  projects: readonly Project[];
   focusAreas: FocusArea[];
   securityMeasures: SecurityMeasure[];
   techStack: TechStackCategory[];
@@ -170,45 +171,10 @@ export const profileData: ProfileData = {
     },
   ],
 
-  experiences: [
-    {
-      company: "LibReport",
-      role: "Project Manager / Database Administrator",
-      period: "August 2025 - November 2025",
-      summary:
-        "Directed the delivery of an academic reporting suite for campus libraries—balancing PM, DBA, and stakeholder duties.",
-      bullets: [
-        "Facilitated sprint rituals across engineering, QA, and client librarians to keep timelines healthy.",
-        "Maintained datasets and migrations that powered real-time usage dashboards.",
-        "Built alignment decks and mini demos so admins could adopt the tool with confidence.",
-      ],
-    },
-    {
-      company: "LibTrack",
-      role: "UI/UX Designer & Quality Assurance Lead",
-      period: "January 2025 - March 2025",
-      summary: "Owned both product design and QA for a circulation-tracker used by collegiate libraries.",
-      bullets: [
-        "Designed high-contrast UI patterns that worked well on kiosk terminals.",
-        "Authored end-to-end test scripts and defect workflows that cut release bugs.",
-        "Partnered with librarians to introduce features in weekly training clinics.",
-      ],
-    },
-    {
-      company: "FloodWatch",
-      role: "UI/UX Designer",
-      period: "August 2024 - November 2024",
-      summary: "Joined a civic-tech team to craft a flood monitoring experience for Northern Luzon communities.",
-      bullets: [
-        "Interviewed responders and barangay staff to map out real alert journeys.",
-        "Sketched responsive dashboards that elevated hazard data for mobile users.",
-        "Worked with eng to test SMS + push notification flows for early warnings.",
-      ],
-    },
-  ],
-  projects: [
-    // Intentionally left empty so the UI shows a placeholder card.
-  ],
+  // Loaded from src/content/entries/, newest-first and author-ordered
+  // respectively. Edit them at /admin/, not here.
+  experiences,
+  projects,
   techStack: [
     {
       title: "Frontend",

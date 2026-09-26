@@ -11,6 +11,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      No `frame-ancestors` here on purpose: the CSP spec ignores that
+      directive when the policy arrives in a <meta> tag, and GitHub Pages
+      cannot set response headers. Clickjacking is handled from the bundle
+      instead — see src/lib/frameGuard.ts.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://cdn.simpleicons.org; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
@@ -70,6 +76,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/entries/profile.tsx"></script>
   </body>
 </html>

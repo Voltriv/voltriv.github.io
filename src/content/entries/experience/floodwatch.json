@@ -1,0 +1,13 @@
+{
+  "id": "floodwatch",
+  "company": "FloodWatch",
+  "role": "UI/UX Designer",
+  "period": "August 2024 - November 2024",
+  "startDate": "2024-08",
+  "summary": "Joined a civic-tech team to craft a flood monitoring experience for Northern Luzon communities.",
+  "bullets": [
+    "Interviewed responders and barangay staff to map out real alert journeys.",
+    "Sketched responsive dashboards that elevated hazard data for mobile users.",
+    "Worked with eng to test SMS + push notification flows for early warnings."
+  ]
+}

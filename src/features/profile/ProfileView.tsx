@@ -22,10 +22,11 @@ import {
 } from "lucide-react";
 import { profileData } from "@/data/profile";
 import { useSectionObserver } from "@/hooks/useSectionObserver";
-import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/components/media/ImageWithFallback";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
 import { whenBootClears } from "./bootGate";
+import { SCROLL_EDGE_TOLERANCE_PX, lockScrollGestures } from "./scrollLock";
 import { useFullpagePager } from "./useFullpagePager";
 import { CountUp } from "./components/CountUp";
 import { DetailDisclosure } from "./components/DetailDisclosure";
@@ -96,9 +97,28 @@ const smoothScrollToHash = (hash: string) => {
   if (!target) return false;
 
   const targetTop = getScrollTargetTop(target);
+  const smooth = !prefersReducedMotion();
+
+  // Hold the pager off for the length of the animation: it would otherwise
+  // sample the scroll position mid-flight and page from whichever section the
+  // jump happens to be passing through.
+  //
+  // Only when the page is actually going to move, though. Clicking the nav
+  // entry for the section already on screen — or the skip link while at the
+  // top — resolves to the current scroll position and scrolls nowhere, and
+  // arming the lock there would have the pager cancel every wheel tick and
+  // arrow key for the next three quarters of a second with nothing on screen
+  // to explain the freeze. Same guard the pager's own `goTo` applies.
+  if (
+    smooth &&
+    Math.abs(targetTop - window.scrollY) > SCROLL_EDGE_TOLERANCE_PX
+  ) {
+    lockScrollGestures();
+  }
+
   window.scrollTo({
     top: targetTop,
-    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    behavior: smooth ? "smooth" : "auto",
   });
   target.focus({ preventScroll: true });
   updateHash(hash);
@@ -509,15 +529,11 @@ export function ProfileView({
         className="profile-scroll-progress"
         aria-hidden="true"
       />
+      {/* No ambient layer here by design: the page reads as paper, and the
+          atmosphere gradients, grid, corner glow and vignette that used to sit
+          here were all standing in for photographic depth this layout does not
+          want. Structure now comes from type, whitespace and hairlines. */}
       <div className="relative">
-        <div className="profile-atmosphere" aria-hidden="true" />
-        <div
-          className="pointer-events-none absolute inset-0 profile-grid opacity-70 dark:opacity-50"
-          aria-hidden="true"
-        />
-        <div className="profile-corner-glow" aria-hidden="true" />
-        <div className="profile-vignette" aria-hidden="true" />
-
         <SectionDotNav
           links={navLinks}
           activeSection={activeSection}
@@ -645,7 +661,6 @@ export function ProfileView({
             tabIndex={-1}
             className="profile-section relative isolate space-y-10"
           >
-            <div className="profile-hero-stage" aria-hidden="true" />
             {/* Two columns from md, not lg: snapping is mandatory from 768px
                 and a stacked hero would overflow the viewport there, which is
                 exactly the state that traps a mandatory-snap scroller. */}
@@ -765,12 +780,6 @@ export function ProfileView({
                   onPointerLeave={resetPortraitPosition}
                   onPointerCancel={resetPortraitPosition}
                 >
-                  <div
-                    className="profile-portrait-orbit absolute -inset-6"
-                    aria-hidden="true"
-                  >
-                    <span />
-                  </div>
                   <p
                     className="absolute -top-7 left-0 font-profile-mono text-[9px] uppercase tracking-[0.24em] text-[var(--profile-muted)]"
                     aria-hidden="true"
@@ -804,10 +813,6 @@ export function ProfileView({
                            so almost nothing is cropped away; 4/5 was cutting
                            into the frame. */
                         className="profile-image block aspect-[3/4] w-full object-cover object-top"
-                      />
-                      <div
-                        className="profile-portrait-scan"
-                        aria-hidden="true"
                       />
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 pt-16">
                         <div className="flex items-center gap-2 text-white">

@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Certification } from "@/data/certifications";
+import type { Certification } from "@/content";
 import { CertificationsPage } from "@/features/certifications/CertificationsPage";
 
 const fixtureCredentials: readonly Certification[] = [

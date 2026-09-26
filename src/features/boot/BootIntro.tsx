@@ -15,6 +15,24 @@ const HEX = "0123456789abcdef";
 const rnd = (s: string) => s[Math.floor(Math.random() * s.length)];
 const byte = () => rnd(HEX) + rnd(HEX);
 
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+/**
+ * The status line is written as HTML so the sequence can use its own `<q>`,
+ * `<em>` and `<u>` markup. Everything interpolated into it is *data*, so it
+ * gets escaped: today `name` and `role` are author-controlled props, but an
+ * innerHTML sink that trusts its inputs is one CMS or API away from being an
+ * XSS hole, and the boot overlay runs before anything else on the page.
+ */
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+
 export function BootIntro({
   lockTz = null,
   oncePerSession = true,
@@ -315,15 +333,18 @@ export function BootIntro({
     });
 
     at(3650, () => {
-      setStatus(`sha256 <q>${greeting}</q><span class="fp" id="boot-fp"></span>`, () => {
-        const el = status.querySelector<HTMLElement>("#boot-fp");
-        if (el) revealDigest(el, digestOrFallback(), reduce ? 1 : 1100);
-      });
+      setStatus(
+        `sha256 <q>${escapeHtml(greeting)}</q><span class="fp" id="boot-fp"></span>`,
+        () => {
+          const el = status.querySelector<HTMLElement>("#boot-fp");
+          if (el) revealDigest(el, digestOrFallback(), reduce ? 1 : 1100);
+        },
+      );
       fill(7);
     });
 
     at(5000, () => {
-      setStatus(`<em>${name}</em>${role}<u></u>`);
+      setStatus(`<em>${escapeHtml(name)}</em>${escapeHtml(role)}<u></u>`);
       fill(8);
     });
 

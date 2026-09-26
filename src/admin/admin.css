@@ -1,0 +1,180 @@
+/* Plain CSS, not Tailwind: the admin entry is outside the Tailwind content
+   globs and outside the production build, and keeping it self-contained means
+   editing the design system can never break the tool used to enter content. */
+
+.admin {
+  --ink: #111;
+  --muted: #666;
+  --line: #ddd;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+  color: var(--ink);
+  font:
+    400 15px/1.6 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin {
+    --ink: #ededed;
+    --muted: #999;
+    --line: #333;
+  }
+}
+
+.admin-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+
+.admin-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-header code,
+.admin-status code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  color: var(--muted);
+}
+
+.admin-tabs button.is-active {
+  border-bottom-color: currentcolor;
+  color: var(--ink);
+}
+
+.admin-form {
+  margin: 1.5rem 0 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.admin-form h2,
+.admin-list h2 {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.admin-field {
+  display: block;
+  margin-bottom: 0.9rem;
+}
+
+.admin-field span {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.admin-field input,
+.admin-field select,
+.admin-field textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.admin-field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.admin-field small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.admin button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.admin-error,
+.admin-status {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.admin-error {
+  /* The only colour in the tool, because a rejected save must not be missed. */
+  border-color: #b4342a;
+  color: #b4342a;
+}
+
+.admin-empty {
+  color: var(--muted);
+}
+
+.admin-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-list li span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}

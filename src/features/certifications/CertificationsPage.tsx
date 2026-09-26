@@ -12,7 +12,7 @@ import {
   certifications,
   type Certification,
   type CertificationCategory,
-} from "@/data/certifications";
+} from "@/content";
 import "./certifications.css";
 
 type CertificationFilter = "All" | CertificationCategory;

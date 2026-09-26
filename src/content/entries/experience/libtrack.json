@@ -1,0 +1,13 @@
+{
+  "id": "libtrack",
+  "company": "LibTrack",
+  "role": "UI/UX Designer & Quality Assurance Lead",
+  "period": "January 2025 - March 2025",
+  "startDate": "2025-01",
+  "summary": "Owned both product design and QA for a circulation-tracker used by collegiate libraries.",
+  "bullets": [
+    "Designed high-contrast UI patterns that worked well on kiosk terminals.",
+    "Authored end-to-end test scripts and defect workflows that cut release bugs.",
+    "Partnered with librarians to introduce features in weekly training clinics."
+  ]
+}

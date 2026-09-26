@@ -67,13 +67,11 @@ const App = () => {
 
   return (
     <>
-      {/*
-        oncePerSession={false} replays the intro on every load.
-        ⚠️ FLIP THIS BACK TO TRUE (or drop the prop) BEFORE DEPLOYING —
-        otherwise every visitor sits through the ~6s sequence on every
-        single page view. It is false purely so the intro can be worked on.
-      */}
-      <BootIntro oncePerSession={false} />
+      {/* Default (once per tab session) is deliberate: without it every
+          visitor sits through the ~6s sequence on every single page view.
+          Pass oncePerSession={false} while working on the intro, but do not
+          commit it that way. */}
+      <BootIntro />
       <ProfileView
         darkMode={darkMode}
         onToggleDarkMode={toggleDarkMode}

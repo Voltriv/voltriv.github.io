@@ -1,0 +1,8 @@
+/* Stylesheet root. Imported by every entry in src/entries/.
+   Paths are siblings now that this file lives alongside what it imports. */
+@import "./preflight.css";
+@import "./globals.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

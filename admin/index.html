@@ -1,0 +1,21 @@
+<!doctype html>
+<!--
+  Local content admin — dev server only.
+
+  This file is intentionally NOT listed in the rollup inputs in
+  vite.config.mts, so `npm run build` does not emit it and nothing here is
+  ever published. No CSP meta tag for the same reason: the policies on the
+  two real entrypoints exist to constrain what ships, and this does not ship.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Credentials — local admin</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/entries/admin.tsx"></script>
+  </body>
+</html>

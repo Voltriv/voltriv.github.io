@@ -18,75 +18,31 @@
        these pages. */
     --background: 1 0 0;
     --foreground: 0.12 0 0;
-    --card: 0.98 0 0;
-    --card-foreground: 0.12 0 0;
-    --popover: 0.98 0 0;
-    --popover-foreground: 0.12 0 0;
     --primary: 0.12 0 0;
     --primary-foreground: 1 0 0;
     --secondary: 0.95 0 0;
     --secondary-foreground: 0.12 0 0;
-    --muted: 0.95 0 0;
-    --muted-foreground: 0.5 0 0;
     --accent: 0.93 0 0;
     --accent-foreground: 0.12 0 0;
     --destructive: 0.45 0 0;
-    --destructive-foreground: 1 0 0;
     --border: 0.88 0 0;
     --input: 0.9 0 0;
-    --input-background: 0.97 0 0;
-    --switch-background: 0.85 0 0;
     --ring: 0.12 0 0;
-    --chart-1: 0.2 0 0;
-    --chart-2: 0.36 0 0;
-    --chart-3: 0.52 0 0;
-    --chart-4: 0.68 0 0;
-    --chart-5: 0.82 0 0;
-    --sidebar: 1 0 0;
-    --sidebar-foreground: 0.12 0 0;
-    --sidebar-primary: 0.12 0 0;
-    --sidebar-primary-foreground: 1 0 0;
-    --sidebar-accent: 0.95 0 0;
-    --sidebar-accent-foreground: 0.12 0 0;
-    --sidebar-border: 0.88 0 0;
-    --sidebar-ring: 0.12 0 0;
   }
 
   .dark {
     --background: 0 0 0;
     --foreground: 0.93 0 0;
-    --card: 0.14 0 0;
-    --card-foreground: 0.93 0 0;
-    --popover: 0.14 0 0;
-    --popover-foreground: 0.93 0 0;
     --primary: 1 0 0;
     --primary-foreground: 0 0 0;
     --secondary: 0.2 0 0;
     --secondary-foreground: 0.93 0 0;
-    --muted: 0.18 0 0;
-    --muted-foreground: 0.68 0 0;
     --accent: 0.24 0 0;
     --accent-foreground: 0.93 0 0;
     --destructive: 0.6 0 0;
-    --destructive-foreground: 0 0 0;
     --border: 0.26 0 0;
     --input: 0.22 0 0;
-    --input-background: 0.18 0 0;
-    --switch-background: 0.28 0 0;
     --ring: 1 0 0;
-    --chart-1: 0.95 0 0;
-    --chart-2: 0.8 0 0;
-    --chart-3: 0.64 0 0;
-    --chart-4: 0.48 0 0;
-    --chart-5: 0.32 0 0;
-    --sidebar: 0 0 0;
-    --sidebar-foreground: 0.93 0 0;
-    --sidebar-primary: 1 0 0;
-    --sidebar-primary-foreground: 0 0 0;
-    --sidebar-accent: 0.2 0 0;
-    --sidebar-accent-foreground: 0.93 0 0;
-    --sidebar-border: 0.26 0 0;
-    --sidebar-ring: 1 0 0;
   }
 
   .profile-theme {
@@ -104,20 +60,12 @@
     /* Text that sits on top of an accent-filled surface. */
     --profile-on-accent: #ffffff;
     --profile-accent-soft: rgba(10, 10, 10, 0.1);
-    --profile-highlight: rgba(10, 10, 10, 0.06);
     --profile-surface: rgba(250, 250, 250, 0.88);
     --profile-surface-strong: #f6f6f6;
     --profile-border: rgba(0, 0, 0, 0.12);
     --profile-border-strong: rgba(0, 0, 0, 0.26);
     --profile-header: rgba(255, 255, 255, 0.82);
     --profile-grid: rgba(0, 0, 0, 0.045);
-    /* The photograph keeps its colour and is lifted slightly. The UI around
-       it is monochrome so the portrait is the one live thing on the page —
-       desaturating it made the whole hero look inert. */
-    --profile-image-filter: saturate(1.06) contrast(1.03);
-    /* Logos are already fetched black, so no filter is needed. */
-    --profile-logo-filter: none;
-    --profile-shadow: 0 18px 48px rgba(0, 0, 0, 0.1);
 
     font-family: var(--profile-font-display);
     color: var(--profile-ink);
@@ -136,18 +84,12 @@
     --profile-accent-strong: #ffffff;
     --profile-on-accent: #000000;
     --profile-accent-soft: rgba(255, 255, 255, 0.14);
-    --profile-highlight: rgba(255, 255, 255, 0.1);
     --profile-surface: rgba(15, 15, 15, 0.88);
     --profile-surface-strong: #0f0f0f;
     --profile-border: rgba(255, 255, 255, 0.14);
     --profile-border-strong: rgba(255, 255, 255, 0.3);
     --profile-header: rgba(0, 0, 0, 0.8);
     --profile-grid: rgba(255, 255, 255, 0.05);
-    /* Not dimmed on the dark ground — brightening it slightly is what keeps
-       the portrait reading as a live photograph rather than a grey panel. */
-    --profile-image-filter: brightness(1.04) saturate(1.06) contrast(1.04);
-    --profile-logo-filter: none;
-    --profile-shadow: 0 20px 56px rgba(0, 0, 0, 0.55);
   }
 
   * {
@@ -253,41 +195,11 @@
     font-family: var(--profile-font-mono);
   }
 
-  .profile-grid {
-    background-image: linear-gradient(
-        to right,
-        var(--profile-grid) 1px,
-        transparent 1px
-      ),
-      linear-gradient(to bottom, var(--profile-grid) 1px, transparent 1px);
-    background-size: 128px 128px;
-  }
-
+  /* No saturate/contrast lift: the portrait is the one place real colour
+     enters the page, and pushing it further pulls against the monochrome
+     everything else is built from. */
   .profile-image {
-    filter: var(--profile-image-filter);
-    transition: filter 0.55s ease, scale 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .profile-logo {
-    filter: var(--profile-logo-filter);
-    transition: filter 0.45s ease;
-  }
-
-  .profile-corner-glow {
-    position: absolute;
-    right: -10rem;
-    top: -12rem;
-    z-index: 0;
-    width: 30rem;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: radial-gradient(
-      circle,
-      var(--profile-accent-soft) 0%,
-      transparent 70%
-    );
-    filter: blur(22px);
-    pointer-events: none;
+    transition: scale 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .profile-scroll-progress {
@@ -446,31 +358,7 @@
   .profile-card {
     position: relative;
     isolation: isolate;
-    background-image: linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.08),
-      transparent 45%
-    );
-    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.35s ease;
-  }
-
-  .profile-card::before {
-    content: "";
-    position: absolute;
-    left: 1.1rem;
-    right: 1.1rem;
-    top: -1px;
-    z-index: -1;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--profile-accent-soft),
-      transparent
-    );
-    pointer-events: none;
+    transition: border-color 0.35s ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -493,9 +381,7 @@
     }
 
     .profile-card:hover {
-      transform: translateY(-3px);
       border-color: var(--profile-border-strong);
-      box-shadow: var(--profile-shadow);
     }
 
     .profile-portrait-stage:hover .profile-image {
@@ -580,62 +466,8 @@
       )
       rotateX(var(--portrait-rotate-x)) rotateY(var(--portrait-rotate-y));
     transform-style: preserve-3d;
-    box-shadow: var(--profile-shadow);
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.35s ease;
-  }
-
-  .profile-portrait-orbit {
-    border: 1px dashed var(--profile-border);
-    border-radius: 999px;
-    animation: profile-orbit 22s linear infinite;
-  }
-
-  .profile-portrait-orbit span {
-    position: absolute;
-    left: 50%;
-    top: -4px;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--profile-accent);
-    box-shadow: 0 0 18px var(--profile-accent);
-  }
-
-  @keyframes profile-orbit {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .profile-portrait-scan {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 46%,
-      rgba(255, 255, 255, 0.22) 49%,
-      rgba(255, 255, 255, 0.62) 50%,
-      rgba(255, 255, 255, 0.22) 51%,
-      transparent 54%,
-      transparent 100%
-    );
-    transform: translateY(-105%);
-    animation: profile-scan 1.8s 0.75s cubic-bezier(0.16, 1, 0.3, 1)
-      both;
-    pointer-events: none;
-  }
-
-  @keyframes profile-scan {
-    70%,
-    100% {
-      transform: translateY(105%);
-    }
-    100% {
-      opacity: 0;
-    }
   }
 
   .profile-frame-corner {
@@ -664,33 +496,6 @@
     border-top: 1px solid var(--profile-border);
   }
 
-  .profile-process-step {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .profile-process-step + .profile-process-step {
-    border-top: 1px solid var(--profile-border);
-  }
-
-  /* The old ::after bottom sweep is gone: these cards now carry the
-     four-edge border-draw, and two bottom lines animating from opposite
-     origins read as a glitch rather than an effect. */
-
-  .profile-process-signal {
-    transition: background-color 0.35s ease, box-shadow 0.35s ease;
-  }
-
-  /* .profile-security-panel removed with the section's card wrapper. */
-
-  .profile-security-step {
-    position: relative;
-  }
-
-  .profile-security-step + .profile-security-step {
-    border-top: 1px solid var(--profile-border);
-  }
-
   .profile-experience-entry {
     transition: background-color 0.35s ease, padding 0.35s ease;
   }
@@ -703,18 +508,11 @@
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* .profile-contact-panel removed with the section's card wrapper. */
-
   .profile-contact-cell + .profile-contact-cell {
     border-top: 1px solid var(--profile-border);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .profile-process-step:hover .profile-process-signal {
-      background: var(--profile-accent);
-      box-shadow: 0 0 0 6px var(--profile-accent-soft);
-    }
-
     .profile-experience-entry:hover,
     .profile-faq-row:hover {
       background: linear-gradient(
@@ -746,24 +544,6 @@
       border-left: 1px solid var(--profile-border);
     }
 
-    .profile-security-step + .profile-security-step {
-      border-top: 0;
-    }
-
-    .profile-security-step:nth-child(even) {
-      border-left: 1px solid var(--profile-border);
-    }
-
-    .profile-security-step:nth-child(n + 3) {
-      border-top: 1px solid var(--profile-border);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .profile-process-step + .profile-process-step {
-      border-top: 0;
-      border-left: 1px solid var(--profile-border);
-    }
   }
 
   /* Contact grid is 3-up at lg, so rows start at every 3rd cell. */
@@ -825,193 +605,10 @@
   }
 
   /* ---------------------------------------------------------------------
-     Atmospheric backgrounds — reconstructs the slow "breathing" of a Ken
-     Burns pan without any photography.
-     --------------------------------------------------------------------- */
-  .profile-atmosphere {
-    position: fixed;
-    inset: -20% -10%;
-    z-index: 0;
-    background:
-      radial-gradient(
-        42rem 32rem at 18% 22%,
-        var(--profile-accent-soft) 0%,
-        transparent 62%
-      ),
-      radial-gradient(
-        38rem 30rem at 82% 68%,
-        var(--profile-highlight) 0%,
-        transparent 64%
-      ),
-      radial-gradient(
-        30rem 26rem at 58% 8%,
-        var(--profile-accent-soft) 0%,
-        transparent 70%
-      );
-    /* Deliberately no blur filter: a full-viewport animated blur is an
-       expensive composite, and soft-stopped radial gradients are already
-       diffuse enough to read the same. */
-    opacity: 1;
-    animation: profile-drift 52s ease-in-out infinite alternate;
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  /* Vignette. Standing in for the darkened edges of the reference site's
-     full-bleed photography — it is most of what gives a flat colour field
-     the weight of a photograph. */
-  .profile-vignette {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(
-      125% 95% at 50% 38%,
-      transparent 42%,
-      rgba(0, 0, 0, 0.16) 78%,
-      rgba(0, 0, 0, 0.34) 100%
-    );
-    pointer-events: none;
-  }
-
-  .dark .profile-vignette {
-    background: radial-gradient(
-      125% 95% at 50% 38%,
-      transparent 38%,
-      rgba(0, 0, 0, 0.45) 76%,
-      rgba(0, 0, 0, 0.72) 100%
-    );
-  }
-
-  @keyframes profile-drift {
-    0% {
-      transform: scale(1) translate3d(0, 0, 0);
-    }
-    50% {
-      transform: scale(1.08) translate3d(2.5%, -2%, 0);
-    }
-    100% {
-      transform: scale(1.14) translate3d(-2%, 2.5%, 0);
-    }
-  }
-
-  /* Slow scale on the hero's own backdrop — the Ken Burns "breathing" the
-     reference site gets from a zooming photograph. */
-  .profile-hero-stage {
-    position: absolute;
-    inset: -10%;
-    z-index: 0;
-    background: radial-gradient(
-      60% 50% at 30% 45%,
-      var(--profile-accent-soft) 0%,
-      transparent 68%
-    );
-    opacity: 0.9;
-    animation: profile-kenburns 38s ease-in-out infinite alternate;
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  @keyframes profile-kenburns {
-    from {
-      transform: scale(1) translate3d(0, 0, 0);
-    }
-    to {
-      transform: scale(1.18) translate3d(-3%, 2%, 0);
-    }
-  }
-
-  /* ---------------------------------------------------------------------
      Accent dot — the reference site's signature typographic tic.
      --------------------------------------------------------------------- */
   .profile-accent-dot {
     color: var(--profile-accent);
-  }
-
-  /* ---------------------------------------------------------------------
-     Border-draw hover: four spans tracing the card edge.
-     --------------------------------------------------------------------- */
-  .profile-draw {
-    position: relative;
-  }
-
-  .profile-draw > .profile-draw-border {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    /* The cards are rounded but not clipped, so straight edge lines would
-       spur out past each corner arc. Inheriting the radius and clipping here
-       traces the actual card shape; it resolves to 0 on square parents. */
-    border-radius: inherit;
-    overflow: hidden;
-  }
-
-  .profile-draw-border span {
-    position: absolute;
-    background: var(--profile-accent);
-    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .profile-draw-border span:nth-child(1),
-  .profile-draw-border span:nth-child(3) {
-    left: 0;
-    right: 0;
-    height: 1.5px;
-  }
-
-  .profile-draw-border span:nth-child(1) {
-    top: 0;
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  .profile-draw-border span:nth-child(3) {
-    bottom: 0;
-    transform: scaleX(0);
-    transform-origin: right;
-  }
-
-  .profile-draw-border span:nth-child(2),
-  .profile-draw-border span:nth-child(4) {
-    top: 0;
-    bottom: 0;
-    width: 1.5px;
-  }
-
-  .profile-draw-border span:nth-child(2) {
-    right: 0;
-    transform: scaleY(0);
-    transform-origin: top;
-  }
-
-  .profile-draw-border span:nth-child(4) {
-    left: 0;
-    transform: scaleY(0);
-    transform-origin: bottom;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .profile-draw:hover .profile-draw-border span:nth-child(1),
-    .profile-draw:hover .profile-draw-border span:nth-child(3) {
-      transform: scaleX(1);
-    }
-
-    .profile-draw:hover .profile-draw-border span:nth-child(2),
-    .profile-draw:hover .profile-draw-border span:nth-child(4) {
-      transform: scaleY(1);
-    }
-
-    .profile-draw-border span:nth-child(2) {
-      transition-delay: 0.12s;
-    }
-
-    .profile-draw-border span:nth-child(3) {
-      transition-delay: 0.24s;
-    }
-
-    .profile-draw-border span:nth-child(4) {
-      transition-delay: 0.36s;
-    }
   }
 
   /* ---------------------------------------------------------------------
@@ -1331,66 +928,11 @@
     padding-top: 0.75rem;
   }
 
-  /* ---------------------------------------------------------------------
-     Hand-rolled snap carousel (no Swiper)
-     --------------------------------------------------------------------- */
-  .profile-carousel-track {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(min(21rem, 82vw), 1fr);
-    gap: 1.25rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    /* `overflow-x: auto` makes overflow-y compute to `auto` too, which would
-       clip the cards' hover lift and their 48px-blur shadow. This padding is
-       the clearance for both; without it the effect is invisible in here. */
-    padding-block: 1rem 1.75rem;
-    padding-inline: 0.25rem;
-  }
-
-  .profile-carousel-track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .profile-carousel-track > * {
-    scroll-snap-align: start;
-  }
-
-  .profile-carousel-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--profile-border);
-    border-radius: 999px;
-    background: var(--profile-surface);
-    color: var(--profile-ink);
-    transition: border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
-  }
-
-  .profile-carousel-button:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  .profile-carousel-button:not(:disabled):hover {
-    border-color: var(--profile-accent);
-    transform: translateY(-2px);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .profile-reveal {
       transition: none;
       opacity: 1;
       transform: none;
-    }
-
-    .profile-atmosphere,
-    .profile-hero-stage {
-      animation: none;
     }
 
     .profile-offcanvas,
@@ -1408,14 +950,6 @@
       transform: scaleX(var(--meter-value, 1));
     }
 
-    .profile-carousel-track {
-      scroll-behavior: auto;
-    }
-
-    .profile-draw-border span {
-      transition: none;
-    }
-
     .profile-marquee {
       animation: none;
       flex-wrap: wrap;
@@ -1431,12 +965,7 @@
       display: none;
     }
 
-    .profile-portrait-scan {
-      display: none;
-    }
-
-    .profile-status-dot,
-    .profile-portrait-orbit {
+    .profile-status-dot {
       animation: none;
     }
 
@@ -1448,9 +977,7 @@
     .profile-navlink,
     .profile-navlink::after,
     .profile-image,
-    .profile-logo,
     .profile-portrait-frame,
-    .profile-process-signal,
     .profile-experience-entry,
     .profile-faq-row,
     .profile-faq-trigger svg {

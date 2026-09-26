@@ -1,0 +1,4 @@
+Project entries are written here by the local admin UI at /admin/ (dev only).
+One JSON file per project; the filename is the entry id.
+Empty on purpose — the profile page renders a placeholder card while it is.
+This file keeps the directory tracked while the collection is empty.

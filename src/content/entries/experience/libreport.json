@@ -1,0 +1,13 @@
+{
+  "id": "libreport",
+  "company": "LibReport",
+  "role": "Project Manager / Database Administrator",
+  "period": "August 2025 - November 2025",
+  "startDate": "2025-08",
+  "summary": "Directed the delivery of an academic reporting suite for campus libraries—balancing PM, DBA, and stakeholder duties.",
+  "bullets": [
+    "Facilitated sprint rituals across engineering, QA, and client librarians to keep timelines healthy.",
+    "Maintained datasets and migrations that powered real-time usage dashboards.",
+    "Built alignment decks and mini demos so admins could adopt the tool with confidence."
+  ]
+}
