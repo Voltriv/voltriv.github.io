@@ -1,19 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--
+  class="dark" / colorScheme dark are set statically because the page now
+  opens dark for everyone. The CSP blocks inline scripts, so there is no
+  theme-bootstrap script available; without this the document paints light
+  before React mounts and flashes on repeat visits, where the boot overlay
+  is skipped. Visitors with a stored light preference get a brief dark frame
+  instead, which is the cheaper of the two.
+-->
+<html lang="en" class="dark" style="color-scheme: dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      No `frame-ancestors` here on purpose: the CSP spec ignores that
+      directive when the policy arrives in a <meta> tag, and GitHub Pages
+      cannot set response headers. Clickjacking is handled from the bundle
+      instead — see src/lib/frameGuard.ts.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.simpleicons.org; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+      content="default-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://cdn.simpleicons.org; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       name="description"
       content="Elijah Meir Vinluan's portfolio for UI/UX design, front-end engineering, and security-aware delivery."
     />
-    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
     <link rel="canonical" href="https://voltriv.github.io/" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://voltriv.github.io/" />
@@ -53,10 +73,10 @@
       content="Portrait of Elijah Meir Vinluan"
     />
     <title>Elijah Meir Vinluan | UI/UX, Front-End &amp; Security</title>
-    <script type="module" crossorigin src="/assets/profile-Bx-OFr5S.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/src-DYSVFQI8.js">
-    <link rel="stylesheet" crossorigin href="/assets/src-BlZEQOfY.css">
-    <link rel="stylesheet" crossorigin href="/assets/profile-C8nAN-MU.css">
+    <script type="module" crossorigin src="/assets/profile-DqLW5IzL.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/styles-A6nOJPAU.js">
+    <link rel="stylesheet" crossorigin href="/assets/styles-CAUKqhuw.css">
+    <link rel="stylesheet" crossorigin href="/assets/profile-8-mG71mv.css">
   </head>
   <body>
     <div id="root"></div>

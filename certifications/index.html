@@ -1,19 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      See the root index.html: `frame-ancestors` is header-only and GitHub
+      Pages cannot send headers, so clickjacking is handled by the bundled
+      guard in src/lib/frameGuard.ts.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.simpleicons.org; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+      content="default-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://cdn.simpleicons.org; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       name="description"
       content="A searchable index of confirmed certifications and credentials for Elijah Meir Vinluan."
     />
-    <meta name="theme-color" content="#f5f1ea" />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
     <link
       rel="canonical"
       href="https://voltriv.github.io/certifications/"
@@ -59,10 +70,10 @@
       content="Portrait of Elijah Meir Vinluan"
     />
     <title>Certifications &amp; Credentials | Elijah Meir Vinluan</title>
-    <script type="module" crossorigin src="/assets/certifications-Dn7ydc-B.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/src-DYSVFQI8.js">
-    <link rel="stylesheet" crossorigin href="/assets/src-BlZEQOfY.css">
-    <link rel="stylesheet" crossorigin href="/assets/certifications-mRsPF5RF.css">
+    <script type="module" crossorigin src="/assets/certifications-CoPTziq4.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/styles-A6nOJPAU.js">
+    <link rel="stylesheet" crossorigin href="/assets/styles-CAUKqhuw.css">
+    <link rel="stylesheet" crossorigin href="/assets/certifications-BH-YdWi_.css">
   </head>
   <body>
     <div id="root"></div>
