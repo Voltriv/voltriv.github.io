@@ -1,0 +1,13 @@
+{
+  "id": "microjob",
+  "company": "MicroJob",
+  "role": "Frontend Developer / UI/UX Designer",
+  "period": "AY 2025–2026",
+  "startDate": "2025-08",
+  "summary": "A microjob platform connecting workers and clients for task-based online jobs.",
+  "bullets": [
+    "Designed and developed responsive React and Tailwind CSS interfaces from Figma wireframes.",
+    "Created user flows for job-seekers and employers, including a service-fee transaction model.",
+    "Worked with a PHP and MySQL stack to connect the interface to the platform."
+  ]
+}

@@ -118,10 +118,10 @@ export type ProfileData = {
 export const profileData: ProfileData = {
   hero: {
     marker: "// profile.index",
-    role: "UI/UX designer · front-end developer · security-minded builder",
+    role: "Full stack web developer · UI/UX designer · security-minded builder",
     headline: ["I design, build", "& secure digital products."],
     intro:
-      "I turn complex ideas into clear, accessible interfaces—then help teams ship them with thoughtful front-end engineering and practical security checks.",
+      "I design and build accessible web and mobile experiences, connecting thoughtful interfaces with dependable back-end systems. My work spans microjob platforms, library systems, and flood monitoring.",
     availability: "Available for new projects",
   },
   navLinks: [
@@ -177,27 +177,59 @@ export const profileData: ProfileData = {
   projects,
   techStack: [
     {
-      title: "Frontend",
+      title: "Web & mobile",
       description: "Interfaces and systems for delightful product experiences.",
       // Logos are requested in black rather than brand colour: the site is
       // monochrome, and desaturating a brand colour in CSS would leave washed
       // mid-greys on the white chip instead of a crisp mark.
       items: [
+        { name: "HTML & CSS" },
         { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/000000" },
         { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/000000" },
         { name: "React", logo: "https://cdn.simpleicons.org/react/000000" },
         { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000" },
         { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/000000" },
+        { name: "Flutter" },
       ],
     },
     {
-      title: "Backend",
+      title: "Backend & databases",
       description: "APIs and services powering civic-grade platforms.",
       items: [
         { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/000000" },
         { name: "Python", logo: "https://cdn.simpleicons.org/python/000000" },
         { name: "PHP", logo: "https://cdn.simpleicons.org/php/000000" },
         { name: "MongoDB", logo: "https://cdn.simpleicons.org/mongodb/000000" },
+        { name: "MySQL" },
+        { name: "System Integration" },
+        { name: "Database Management" },
+      ],
+    },
+    {
+      title: "UI/UX & design",
+      description: "Research and design practices for accessible web and mobile experiences.",
+      items: [
+        { name: "Figma" },
+        { name: "Wireframing" },
+        { name: "Prototyping" },
+        { name: "User Research" },
+        { name: "Interface Design" },
+      ],
+    },
+    {
+      title: "Programming",
+      description: "Additional programming experience alongside JavaScript, Python, and PHP.",
+      items: [{ name: "Java" }],
+    },
+    {
+      title: "Project delivery",
+      description: "Collaborative planning, documentation, and practical technical support.",
+      items: [
+        { name: "Agile" },
+        { name: "Scrum" },
+        { name: "Team Coordination" },
+        { name: "Technical Documentation" },
+        { name: "Troubleshooting" },
       ],
     },
     {
@@ -214,6 +246,9 @@ export const profileData: ProfileData = {
         { name: "Nmap" },
         { name: "Masscan" },
         { name: "Maltego" },
+        { name: "Wireshark" },
+        { name: "Burp Suite" },
+        { name: "Network Security" },
       ],
     },
   ],
@@ -224,9 +259,9 @@ export const profileData: ProfileData = {
         "Clear flows, reusable components, and accessible visual patterns that help people move with confidence.",
     },
     {
-      title: "Front-end delivery",
+      title: "Web & mobile delivery",
       description:
-        "Responsive React builds with practical performance, testing, and maintainability checks.",
+        "Responsive React interfaces, Flutter mobile experiences, and back-end integration with PHP, Python, and databases.",
     },
     {
       title: "Security awareness",
@@ -340,9 +375,10 @@ export const profileData: ProfileData = {
   ],
   collaborations: [
     { name: "LibReport", location: "Dagupan City" },
-    { name: "LibTrack", location: "Campus Libraries" },
+    { name: "LibTracker", location: "Web & Mobile" },
+    { name: "MicroJob", location: "Microjob Platform" },
     { name: "FloodWatch", location: "Northern Luzon" },
-    { name: "CIT Student Council", location: "Dagupan" },
+    { name: "CITE Student Council", location: "Dagupan" },
     { name: "UI/UX Study Group", location: "Remote" },
     { name: "Security Lab", location: "Philippines" },
   ],

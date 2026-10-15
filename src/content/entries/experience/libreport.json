@@ -1,13 +1,13 @@
 {
   "id": "libreport",
   "company": "LibReport",
-  "role": "Project Manager / Database Administrator",
-  "period": "August 2025 - November 2025",
+  "role": "Project Manager",
+  "period": "AY 2025–2026",
   "startDate": "2025-08",
-  "summary": "Directed the delivery of an academic reporting suite for campus libraries—balancing PM, DBA, and stakeholder duties.",
+  "summary": "A library management and analytics web app that turns usage data into insights for resource allocation, inventory, and staffing.",
   "bullets": [
-    "Facilitated sprint rituals across engineering, QA, and client librarians to keep timelines healthy.",
-    "Maintained datasets and migrations that powered real-time usage dashboards.",
-    "Built alignment decks and mini demos so admins could adopt the tool with confidence."
+    "Coordinated team tasks, timelines, and agile workflows throughout project delivery.",
+    "Oversaw a Python and Django system using data mining and visualization to support library decisions.",
+    "Established evaluation and monitoring processes to keep results reproducible across iterations."
   ]
 }

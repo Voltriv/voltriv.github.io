@@ -488,7 +488,7 @@ export function ProfileView({
       ratio: Math.min(experiences.length / 5, 1),
     },
     {
-      label: "Tools in rotation",
+      label: "Skills & tools",
       value: totalStackItems.toString(),
       count: totalStackItems,
       ratio: Math.min(totalStackItems / 20, 1),
@@ -998,7 +998,7 @@ export function ProfileView({
           <section
             id="capabilities"
             tabIndex={-1}
-            className="profile-section space-y-12"
+            className="profile-section profile-section--free space-y-12"
           >
             {/* Single column now that the stack carousel is gone. */}
             <div>
@@ -1021,7 +1021,7 @@ export function ProfileView({
                   {focusAreas.map((area, index) => (
                     <li
                       key={area.title}
-                      className="profile-reveal flex items-baseline gap-4 border-b border-[var(--profile-border)] py-3"
+                      className="profile-reveal grid grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-2 border-b border-[var(--profile-border)] py-3"
                       style={staggerStyle(index, 55)}
                     >
                       <span className="font-profile-mono text-[10px] text-[var(--profile-accent)]">
@@ -1030,7 +1030,7 @@ export function ProfileView({
                       <span className="shrink-0 text-base font-semibold text-[var(--profile-ink)] sm:w-40">
                         {area.title}
                       </span>
-                      <span className="text-sm text-[var(--profile-muted)]">
+                      <span className="col-start-2 text-sm text-[var(--profile-muted)]">
                         {area.description}
                       </span>
                     </li>
@@ -1047,7 +1047,7 @@ export function ProfileView({
                     className="profile-reveal flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-[var(--profile-border)] py-3"
                     style={staggerStyle(index, 110)}
                   >
-                    <span className="shrink-0 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)] sm:w-44">
+                    <span className="w-full shrink-0 font-profile-mono text-[10px] uppercase tracking-[0.24em] text-[var(--profile-muted)] sm:w-44">
                       {group.title}
                     </span>
                     <span className="min-w-0 flex-1 text-sm text-[var(--profile-ink)]">

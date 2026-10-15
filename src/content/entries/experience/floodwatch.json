@@ -2,12 +2,12 @@
   "id": "floodwatch",
   "company": "FloodWatch",
   "role": "UI/UX Designer",
-  "period": "August 2024 - November 2024",
+  "period": "AY 2024–2025",
   "startDate": "2024-08",
-  "summary": "Joined a civic-tech team to craft a flood monitoring experience for Northern Luzon communities.",
+  "summary": "A localized flood monitoring and forecasting mobile app for residents of Brgy. Bonuan Boquig.",
   "bullets": [
-    "Interviewed responders and barangay staff to map out real alert journeys.",
-    "Sketched responsive dashboards that elevated hazard data for mobile users.",
-    "Worked with eng to test SMS + push notification flows for early warnings."
+    "Designed a mobile interface for real-time flood updates, forecasts, and vehicle passability information.",
+    "Helped present Arduino sensor data and historical flood records in clear, accessible user flows.",
+    "Worked with a Flutter, Arduino, Figma, and Firebase project stack."
   ]
 }
